@@ -14,9 +14,10 @@ EP:
   CompileUnit  <- Comment eoi
 
 # Comments can be nested:
-  CommentOpen  <-  "{" / "(*"
-  CommentClose <-  "}" / "*)"
-  Comment      <- CommentOpen (Comment / !CommentClose .)* CommentClose
+  CommentOpen    <-  "{" / "(*"
+  CommentClose   <-  "}" / "*)"
+  CommentContent <- (Comment / !CommentClose .)*
+  Comment        <- CommentOpen CommentContent CommentClose
 `));
 
 
@@ -35,31 +36,6 @@ string toD(ParseTree p)
 {
 	string parseToCode(ParseTree p)
 	{
-		string parseComment(ParseTree p)
-		{
-			switch(p.name) {
-				case "EP.Comment":
-					assert(equal(p.children[0].name,   "EP.CommentOpen"));
-					assert(equal(p.children[$-1].name, "EP.CommentClose"));
-					if (p.children.length < 3)    // Not a nested commment.
-						return "/*" ~ p.input[p.children[0].end .. p.children[1].begin] ~ "*/";
-					// There are nested comments.
-					string contents;
-                    size_t begin = p.children[0].end;   // Start after own CommentOpen.
-                    size_t end;
-					foreach(child; p.children[1 .. $-1]) {  // For each nested comment, do
-                        end = child.children[0].begin;          // Upto nested CommentOpen.
-                        contents ~= p.input[begin .. end];      // Content before nested comment.
-                        contents ~= parseComment(child);        // Nested comment.
-                        begin = child.children[$ - 1].end;      // Continue after nested CommentClose.
-                    }
-                    contents ~= p.input[begin .. p.children[$ - 1].begin];   // Content after last nested comment.
-                    return "/+" ~ contents ~ "+/";
-                default:
-                    assert(false);
-			}
-		}
-
 		switch(p.name)
 		{
 			case "EP":
@@ -69,8 +45,24 @@ string toD(ParseTree p)
 				foreach(child; p.children)	// child is a ParseTree.
 					result ~= parseToCode(child);
 				return result;
-			case "EP.Comment":
-                return parseComment(p);
+            case "EP.Comment":
+                assert(p.children.length == 3);
+                assert(equal(p.children[1].name, "EP.CommentContent"));
+                return parseToCode(p.children[1]);
+			case "EP.CommentContent":
+                if(p.children.length == 0)  // No nested comments.
+                    return "/*" ~ p.input[p.begin .. p.end] ~ "*/";
+                // There are nested comments. All p.children are "EP.Comment".
+                string contents;
+                size_t begin = p.begin;
+                foreach(child; p.children) {  // For each nested comment, do
+                    assert(equal(child.name, "EP.Comment"));
+                    contents ~= p.input[begin .. child.begin];      // Content before nested comment.
+                    contents ~= parseToCode(child);                 // Nested comment.
+                    begin = child.end;                              // Continue after nested comment.
+                }
+                contents ~= p.input[begin .. p.end];    // Content after last nested comment.
+                return "/+" ~ contents ~ "+/";
 			default:
 				return "";
 		}
@@ -79,7 +71,7 @@ string toD(ParseTree p)
 	return parseToCode(p);
 }
 
-void testPascal(string pascal)
+void test(string pascal)
 {
     auto parseTree = EP(pascal);
     writeln(parseTree);
@@ -94,5 +86,5 @@ void testPascal(string pascal)
 /* This cannot contain nested comments. */
 void main()
 {
-    testPascal("(* Here comes a {nested} comment.}");
+    test("(* Here comes a {nested} comment.}");
 }
