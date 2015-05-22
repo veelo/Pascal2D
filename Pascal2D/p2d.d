@@ -10,14 +10,15 @@ EP:
     CompileUnit  <- Program eoi
 
 # Token separators
-    _           <- ( WhiteSpace / Comment ) _*
-    WhiteSpace  <- ( " " / "\t" / "\r" / "\n" / "\r\n" )+
+    _           <- ( WhiteSpace / Comment / InlineComment ) _*
+    WhiteSpace  <- ( " " / "\t" / endOfLine )+
 
 # Comments:
     CommentOpen     <-  "{" / "(*"
     CommentClose    <-  "}" / "*)"
-    CommentContent  <- (!CommentClose .)*
-    Comment         <- CommentOpen CommentContent CommentClose
+    CommentContent  <- ( !CommentClose . )*
+    InlineComment   <- CommentOpen CommentContent CommentClose !endOfLine
+    Comment         <- CommentOpen CommentContent CommentClose &endOfLine
 
 # 6.1.1
     Digit           <- [0-9]
@@ -125,8 +126,8 @@ EP:
     SimpleStatement <- ProcedureStatement
 
 # 6.9.2.3
-#TODO    ProcedureStatement  <- ProcedureName (ActualParameterList? / ReadParameterList / ReadlnParameterList / ReadstrParameterList / WriteParameterList / WritelnParameterList / WritestrParameterList )
-    ProcedureStatement  <- ProcedureName WritelnParameterList
+#TODO    ProcedureStatement  <- ProcedureName _? ( _? ActualParameterList? / ReadParameterList / ReadlnParameterList / ReadstrParameterList / WriteParameterList / WritelnParameterList / WritestrParameterList _? )
+    ProcedureStatement  <- ProcedureName _? WritelnParameterList _?
 
 # 6.9.3.1
     StatementSequence   <- _? Statement _? ( :";" _? Statement _? )*
@@ -141,8 +142,8 @@ EP:
     WriteParameter  <- Expression ( ":" Expression ( ":" Expression )? )?
 
 # 6.10.4
-#TODO    WritelnParameterList    <- ( "(" ( FileVariable / WriteParameter ) ( "," WriteParameter )* ")" )?
-    WritelnParameterList    <- ( "(" WriteParameter ( "," WriteParameter )* ")" )?
+#TODO    WritelnParameterList    <- ( "(" _? ( FileVariable / WriteParameter ) _? ( "," _? WriteParameter _? )* ")" )?
+    WritelnParameterList    <- ( "(" _? WriteParameter _? ( "," _? WriteParameter _? )* ")" )?
 
 # 6.11.2
     ConstituentIdentifier   <- identifier
@@ -200,6 +201,7 @@ string toD(ParseTree p)
 	string parseToCode(ParseTree p)
 	{
         import std.range.primitives;
+        import std.algorithm.searching;
 		switch(p.name)
 		{
 			case "EP":
@@ -216,14 +218,16 @@ string toD(ParseTree p)
 				foreach(child; p.children)	// child is a ParseTree.
 					result ~= parseToCode(child);
 				return result;
-            case "EP.Comment":
+            case "EP.Comment", "EP.InlineComment":
                 assert(p.children.length == 3);
                 assert(equal(p.children[1].name, "EP.CommentContent"));
-                return parseToCode(p.children[1]);
-			case "EP.CommentContent":
-                assert(p.children.length == 0); // No nested comments.
-                return "/*" ~ p.input[p.begin .. p.end] ~ "*/";
-
+                auto contentNode = p.children[1];
+                auto contentString = contentNode.input[contentNode.begin .. contentNode.end];
+                if(equal(p.name, "EP.Comment") && !canFind(contentString, "\n"))
+                    // End-of-line comment.
+                    return "//" ~ contentString;
+                // Ordinary comment.
+                return "/*" ~ contentString ~ "*/";
             case "EP.WhiteSpace":
                 return p.input[p.begin .. p.end];
             case "EP.ProgramParameterList":
@@ -268,7 +272,6 @@ string toD(ParseTree p)
 			default:
                 if(startsWith(p.name, "literal"))   // Disregard keywords etc.
                     return "";
-                writeln(p.name[0..6]);
 				assert(false, p.name ~ " is unhandled.");
 		}
 	}
@@ -296,14 +299,16 @@ void test(string pascal)
 
 void main()
 {
-    test("(* Here comes a {wannabe nested comment.}");
+    //test("(* Here comes a {wannabe nested comment.}");
 
     test("
 program MyTest(output);
 
+(* Say
+   hello. }
 begin
-    writeln('Hello D''s \"World\"!');
-    writeln;
+    writeln( {Inline comment.} 'Hello D''s \"World\"!' {Inline comment.} {One more {thing.});
+    writeln;     {Empty}
     writeln('');
 end.
     ");
