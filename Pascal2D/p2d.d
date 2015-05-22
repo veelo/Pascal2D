@@ -11,7 +11,7 @@ EP:
 
 # Token separators
     _           <- ( WhiteSpace / Comment ) _*
-    WhiteSpace  <- ( " " / "\t" / "\n" / "\r" )+
+    WhiteSpace  <- ( " " / "\t" / "\r" / "\n" / "\r\n" )+
 
 # Comments:
     CommentOpen     <-  "{" / "(*"
@@ -23,14 +23,14 @@ EP:
     Digit           <- [0-9]
 
 # 6.1.7
-    DigitSequence   <- Digit+
-    Sign            <- "+" / "-"
+    DigitSequence   <~ (Digit+)     # The tilde fuses the Digit nodes (["1", "2", "3"]) into one DigitSequence node (["123"]);
+    Sign            <- [-+]
 
 # 6.1.8
     Label   <- DigitSequence
 
 # 6.1.9 (complete)
-    CharacterString <- "'" StringElement* "'"
+    CharacterString <- :"'" StringElement* :"'"  # The colon discards the quotes.
     StringElement   <- ApostropheImage / StringCharacter
     ApostropheImage <- "''"
     StringCharacter <- !"'" .
@@ -128,11 +128,11 @@ EP:
 #TODO    ProcedureStatement  <- ProcedureName (ActualParameterList? / ReadParameterList / ReadlnParameterList / ReadstrParameterList / WriteParameterList / WritelnParameterList / WritestrParameterList )
     ProcedureStatement  <- ProcedureName WritelnParameterList
 
-# 6.9.3.1   (NOTE: modified to allow ";" after statement.)
-    StatementSequence   <- _? Statement ";"? _? ( ";" _? Statement _? )*
+# 6.9.3.1
+    StatementSequence   <- _? Statement _? ( :";" _? Statement _? )*
 
-# 6.9.3.2
-    CompoundStatement   <- "begin" StatementSequence "end"
+# 6.9.3.2   (NOTE: modified to allow ";" before "end".)
+    CompoundStatement   <- "begin" StatementSequence :";"? _? "end"
 
 # 6.9.3.10
     FieldDesignatorIdentifier   <- identifier
@@ -234,7 +234,7 @@ string toD(ParseTree p)
                 string result;
                 foreach(child; p.children)  // child is a ParseTree.
                     result ~= parseToCode(child);
-                return "int main(string[] args)\n" ~ result;
+                return "void main(string[] args)\n" ~ result;
 
             case "EP.CompoundStatement":
                 string result;
@@ -254,8 +254,6 @@ string toD(ParseTree p)
             case "EP.ApostropheImage":
                 return "'";
             case "EP.WritelnParameterList":
-                if(empty(p.children))
-                    return "";
                 string result;
                 foreach(child; p.children)  // child is a ParseTree.
                     result ~= parseToCode(child);
@@ -305,6 +303,8 @@ program MyTest(output);
 
 begin
     writeln('Hello D''s \"World\"!');
+    writeln;
+    writeln('');
 end.
     ");
 
