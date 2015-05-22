@@ -175,11 +175,11 @@ EP:
 
 unittest // Extended Pascal comments
 {
-	assert(EP("(* Mixed. }").successful);
-	assert(EP("{Multi word comment.}").successful);
-	assert(EP("{Multi line
-	           comment. With \n
-               \"escapes\"}").successful);
+	assert(EP.Comment("(* Mixed. }").successful);
+    assert(EP.Comment("{Multi word comment.}").successful);
+    assert(EP.Comment("{Multi line
+	                   comment. With \n
+                       \"escapes\"}").successful);
 }
 
 
@@ -318,4 +318,24 @@ begin
     writeln('Hello D''s \"World\"!');
 end.
     ");
+
+}
+
+unittest {
+    assert(equal(toD(EP("
+program MyTest(output);
+
+begin
+    writeln('Hello D''s \"World\"!');
+end.
+    ")), "import std.stdio;
+
+
+ 
+
+int main(string[] args)
+{
+    writeln(\"Hello D's \\\"World\\\"!\");
+}
+    "));
 }
