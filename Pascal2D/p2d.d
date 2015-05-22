@@ -13,10 +13,10 @@ EP:
     _           <- ( WhiteSpace / Comment ) _*
     WhiteSpace  <- ( " " / "\t" / "\n" / "\r" )+
 
-# Comments can be nested:
+# Comments:
     CommentOpen     <-  "{" / "(*"
     CommentClose    <-  "}" / "*)"
-    CommentContent  <- (Comment / !CommentClose .)*
+    CommentContent  <- (!CommentClose .)*
     Comment         <- CommentOpen CommentContent CommentClose
 
 # 6.1.1
@@ -180,6 +180,9 @@ unittest // Extended Pascal comments
     assert(EP.Comment("{Multi line
 	                   comment. With \n
                        \"escapes\"}").successful);
+
+    // The EP standard does not allow nested comments.
+    assert(!EP("(* Here comes a {nested} comment.}").successful);
 }
 
 
@@ -218,19 +221,8 @@ string toD(ParseTree p)
                 assert(equal(p.children[1].name, "EP.CommentContent"));
                 return parseToCode(p.children[1]);
 			case "EP.CommentContent":
-                if(p.children.length == 0)  // No nested comments.
-                    return "/*" ~ p.input[p.begin .. p.end] ~ "*/";
-                // There are nested comments. All p.children are "EP.Comment".
-                string contents;
-                size_t begin = p.begin;
-                foreach(child; p.children) {  // For each nested comment, do
-                    assert(equal(child.name, "EP.Comment"));
-                    contents ~= p.input[begin .. child.begin];      // Content before nested comment.
-                    contents ~= parseToCode(child);                 // Nested comment.
-                    begin = child.end;                              // Continue after nested comment.
-                }
-                contents ~= p.input[begin .. p.end];    // Content after last nested comment.
-                return "/+" ~ contents ~ "+/";
+                assert(p.children.length == 0); // No nested comments.
+                return "/*" ~ p.input[p.begin .. p.end] ~ "*/";
 
             case "EP.WhiteSpace":
                 return p.input[p.begin .. p.end];
@@ -304,12 +296,9 @@ void test(string pascal)
     writeln(toD(parseTree));
 }
 
-/+ This is a /+ Nested +/ coment.+/
-/+ This is also a /* nested */ comment +/
-/* This cannot contain nested comments. */
 void main()
 {
-    test("(* Here comes a {nested} comment.}");
+    test("(* Here comes a {wannabe nested comment.}");
 
     test("
 program MyTest(output);
@@ -320,6 +309,7 @@ end.
     ");
 
 }
+
 
 unittest {
     assert(equal(toD(EP("
