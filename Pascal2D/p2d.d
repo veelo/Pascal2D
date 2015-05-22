@@ -200,6 +200,14 @@ string toD(ParseTree p)
 
 	string parseToCode(ParseTree p)
 	{
+        string parseChildren(ParseTree p)
+        {
+            string result;
+            foreach(child; p.children)  // child is a ParseTree.
+                result ~= parseToCode(child);
+            return result;
+        }
+
         import std.range.primitives;
         import std.algorithm.searching;
 		switch(p.name)
@@ -214,10 +222,7 @@ string toD(ParseTree p)
                  "EP.WriteParameter",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement":
-				string result;
-				foreach(child; p.children)	// child is a ParseTree.
-					result ~= parseToCode(child);
-				return result;
+				return parseChildren(p);
             case "EP.Comment", "EP.InlineComment":
                 assert(p.children.length == 3);
                 assert(equal(p.children[1].name, "EP.CommentContent"));
@@ -235,33 +240,18 @@ string toD(ParseTree p)
                 return "";
 
             case "EP.StatementPart":
-                string result;
-                foreach(child; p.children)  // child is a ParseTree.
-                    result ~= parseToCode(child);
-                return "void main(string[] args)\n" ~ result;
+                return "void main(string[] args)\n" ~ parseChildren(p);
 
             case "EP.CompoundStatement":
-                string result;
-                foreach(child; p.children)  // child is a ParseTree.
-                    result ~= parseToCode(child);
-                return "{" ~ result ~ "}";
+                return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
-                string result;
-                foreach(child; p.children)  // child is a ParseTree.
-                    result ~= parseToCode(child);
-                return result ~ ";";
+                return parseChildren(p) ~ ";";
             case "EP.CharacterString":
-                string result;
-                foreach(child; p.children)  // child is a ParseTree.
-                    result ~= parseToCode(child);
-                return "\"" ~ escapeString(result) ~ "\"";
+                return "\"" ~ escapeString(parseChildren(p)) ~ "\"";
             case "EP.ApostropheImage":
                 return "'";
             case "EP.WritelnParameterList":
-                string result;
-                foreach(child; p.children)  // child is a ParseTree.
-                    result ~= parseToCode(child);
-                return "(" ~ result ~ ")";
+                return "(" ~ parseChildren(p) ~ ")";
 
 
             // These translate verbally
