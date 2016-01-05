@@ -1,68 +1,6 @@
-﻿import pegged.grammar;
-import pegged.tester.grammartester;
 import std.stdio;
 
 import epparser;
-
-mixin(grammar(`
-Arithmetic:
-    Term     < Factor (Add / Sub)*
-    Add      < "+" Factor
-    Sub      < "-" Factor
-    Factor   < Primary (Mul / Div)*
-    Mul      < "*" Primary
-    Div      < "/" Primary
-    Primary  < Parens / Neg / Number / Variable
-    Parens   < :"(" Term :")"
-    Neg      < "-" Primary
-    Number   < ~([0-9]+)
-    Variable <- identifier
-`));
-
-unittest
-{
-    // Instantiate a GrammarTester using the Arithmetic grammar and perform
-    //   all tests by trying to match the "Term" nonterminal symbol.
-    auto arithmeticTester = new GrammarTester!(Arithmetic, "Term");
-
-    arithmeticTester.assertSimilar(`1 + 3`,
-        `
-        Term->
-        {
-            Factor->Primary->Number
-            Add->
-                Factor->Primary->Number
-        }
-        `);
-}
-
-/*
-unittest
-{
-    auto discriminatedSchemaTester = new GrammarTester!(EP, "DiscriminatedSchema");
-    discriminatedSchemaTester.assertSimilar(
-        `char(5)`,
-        `
-        `);
-}
-*/
-
-/*
-unittest
-{
-    auto typeDefTester = new GrammarTester!(EP, "TypeDefinitionPart");
-    typeDefTester.assertSimilar(
-        `TYPE a = (een);
-              b = (twee);
-        `,
-        `
-        TypeDefinitionPart->
-        {
-            TypeDefinition
-        }
-        `);
-};
-*/
 
 unittest // Extended Pascal comments
 {
@@ -220,7 +158,6 @@ string toD(const ref ParseTree p)
                 return "'";
             case "EP.WritelnParameterList":
                 return "(" ~ parseChildren(p) ~ ")";
-
 
             // These translate verbally
             case "EP.ProcedureName", "EP.StringCharacter", "EP.Identifier":
