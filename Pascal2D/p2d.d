@@ -184,12 +184,10 @@ string toD(const ref ParseTree p)
 
 void test(const string pascal)
 {
-    //writeln("test0");
     auto test = EP(`bug`);
-    //writeln("test1");
     auto parseTree = EP(pascal);
     writeln("___________________________");
-    //writeln(parseTree);
+    writeln(parseTree);
     writeln("PASCAL:");
     writeln(pascal);
     writeln("\nD:");

@@ -13,23 +13,21 @@ EP:
 #    CompileUnit  <- (Program / Comment) eoi
     CompileUnit  <- Program eoi
 
-# Token separators
-    _           <- ( WhiteSpace / Comment / InlineComment ) _*
-    WhiteSpace  <- ( " " / "\t" / endOfLine )+
-
-# Comments:
-    CommentOpen     <-  "{" / "(*"
-    CommentClose    <-  "}" / "*)"
-    CommentContent  <- ( !CommentClose . )*
-    InlineComment   <- CommentOpen CommentContent CommentClose !endOfLine
-    Comment         <- CommentOpen CommentContent CommentClose &endOfLine
-
 # 6.1.1
     Digit           <- [0-9]
     Letter          <- [a-zA-Z]
 
 # 6.1.3
     Identifier      <~ Letter ( "_"? ( Letter / Digit ) )*
+
+# 6.1.4 (complete)
+    RemoteDirective <- "forward"i / "external"i
+
+# 6.1.5 (complete)
+    InterfaceDirective <- "interface"i / "external"i
+
+# 6.1.6 (complete)
+    ImplementationDirective <- "implementation"i
 
 # 6.1.7 (complete)
     SignedNumber    <- SignedInteger / SignedReal
@@ -46,7 +44,7 @@ EP:
     ExtendedDigit   <- Digit / Letter
     ExtendedNumber  <- UnsignedInteger "#" ExtendedDigit+
 
-# 6.1.8
+# 6.1.8 (complete)
     Label   <- DigitSequence
 
 # 6.1.9 (complete)
@@ -55,20 +53,33 @@ EP:
     ApostropheImage <- "''"
     StringCharacter <- !"'" .
 
-# 6.2.1
-#TODO   Block           <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
-    Block               <- ImportPart ( _? TypeDefinitionPart )* _? StatementPart
-    ImportPart          <- ("import" (ImportSpecification ";")+ )?
-    StatementPart       <- _? CompoundStatement _?
-    TypeDefinitionPart  <- :TYPE _ ( TypeDefinition / SchemaDefinition ) _? ";" _? ( ( TypeDefinition / SchemaDefinition ) _? ";" _? )*
+# 6.1.10 Token separators
+    _               <- ( WhiteSpace / Comment / InlineComment ) _*
+    WhiteSpace      <- ( " " / "\t" / endOfLine )+
+    CommentOpen     <-  "{" / "(*"
+    CommentClose    <-  "}" / "*)"
+    CommentContent  <~ ( !CommentClose . )*
+    InlineComment   <- CommentOpen CommentContent CommentClose !endOfLine
+    Comment         <- CommentOpen CommentContent CommentClose &endOfLine
 
-# 6.3.1
-    ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
+# 6.2.1 (complete)
+    Block                   <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
+    ImportPart              <- (:"import"i _ ( ImportSpecification _? :";" _? )+ )?
+    LabelDeclarationPart    <- :"label"i _ Label ( _? "," _? Label )* _? :";" _?
+    ConstantDefinitionPart  <- :"const"i _ ( ConstantDefinition _? :";" _? )+
+    TypeDefinitionPart      <- :TYPE _ ( ( TypeDefinition / SchemaDefinition ) _? :";" _? )+
+    VariableDeclarationPart <- :"var"i _ ( VariableDeclaration _? :";" _? )+
+    ProcedureAndFunctionDeclarationPart <- ( ( ProcedureDeclaration / FunctionDeclaration ) _? :";" _? )*
+    StatementPart           <- _? CompoundStatement _?
+
+# 6.3.1 (complete)
+    ConstantDefinition  <- Identifier _? "=" _? ConstantExpression
     ConstantIdentifier  <- Identifier
+    ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
     TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter _?
-    TypeDenoter         <- (BINDABLE _ )? ( TypeName / NewType / TypeInquiry / DiscriminatedSchema ) _? InitialStateSpecifier?
+    TypeDenoter         <- :(BINDABLE _ )? ( TypeName / NewType / TypeInquiry / DiscriminatedSchema ) _? InitialStateSpecifier?
     NewType             <- NewOrdinalType / NewStructuredType / NewPointerType / RestrictedType
     SimpleTypeName      <- TypeName
     StructuredTypeName  <- ArrayTypeName / RecordTypeName / SetTypeName / FileTypeName
@@ -99,25 +110,27 @@ EP:
     SubrangeBound       <- Expression
 
 # 6.4.2.5 (complete)
-    RestrictedType      <- RESTRICTED _ TypeName
+    RestrictedType      <- :RESTRICTED _ TypeName
 
 # 6.4.3.1 (complete)
     StructuredType          <- NewStructuredType / StructuredTypeName
-    NewStructuredType       <- PACKED? _? UnpackedStructuredType
+    NewStructuredType       <- :PACKED? _? UnpackedStructuredType
     UnpackedStructuredType  <- ArrayType / RecordType / SetType / FileType
 
 # 6.4.3.2 (complete)
-    ArrayType           <- ARRAY _ "[" _? IndexType ( _? "," _? IndexType )* _? "]" _ OF _ ComponentType
+    ArrayType           <- :ARRAY _ "[" _? IndexType ( _? "," _? IndexType )* _? "]" _ OF _ ComponentType
     IndexType           <- OrdinalType
     ComponentType       <- TypeDenoter
 
+# 6.4.3.3 String types. TODO
+
 # 6.4.3.4 (complete)
-    RecordType          <- RECORD _ FieldList _ END
+    RecordType          <- :RECORD _ FieldList _ :END
     FieldList           <- ( ( FixedPart ( _? ";" _? VariantPart )? / VariantPart ) _? ";"? )?
     FixedPart           <- RecordSection ( _? ";" _? RecordSection )*
     RecordSection       <- IdentifierList _? ":" _? TypeDenoter
     FieldIdentifier     <- Identifier
-    VariantPart         <- CASE _ VariantSelector _ OF _ ( VariantListElement ( _? ";" _? VariantListElement )* _? ( ":"? _? VariantPartCompleter )? / VariantPartCompleter )
+    VariantPart         <- :CASE _ VariantSelector _ :OF _ ( VariantListElement ( _? ";" _? VariantListElement )* _? ( ":"? _? VariantPartCompleter )? / VariantPartCompleter )
     VariantListElement  <- CaseConstantList _? ":" _? VariantDenoter
     VariantPartCompleter    <- OTHERWISE _ VariantDenoter
     VariantDenoter      <- "(" _? FieldList _? ")"
@@ -129,15 +142,15 @@ EP:
     CaseConstant        <- ConstantExpression
 
 # 6.4.3.5 (complete)
-    SetType             <- SET _ OF _ BaseType
+    SetType             <- :SET _ :OF _ BaseType
     BaseType            <- OrdinalType
 
 # 6.4.3.6 (complete)
-    FileType            <- FILE _ ( "[" _? IndexType _? "]" _? )? OF _ ComponentType
+    FileType            <- :FILE _ ( "[" _? IndexType _? "]" _? )? :OF _ ComponentType
 
 # 6.4.4 (complete)
     PointerType         <- NewPointerType / PointerTypeName
-    NewPointerType      <- "^" _? DomainType
+    NewPointerType      <- :"^" _? DomainType
     DomainType          <- TypeName / SchemaName
 
 # 6.4.7 (complete)
@@ -148,20 +161,20 @@ EP:
     SchemaIdentifier            <- Identifier
     SchemaName                  <- ( ImportedInterfaceIdentifier _? "." _? )? SchemaIdentifier
 
-# 6.4.8
+# 6.4.8 (complete)
     DiscriminatedSchema     <- SchemaName _? ActualDiscriminantPart
     ActualDiscriminantPart  <- "(" _? DiscriminantValue _? ( "," _? DiscriminantValue _? )* ")"
     DiscriminantValue       <- Expression
 
 # 6.4.9 (complete)
-    TypeInquiry         <- TYPE _ OF _ TypeInquiryObject
+    TypeInquiry         <- :TYPE _ :OF _ TypeInquiryObject
     TypeInquiryObject   <- VariableName / ParameterIdentifier
 
-# 6.5.1
-    VariableDeclaration <- IdentifierList ":" TypeDenoter
+# 6.5.1 (complete)
+    VariableDeclaration <- IdentifierList _? ":" _? TypeDenoter
     VariableIdentifier  <- Identifier
     VariableName        <- ( ImportedInterfaceIdentifier "." )? VariableIdentifier
-    VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable #TODO/ FunctionIdentifiedVariable
+    VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable
 
 # 6.5.2 (complete)
     EntireVariable      <- VariableName
@@ -181,32 +194,55 @@ EP:
     FieldSpecifier      <- FieldIdentifier
 
 # 6.5.4 (complete)
-    IdentifiedVariable  <- PointerVariable "^"
+    IdentifiedVariable  <- PointerVariable :"^"
     PointerVariable     <- VariableAccess
 
 # 6.5.5 (complete)
-    BufferVariable      <- FileVariable "^"
+    BufferVariable      <- FileVariable :"^"
     FileVariable        <- VariableAccess
 
 # 6.5.6 (complete)
-    SubstringVariable   <- StringVariable "[" IndexExpression ".." IndexExpression "]"
+    SubstringVariable   <- StringVariable "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
 # 6.6 (complete)
-    InitialStateSpecifier   <- "value" ComponentValue
+    InitialStateSpecifier   <- "value"i _ ComponentValue
 
 # 6.7.1 (complete)
-#TODO    ProcedureHeading        <- "procedure" Identifier FormalParameterList?
-    ProcedureIdentification <- "procedure" ProcedureIdentifier
+    ProcedureDeclaration    <- ProcedureHeading _? ";" _? RemoteDirective
+                             / ProcedureIdentification _? ";" _? ProcedureBlock
+                             / ProcedureHeading _? ";" _? ProcedureBlock
+    ProcedureHeading        <- "procedure"i _ Identifier _ FormalParameterList?
+    ProcedureIdentification <- "procedure"i _ ProcedureIdentifier
     ProcedureIdentifier     <- Identifier
     ProcedureBlock          <- Block
     ProcedureName           <- ( ImportedInterfaceIdentifier "." )? ProcedureIdentifier
 
-# 6.7.2
-    FunctionIdentifier  <- Identifier
-    FunctionName        <- ( ImportedInterfaceIdentifier _? "." _? )? FunctionIdentifier
+# 6.7.2 (complete)
+    FunctionDeclaration         <- FunctionHeading _? ";" _? RemoteDirective
+                                 / FunctionIdentification _? ";" _? FunctionBlock
+                                 / FunctionHeading _? ";" _? FunctionBlock
+    FunctionHeading             <- :"function"i _ Identifier _? FormalParameterList? _? ResultVariableSpecification? _? ":" _? ResultType
+    ResultVariableSpecification <- "=" _? Identifier
+    FunctionIdentification      <- :"function"i _ FunctionIdentifier
+    FunctionIdentifier          <- Identifier
+    ResultType                  <- TypeName
+    FunctionBlock               <- Block
+    FunctionName                <- ( ImportedInterfaceIdentifier _? "." _? )? FunctionIdentifier
 
-# 6.7.3.1
-    ParameterIdentifier <- Identifier
+# 6.7.3.1 (complete)
+    FormalParameterList                 <- "(" _? FormalParameterSection ( _? ";" _? FormalParameterSection )* _? ")"
+    FormalParameterSection              <- ValueParameterSpecification
+                                         / VariableParameterSpecification
+                                         / ProceduralParameterSpecification
+                                         / FunctionalParameterSpecification
+    ValueParameterSpecification         <- ("protected"i _ )? IdentifierList _? ":" ParameterForm
+    VariableParameterSpecification      <- ("protected"i _ )? "var"i _ IdentifierList _? ":" _? ParameterForm
+    ParameterForm                       <- TypeName / SchemaName / TypeInquiry
+    ParameterIdentifier                 <- Identifier
+    ProceduralParameterSpecification    <- ProcedureHeading
+    FunctionalParameterSpecification    <- FunctionHeading
+
+# 6.7.3.7.1
 
 # 6.8.1 (complete)
     Expression          <- SimpleExpression _? (RelationalOperator _? SimpleExpression)?
