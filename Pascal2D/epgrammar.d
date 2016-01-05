@@ -353,30 +353,30 @@ EP:
     ProgramComponent    <- ( MainProgramDeclaration _? "." ) #TODO/ ( ModuleDeclaration "." )
 
 # Keywords
-    PROGRAM     <~ [Pp] [Rr] [Oo] [Gg] [Rr] [Aa] [Mm]
-    ONLY        <~ [Oo][Nn][Ll][Yy]
-    QUALIFIED   <~ [Qq][Uu][Aa][Ll][Ii][Ff][Ii][Ee][Dd]
-    BEGIN       <~ [Bb][Ee][Gg][Ii][Nn]
-    END         <~ [Ee][Nn][Dd]
-    POW         <~ [Pp][Oo][Ww]
-    DIV         <~ [Dd][Ii][Vv]
-    MOD         <~ [Mm][Oo][Dd]
-    AND         <~ [Aa][Nn][Dd]
-    AND_THEN    <~ [Aa][Nn][Dd][_][Tt][Hh][Ee][Nn]
-    OR          <~ [Oo][Rr]
-    OR_ELSE     <~ [Oo][Rr][_][Ee][Ll][Ss][Ee]
-    IN          <~ [Ii][Nn]
-    NIL         <~ [Nn][il][IL]
-    NOT         <~ [Nn][Oo][Tt]
-    TYPE        <~ [Tt][Yy][Pp][Ee]
-    BINDABLE    <~ [Bb][Ii][Nn][Dd][Aa][Bb][Ll][Ee]
-    RESTRICTED  <~ [Rr][Ee][Ss][Tt][Rr][Ii][Cc][Tt][Ee][Dd]
-    PACKED      <~ [Pp][Aa][Cc][Kk][Ee][Dd]
-    ARRAY       <~ [Aa][Rr][Rr][Aa][Yy]
-    OF          <~ [Oo][Ff]
-    RECORD      <~ [Rr][Ee][Cc][Oo][Rr][Dd]
-    CASE        <~ [Cc][Aa][Ss][Ee]
-    OTHERWISE   <~ [Oo][Tt][Hh][Ee][Rr][Ww][Ii][Ss][Ee]
-    SET         <~ [Ss][Ee][Tt]
-    FILE        <~ [Ff][Ii][Ll][Ee]
+    PROGRAM     <~ "program"i
+    ONLY        <~ "only"i
+    QUALIFIED   <~ "qualified"i
+    BEGIN       <~ "begin"i
+    END         <~ "end"i
+    POW         <~ "pow"i
+    DIV         <~ "div"i
+    MOD         <~ "mod"i
+    AND         <~ "and"i
+    AND_THEN    <~ "and_then"i
+    OR          <~ "or"i
+    OR_ELSE     <~ "or_else"i
+    IN          <~ "in"i
+    NIL         <~ "nil"i
+    NOT         <~ "not"i
+    TYPE        <~ "type"i
+    BINDABLE    <~ "bindable"i
+    RESTRICTED  <~ "restricted"i
+    PACKED      <~ "packed"i
+    ARRAY       <~ "array"i
+    OF          <~ "of"i
+    RECORD      <~ "record"i
+    CASE        <~ "case"i
+    OTHERWISE   <~ "otherwise"i
+    SET         <~ "set"i
+    FILE        <~ "file"i
 `;

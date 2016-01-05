@@ -133,8 +133,8 @@ string toD(const ref ParseTree p)
                 case "EP.WhiteSpace":
                     return contents(p);
                 default:
-                    if(startsWith(p.name, "literal"))   // Disregard keywords etc.
-                        writeln("Found literal ", contents(p));
+                    if(startsWith(p.name, "Literal") || startsWith(p.name, "CILiteral"))   // Disregard keywords etc.
+                        writeln("LOG: Found literal ", contents(p));
                         return "";
                     assert(false, p.name ~ " is unhandled.");
             }
