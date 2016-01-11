@@ -7,14 +7,15 @@
 //
 // Uses extended PEG syntax:
 // https://github.com/PhilippeSigaud/Pegged/wiki/Extended-PEG-Syntax
+//
+// Minor edits have been made, marked with BNV.
 
 enum EPgrammar = `
 EP:
-#    CompileUnit  <- (Program / Comment) eoi
-    CompileUnit  <- Program eoi
+    BNVCompileUnit  <- Program eoi
 
 # 6.1.1
-    Digit           <- [0-9]
+    Digit           <- digit
     Letter          <- [a-zA-Z]
 
 # 6.1.3
@@ -39,7 +40,7 @@ EP:
     UnsignedInteger <- DigitSequence
     FractionalPart  <- DigitSequence
     ScaleFactor     <~ Sign? DigitSequence
-    DigitSequence   <~ Digit+   # The tilde fuses the Digit nodes (["1", "2", "3"]) into one DigitSequence node (["123"]);
+    DigitSequence   <~ digits
     Number          <~ SignedNumber / Sign? ( DigitSequence "." / "." FractionalPart ) ( [eE] ScaleFactor )?
     ExtendedDigit   <- Digit / Letter
     ExtendedNumber  <- UnsignedInteger "#" ExtendedDigit+
@@ -48,19 +49,20 @@ EP:
     Label   <- DigitSequence
 
 # 6.1.9 (complete)
-    CharacterString <- :"'" StringElement* :"'"  # The colon discards the quotes.
+    CharacterString <- "'" StringElement* "'"
     StringElement   <- ApostropheImage / StringCharacter
     ApostropheImage <- "''"
     StringCharacter <- !"'" .
 
 # 6.1.10 Token separators
-    _               <- ( WhiteSpace / Comment / InlineComment ) _*
-    WhiteSpace      <- ( " " / "\t" / endOfLine )+
+    Spacing         <- blank+   # BNV Do not discard spacing.
+    _               <- ( Spacing / TrailingComment / InlineComment )+
+    Comment         <- ( :Spacing / TrailingComment / InlineComment )+
     CommentOpen     <-  "{" / "(*"
     CommentClose    <-  "}" / "*)"
     CommentContent  <~ ( !CommentClose . )*
     InlineComment   <- CommentOpen CommentContent CommentClose !endOfLine
-    Comment         <- CommentOpen CommentContent CommentClose &endOfLine
+    TrailingComment <- CommentOpen CommentContent CommentClose &endOfLine
 
 # 6.2.1 (complete)
     Block                   <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
@@ -235,6 +237,7 @@ EP:
                                          / VariableParameterSpecification
                                          / ProceduralParameterSpecification
                                          / FunctionalParameterSpecification
+                                         / ConformantArrayParameterSpecification    # BNV moved from section 6.7.3.7.1
     ValueParameterSpecification         <- ("protected"i _ )? IdentifierList _? ":" ParameterForm
     VariableParameterSpecification      <- ("protected"i _ )? "var"i _ IdentifierList _? ":" _? ParameterForm
     ParameterForm                       <- TypeName / SchemaName / TypeInquiry
@@ -243,6 +246,26 @@ EP:
     FunctionalParameterSpecification    <- FunctionHeading
 
 # 6.7.3.7.1
+#    FormalParameterSection                  <- ConformantArrayParameterSpecification   # BNV Moved to section 6.7.3.1
+    ConformantArrayParameterSpecification   <- ( "protected"i _ )? ( ValueConformantArraySpecification / VariableConformantArraySpecification )
+    ValueConformantArraySpecification       <- IdentifierList _? ":" _? ConformantArrayForm
+    VariableConformantArraySpecification    <- "var"i _ IdentifierList _? ":" _? ConformantArrayForm
+    ConformantArrayForm                     <- PackedConformantArrayForm / UnpackedConformantArrayForm
+    PackedConformantArrayForm               <- "packed"i _ "array"i _? "[" _? IndexTypeSpecification _? "]" _? "of"i _? TypeName
+    UnpackedConformantArrayForm             <- "array"i _? "[" _? IndexTypeSpecification ( _? ";" _? IndexTypeSpecification )* _? "]" _? "of"i _? TypeName
+    IndexTypeSpecification                  <- Identifier _? ".." _? Identifier _? ":" _? OrdinalTypeName
+# TODO mistake in standard?
+#    Primary                                 <- BoundIdentifier
+#    BoundIdentifier                         <- Identifier
+
+# 6.7.5 Required procedures TODO
+
+# 6.7.5.5
+    ReadstrParameterList    <- "(" _? StringExpression _? "," _? VariableAccess ( _? "," _? VariableAccess )* _? ")"
+    StringExpression        <- Expression
+    WritestrParameterList   <- "(" _? StringVariable _? "," _? WriteParameter ( _? "," _? WriteParameter )* _? ")"
+
+# 6.7.6 Required functions TODO
 
 # 6.8.1 (complete)
     Expression          <- SimpleExpression _? (RelationalOperator _? SimpleExpression)?
@@ -254,7 +277,7 @@ EP:
     SetConstructor      <- "[" _? ( MemberDesignator ( _? "," _? MemberDesignator )* )? _? "]"
     MemberDesignator    <- Expression ( _? ".." _? Expression )?
 
-# 6.8.2
+# 6.8.2 (complete)
     ConstantExpression  <- Expression
 
 # 6.8.3.1 (complete)
@@ -263,7 +286,14 @@ EP:
     AddingOperator          <- "+" / "-" / "><" / OR / OR_ELSE
     RelationalOperator      <- "=" / "<>" / "<=" / "<" / ">=" / ">" / IN
 
-# 6.8.4
+# 6.8.3.3
+    BooleanExpression       <- Expression
+
+# 6.8.3.4 Set operators TODO
+
+# 6.8.3.6 String operator TODO
+
+# 6.8.4 (complete)
     SchemaDiscriminant      <- ( VariableAccess / ConstantAccess ) _? "." _? DiscriminantSpecifier / SchemaDiscriminantIdentifier
     DiscriminantSpecifier   <- DiscriminantIdentifier
 
@@ -287,12 +317,12 @@ EP:
     RecordFunctionAccess    <- RecordFunction _? "." _? FieldSpecifier
     RecordFunction          <- FunctionAccess
 
-# 6.8.6.5 (complete)
-    SubstringFunctionAccess <- StringFunction _? "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
-
 # 6.8.6.4 (complete)
     FunctionIdentifiedVariable  <- PointerFunction _? "^"
     PointerFunction             <- FunctionAccess
+
+# 6.8.6.5 (complete)
+    SubstringFunctionAccess <- StringFunction _? "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
 # 6.8.7.1 (complete)
     StructuredValueConstructor  <- ArrayTypeName _? ArrayValue / RecordTypeName _? RecordValue / SetTypeName _? SetValue
@@ -312,7 +342,7 @@ EP:
     ConstantTagValue    <- ConstantExpression
     TagFieldIdentifier  <- FieldIdentifier
 
-# 6.8.7.4
+# 6.8.7.4 (complete)
     SetValue            <- SetConstructor
 
 # 6.8.8.1 (complete)
@@ -331,35 +361,93 @@ EP:
 # 6.8.8.4 (complete)
     SubstringConstant   <- StringConstant _. "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
-# 6.9.1
-#TODO    Statement   <- ( Label ":" )? ( SimpleStatement / StructuredStatement )
-    Statement   <- ( Label ":" )? SimpleStatement
+# 6.9.1 (complete)
+    Statement   <- ( Label _? ":" _? )? ( SimpleStatement / StructuredStatement )
 
-# 6.9.2.1
-#TODO    SimpleStatement <- EmptyStatement / AssignmentStatement / ProcedureStatement / GotoStatement
-    SimpleStatement <- ProcedureStatement
+# 6.9.2.1 (complete)
+#    SimpleStatement <- EmptyStatement / AssignmentStatement / ProcedureStatement / GotoStatement # Standard
+    SimpleStatement <- AssignmentStatement / ProcedureStatement / GotoStatement / EmptyStatement # BNV Moved EmptyStatement last, try real statements first.
+    EmptyStatement  <- eps
 
-# 6.9.2.3
-#TODO    ProcedureStatement  <- ProcedureName _? ( _? ActualParameterList? / ReadParameterList / ReadlnParameterList / ReadstrParameterList / WriteParameterList / WritelnParameterList / WritestrParameterList _? )
-    ProcedureStatement  <- ProcedureName _? WritelnParameterList _?
+# 6.9.2.2 (complete)
+    AssignmentStatement <- ( VariableAccess / FunctionIdentifier ) _? ":=" _? Expression
 
-# 6.9.3.1
-    StatementSequence   <- _? Statement _? ( :";" _? Statement _? )*
+# 6.9.2.3 (complete) #BNV Extended for required procedures.
+    ProcedureStatement  <-
+                         / READ _? ReadParameterList
+                         / READLN _? ReadlnParameterList
+                         / READSTR _? ReadstrParameterList
+                         / WRITE _? WriteParameterList
+                         / WRITELN _? WritelnParameterList?
+                         / WRITESTR _? WritestrParameterList
+                         / ProcedureName _? ActualParameterList?
 
-# 6.9.3.2   (NOTE: modified to allow ";" before "end".)
-    CompoundStatement   <- BEGIN _? StatementSequence? _? :";"? _? END  # BNV made StatementSequence optional.
+# 6.9.2.4 (complete)
+    GotoStatement       <- "goto"i _ Label
 
-# 6.9.3.10
+# 6.9.3.1 (complete)
+    StructuredStatement <- CompoundStatement / ConditionalStatement / RepetitiveStatement / WithStatement
+    StatementSequence   <- Statement _? ( ";" _? Statement _? )*
+
+# 6.9.3.2 (complete)
+    CompoundStatement   <- :BEGIN _? StatementSequence _? :END
+
+# 6.9.3.3 (complete)
+    ConditionalStatement    <- IfStatement / CaseStatement
+
+# 6.9.3.4 (complete)
+    IfStatement <- "if"i _ BooleanExpression _ "then"i _ Statement ElsePart?
+    ElsePart    <- "else"i _ Statement
+
+# 6.9.3.5 (complete)
+    CaseStatement           <- "case"i _ CaseIndex _ "of"i _ ( CaseListElement ( _? ";" _? CaseListElement )* ( _? ";"? _? CaseStatementCompleter )? / _? CaseStatementCompleter ) _? ";"? _? "end"i
+    CaseIndex               <- Expression
+    CaseListElement         <- CaseConstantList _? ":" _? Statement
+    CaseStatementCompleter  <- "otherwise"i _ StatementSequence
+
+# 6.9.3.6 (complete)
+    RepetitiveStatement <- RepeatStatement / WhileStatement / ForStatement
+
+# 6.9.3.7 (complete)
+    RepeatStatement <- "repeat"i _ StatementSequence _ "until"i _ BooleanExpression
+
+# 6.9.3.8 (complete)
+    WhileStatement  <- "while"i _ BooleanExpression _ "do"i _ Statement
+
+# 6.9.3.9.1 (complete)
+    ForStatement    <- "for"i _ ControlVariable _ IterationClause _ "do"i _ Statement
+    ControlVariable <- EntireVariable
+    IterationClause <- SequenceIteration / SetMemberIteration
+
+# 6.9.3.9.2 (complete)
+    SequenceIteration   <- ":=" _? InitialValue _ ( "to"i / "downto"i ) _ FinalValue
+    InitialValue        <- Expression
+    FinalValue          <- Expression
+
+# 6.9.3.9.3 (complete)
+    SetMemberIteration  <- "in"i _ SetExpression
+    SetExpression       <- Expression
+
+# 6.9.3.10 (complete)
+    WithStatement                   <- "with"i _ WithList _ "do"i _ Statement
+    WithList                        <- WithElement ( _? "," _? WithElement)*
+    WithElement                     <- VariableAccess / ConstantAccess
     FieldDesignatorIdentifier       <- Identifier
     ConstantFieldIdentifier         <- Identifier
     SchemaDiscriminantIdentifier    <- Identifier
 
-# 6.10.3
-    WriteParameter  <- Expression ( ":" Expression ( ":" Expression )? )?
+# 6.10.1 (complete)
+    ReadParameterList   <- "(" _? ( FileVariable _? "," _? )? VariableAccess _? ( _? "," _? VariableAccess )* _? ")"
+
+# 6.10.2 (complete)
+    ReadlnParameterList <- ( "(" _? ( FileVariable / VariableAccess ) ( _? "," _? VariableAccess )* _? ")" )?
+
+# 6.10.3 (complete)
+    WriteParameterList  <- "(" _? ( FileVariable _? "," _? )? WriteParameter ( _? "," _? WriteParameter )* _? ")"
+    WriteParameter      <- Expression ( _? ":" _? Expression ( _? ":" _? Expression )? )?
 
 # 6.10.4
-#TODO    WritelnParameterList    <- ( "(" _? ( FileVariable / WriteParameter ) _? ( "," _? WriteParameter _? )* ")" )?
-    WritelnParameterList    <- ( "(" _? WriteParameter _? ( "," _? WriteParameter _? )* ")" )?
+    WritelnParameterList    <- ( "(" _? ( FileVariable / WriteParameter ) _? ( "," _? WriteParameter _? )* ")" )?
 
 # 6.11.2
     ConstituentIdentifier   <- Identifier
@@ -376,17 +464,17 @@ EP:
     ImportedInterfaceIdentifier <- Identifier
 
 # 6.12
-    MainProgramDeclaration  <- ProgramHeading _? ";" _? MainProgramBlock
-    MainProgramBlock        <- Block
-    ProgramHeading          <- PROGRAM _ BNVProgramName ( _? "(" ProgramParameterList ")" )?
+    MainProgramDeclaration  <- ProgramHeading _? ";" :Spacing? MainProgramBlock
+    MainProgramBlock        <- _? Block
+    ProgramHeading          <- PROGRAM Comment? BNVProgramName ( Comment? "(" ProgramParameterList ")" )?
     ProgramParameterList    <- IdentifierList
 # BNV extensions
     BNVProgramName          <- Identifier
 
 # 6.13
     Program             <- _? ProgramBlock _?
-    ProgramBlock        <- ProgramComponent+
-    ProgramComponent    <- ( MainProgramDeclaration _? "." ) #TODO/ ( ModuleDeclaration "." )
+    ProgramBlock        <- ( ProgramComponent _? )+
+    ProgramComponent    <- ( MainProgramDeclaration _? "." ) #TODO/ ( ModuleDeclaration _? "." )
 
 # Keywords
     PROGRAM     <~ "program"i
@@ -415,4 +503,12 @@ EP:
     OTHERWISE   <~ "otherwise"i
     SET         <~ "set"i
     FILE        <~ "file"i
+
+# Built-ins
+    READ        <- "read"i
+    READLN      <- "readln"i
+    READSTR     <- "readstr"i
+    WRITE       <- "write"i
+    WRITELN     <- "writeln"i
+    WRITESTR    <- "writestr"i
 `;

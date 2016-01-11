@@ -4,7 +4,7 @@ import epparser;
 
 unittest // Extended Pascal comments
 {
-    assert(EP.Comment("(* Mixed. }\n").successful, "Mixed opening and closing comment notations.");
+    assert(EP.TrailingComment("(* Mixed. }\n").successful, "Mixed opening and closing comment notations.");
     assert(EP.InlineComment("(* Mixed. }").successful, "Mixed opening and closing comment notations, inline.");
     assert(EP.InlineComment("{Multi word comment.}").successful, "Multi-word comment.");
     assert(EP.InlineComment("{Multi line
@@ -26,7 +26,7 @@ string toD(const ref ParseTree p)
     string escapeString(const string s)
     {
         import std.array;
-        return s.replace("\"", "\\\"");
+        return s.replace("\"", "\\\""); // TODO consider translate()
     }
 
     string contents(const ref ParseTree p)
@@ -58,23 +58,28 @@ string toD(const ref ParseTree p)
             import std.algorithm.searching;
             switch(p.name)
             {
-                case "EP._":
+                case "EP._", "EP.Comment":
                     return parseChildren(p, &parseDefaults);
-                case "EP.Comment", "EP.InlineComment":
+                case "EP.TrailingComment", "EP.InlineComment":
                     assert(p.children.length == 3);
                     assert(equal(p.children[1].name, "EP.CommentContent"));
                     auto contentString = contents(p.children[1]);
-                    if(equal(p.name, "EP.Comment") && !canFind(contentString, "\n"))
+                    if(equal(p.name, "EP.TrailingComment") && !canFind(contentString, "\n"))
                         return "//" ~ contentString;    // End-of-line comment.
                     return "/*" ~ contentString ~ "*/"; // Ordinary comment.
                     // These translate verbally
-                case "EP.WhiteSpace":
+                case "EP.Spacing":
                     return contents(p);
+                case "fail":
+                    writeln("PARSE ERROR: " ~ p.toString);
+                    assert(0, "Parse unsuccessful");
                 default:
                     if(startsWith(p.name, "Literal") || startsWith(p.name, "CILiteral"))   // Disregard keywords etc.
+                    {
                         writeln("LOG: Found literal ", contents(p));
                         return "";
-                    assert(false, p.name ~ " is unhandled.");
+                    }
+                    assert(0, p.name ~ " is unhandled.");
             }
         }
 
@@ -119,12 +124,13 @@ string toD(const ref ParseTree p)
         }
 
         import std.range.primitives;
+        import std.string : translate;
         switch(p.name)
         {
             case "EP":
                 return parseToCode(p.children[0]);	// The grammar result has only one child: the start rule's parse tree.
             // These just recurse into their children.
-            case "EP.CompileUnit",
+            case "EP.BNVCompileUnit",
                  "EP.Program", "EP.ProgramBlock", "EP.MainProgramBlock", "EP.Block", "EP.ProgramComponent",
                  "EP.MainProgramDeclaration", "EP.ProgramHeading",
                  "EP.StatementSequence", "EP.Statement", "EP.ProcedureStatement",
@@ -151,9 +157,14 @@ string toD(const ref ParseTree p)
             case "EP.CompoundStatement":
                 return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
+                if (p.children[0].name == "EP.EmptyStatement")
+                    return "";
                 return parseChildren(p) ~ ";";
             case "EP.CharacterString":
-                return "\"" ~ escapeString(parseChildren(p).dup) ~ "\"";
+                string result;
+                foreach(child; p.children)
+                    result ~= parseToCode(child);
+                return "\"" ~ escapeString(result) ~ "\"";
             case "EP.ApostropheImage":
                 return "'";
             case "EP.WritelnParameterList":
@@ -164,8 +175,12 @@ string toD(const ref ParseTree p)
                 return contents(p);
 
             // These are ignored
-            case "EP.PROGRAM", "EP.BEGIN", "EP.END":
+            case "EP.PROGRAM", "EP.BEGIN", "EP.END", "EP.EmptyStatement":
                 return "";
+
+            // Required procedures
+            case "EP.WRITELN":
+                return "writeln";
 
             default:
                 return parseDefaults(p);
@@ -196,8 +211,8 @@ void test(const string pascal)
 
 void main()
 {
-    test("
-program MyTest(output);
+    test(
+`program MyTest(output);
 
 (* Say
    hello. }
@@ -207,7 +222,7 @@ begin
     writeln('');  {Empty string}
     writeln('a'); {String}
 end.
-    ");
+`);
 
 
     test("
@@ -250,19 +265,27 @@ END.
 
 
 unittest {
-    string input = `
-program MyTest(output);
+    string input =
+`program MyTest(output);
 
 begin
     writeln('Hello D''s "World"!');
 end.
 `;
+    /+
+    import std.experimental.logger;
+    sharedLog = new FileLogger("TraceLog.txt", LogLevel.all);
+    bool cond (string ruleName)
+    {
+        return (ruleName.startsWith("EP") && !ruleName.startsWith("EP.Literal"));
+    }
+    setTraceConditionFunction(&cond);
+    /*setTraceConditionFunction(ruleName => ruleName.startsWith("EP"));*/
+    /*traceAll;*/
+    +/
     auto parsed = EP(input);
     assert(equal(toD(parsed),
 `import std.stdio;
-
-
- 
 
 void main(string[] args)
 {
