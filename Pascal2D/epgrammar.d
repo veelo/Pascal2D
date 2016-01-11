@@ -65,14 +65,14 @@ EP:
     TrailingComment <- CommentOpen CommentContent CommentClose &endOfLine
 
 # 6.2.1 (complete)
-    Block                   <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
-    ImportPart              <- (:"import"i _ ( ImportSpecification _? :";" _? )+ )?
-    LabelDeclarationPart    <- :"label"i _ Label ( _? "," _? Label )* _? :";" _?
-    ConstantDefinitionPart  <- :"const"i _ ( ConstantDefinition _? :";" _? )+
-    TypeDefinitionPart      <- :TYPE _ ( ( TypeDefinition / SchemaDefinition ) _? :";" _? )+
-    VariableDeclarationPart <- :"var"i _ ( VariableDeclaration _? :";" _? )+
+    Block                               <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
+    ImportPart                          <- (:"import"i _ ( ImportSpecification _? :";" _? )+ )?
+    LabelDeclarationPart                <- :"label"i _ Label ( _? "," _? Label )* _? :";" _?
+    ConstantDefinitionPart              <- :"const"i _ ( ConstantDefinition _? :";" _? )+
+    TypeDefinitionPart                  <- :TYPE _ ( ( TypeDefinition / SchemaDefinition) _? :";" _? )+
+    VariableDeclarationPart             <- :"var"i _ ( VariableDeclaration _? :";" _? )+
     ProcedureAndFunctionDeclarationPart <- ( ( ProcedureDeclaration / FunctionDeclaration ) _? :";" _? )*
-    StatementPart           <- _? CompoundStatement _?
+    StatementPart                       <- _? CompoundStatement _?
 
 # 6.3.1 (complete)
     ConstantDefinition  <- Identifier _? "=" _? ConstantExpression
@@ -80,10 +80,10 @@ EP:
     ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
-    TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter _?
-    TypeDenoter         <- :(BINDABLE _ )? ( TypeName / NewType / TypeInquiry / DiscriminatedSchema ) _? InitialStateSpecifier?
-    NewType             <- NewOrdinalType / NewStructuredType / NewPointerType / RestrictedType
-    SimpleTypeName      <- TypeName
+    TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter
+    TypeDenoter         <- :(BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
+    NewType             <- NewStructuredType / NewOrdinalType / NewPointerType / RestrictedType # BNV Put NewStructuredType first.
+    # SimpleTypeName      <- TypeName   # BNV Semantic only
     StructuredTypeName  <- ArrayTypeName / RecordTypeName / SetTypeName / FileTypeName
     ArrayTypeName       <- TypeName
     RecordTypeName      <- TypeName
@@ -91,7 +91,7 @@ EP:
     FileTypeName        <- TypeName
     PointerTypeName     <- TypeName
     TypeIdentifier      <- Identifier
-    TypeName            <- ( ImportedInterfaceIdentifier "." )? TypeIdentifier
+    TypeName            <- ( ImportedInterfaceIdentifier _? "." _? )? TypeIdentifier
 #BNV extensions
     BNVTypeDefName      <- Identifier
 
@@ -175,7 +175,7 @@ EP:
 # 6.5.1 (complete)
     VariableDeclaration <- IdentifierList _? ":" _? TypeDenoter
     VariableIdentifier  <- Identifier
-    VariableName        <- ( ImportedInterfaceIdentifier "." )? VariableIdentifier
+    VariableName        <- ( ImportedInterfaceIdentifier _? "." _? )? VariableIdentifier
     VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable
 
 # 6.5.2 (complete)
@@ -217,7 +217,7 @@ EP:
     ProcedureIdentification <- "procedure"i _ ProcedureIdentifier
     ProcedureIdentifier     <- Identifier
     ProcedureBlock          <- Block
-    ProcedureName           <- ( ImportedInterfaceIdentifier "." )? ProcedureIdentifier
+    ProcedureName           <- ( ImportedInterfaceIdentifier _? "." _? )? ProcedureIdentifier
 
 # 6.7.2 (complete)
     FunctionDeclaration         <- FunctionHeading _? ";" _? RemoteDirective
@@ -238,7 +238,7 @@ EP:
                                          / ProceduralParameterSpecification
                                          / FunctionalParameterSpecification
                                          / ConformantArrayParameterSpecification    # BNV moved from section 6.7.3.7.1
-    ValueParameterSpecification         <- ("protected"i _ )? IdentifierList _? ":" ParameterForm
+    ValueParameterSpecification         <- ("protected"i _ )? IdentifierList _? ":" _? ParameterForm
     VariableParameterSpecification      <- ("protected"i _ )? "var"i _ IdentifierList _? ":" _? ParameterForm
     ParameterForm                       <- TypeName / SchemaName / TypeInquiry
     ParameterIdentifier                 <- Identifier
