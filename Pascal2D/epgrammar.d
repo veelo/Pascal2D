@@ -8,7 +8,10 @@
 // Uses extended PEG syntax:
 // https://github.com/PhilippeSigaud/Pegged/wiki/Extended-PEG-Syntax
 //
-// Minor edits have been made, marked with BNV.
+// Minor edits have been made, marked with BNV, with the following objectives:
+// 1 - Retain layout and comments.
+// 2 - Reorder choices from long to short in order to get the longest match.
+// 3 - Identify certain identifiers in the translator.
 
 enum EPgrammar = `
 EP:
@@ -185,7 +188,7 @@ EP:
     ComponentVariable   <- IndexedVariable / FieldDesignator
 
 # 6.5.3.2 (complete)
-    IndexedVariable     <- (ArrayVariable "[" IndexExpression ( "," IndexExpression )* "]" ) / ( StringVariable "[" IndexExpression "]" )
+    IndexedVariable     <- (ArrayVariable _? "[" _? IndexExpression ( _? "," _? IndexExpression )* _? "]" ) / ( StringVariable _? "[" _? IndexExpression _? "]" )
     ArrayVariable       <- VariableAccess
     StringVariable      <- VariableAccess
     IndexExpression     <- Expression
@@ -204,7 +207,7 @@ EP:
     FileVariable        <- VariableAccess
 
 # 6.5.6 (complete)
-    SubstringVariable   <- StringVariable "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
+    SubstringVariable   <- StringVariable _? "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
 # 6.6 (complete)
     InitialStateSpecifier   <- "value"i _ ComponentValue
@@ -260,7 +263,7 @@ EP:
 
 # 6.7.5 Required procedures TODO
 
-# 6.7.5.5
+# 6.7.5.5 (complete)
     ReadstrParameterList    <- "(" _? StringExpression _? "," _? VariableAccess ( _? "," _? VariableAccess )* _? ")"
     StringExpression        <- Expression
     WritestrParameterList   <- "(" _? StringVariable _? "," _? WriteParameter ( _? "," _? WriteParameter )* _? ")"
@@ -272,7 +275,16 @@ EP:
     SimpleExpression    <- Sign? _? Term ( _? AddingOperator _? Term )*
     Term                <- Factor ( _? MultiplyingOperator _? Factor )*
     Factor              <- Primary ( _? ExponentiatingOperator _? Primary )?
-    Primary             <- VariableAccess / UnsignedConstant / SetConstructor / FunctionAccess / "(" _? Expression _? ")" / NOT _? Primary / ConstantAccess / SchemaDiscriminant / StructuredValueConstructor / DiscriminantIdentifier
+    Primary             <- UnsignedConstant
+                         / SetConstructor
+                         / "(" _? Expression _? ")"
+                         / NOT _? Primary
+                         / StructuredValueConstructor
+                         / SchemaDiscriminant           # BNV Moved after StructuredValueConstructor
+                         / ConstantAccess               # BNV Moved after StructuredValueConstructor
+                         / FunctionAccess               # BNV Moved after StructuredValueConstructor
+                         / VariableAccess               # BNV Moved after StructuredValueConstructor
+                         / DiscriminantIdentifier
     UnsignedConstant    <- UnsignedNumber / CharacterString / NIL / ExtendedNumber
     SetConstructor      <- "[" _? ( MemberDesignator ( _? "," _? MemberDesignator )* )? _? "]"
     MemberDesignator    <- Expression ( _? ".." _? Expression )?
@@ -285,6 +297,8 @@ EP:
     MultiplyingOperator     <- "*" / "/" / DIV / MOD / AND / AND_THEN
     AddingOperator          <- "+" / "-" / "><" / OR / OR_ELSE
     RelationalOperator      <- "=" / "<>" / "<=" / "<" / ">=" / ">" / IN
+
+# 6.8.3.2 Arithmetic operators TODO?
 
 # 6.8.3.3
     BooleanExpression       <- Expression
@@ -436,6 +450,8 @@ EP:
     ConstantFieldIdentifier         <- Identifier
     SchemaDiscriminantIdentifier    <- Identifier
 
+# 6.9.4 Threats
+
 # 6.10.1 (complete)
     ReadParameterList   <- "(" _? ( FileVariable _? "," _? )? VariableAccess _? ( _? "," _? VariableAccess )* _? ")"
 
@@ -446,12 +462,34 @@ EP:
     WriteParameterList  <- "(" _? ( FileVariable _? "," _? )? WriteParameter ( _? "," _? WriteParameter )* _? ")"
     WriteParameter      <- Expression ( _? ":" _? Expression ( _? ":" _? Expression )? )?
 
-# 6.10.4
+# 6.10.4 (complete)
     WritelnParameterList    <- ( "(" _? ( FileVariable / WriteParameter ) _? ( "," _? WriteParameter _? )* ")" )?
 
-# 6.11.2
-    ConstituentIdentifier   <- Identifier
-    InterfaceIdentifier     <- Identifier
+# 6.11.1 (complete)
+    ModuleDeclaration       <- ModuleHeadeing ( _? ";" _? ModuleBlock )? /
+                               ModuleIdentification _? ";" _? ModuleBlock
+    ModuleHeadeing          <- "module"i Comment? BNVModuleName Comment? InterfaceDirective? Comment? ( "(" ModuleParameterList ")" Comment? )? ";" _? InterfaceSpecificationPart _? ImportPart _? ( ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionHeadingPart)* _? END
+    ModuleParameterList     <- IdentifierList
+    ProcedureAndFunctionHeadingPart <- ( ProcedureHeading / FunctionHeading ) _? ";"
+    ModuleIdentification    <- "module"i Comment? ModuleIdenifier Comment? ImplementationDirective
+    ModuleIdenifier         <- Identifier
+    ModuleBlock             <- ImportPart ( ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? InitializationPart? _? FinalizationPart? _? END
+    InitializationPart      <- "to"i _? "begin"i _? "do"i _? Statement _? ";"
+    FinalizationPart        <- "to"i _? "end"i _? "do"i _? Statement _? ";"
+    BNVModuleName           <- Identifier
+
+# 6.11.2 (complete)
+    InterfaceSpecificationPart  <- "export"i _? ( ExportPart _? ";" )+
+    ExportPart                  <- Identifier _? "=" _? "(" _? ExportList _? ")"
+    ExportList                  <- ( ExportClause / ExportRange ) _? ( "," _? ( ExportClause / ExportRange ) _? )*
+    ExportClause                <- ExportableName / ExportRenamingClause
+    ExportRenamingClause        <- ExportableName _? "=>" _? Identifier
+    ExportableName              <- ConstantName / TypeName / SchemaName / ( "protected"i? _?VariableName ) / ProcedureName / FunctionName
+    ExportRange                 <- FirstConstantName _? ".." _? LastConstantName
+    FirstConstantName           <- ConstantName
+    LastConstantName            <- ConstantName
+    ConstituentIdentifier       <- Identifier
+    InterfaceIdentifier         <- Identifier
 
 # 6.11.3 (complete)
     ImportSpecification         <- InterfaceIdentifier AccessQualifier? ImportQualifier?
@@ -463,46 +501,48 @@ EP:
     ImportRenamingClause        <- ConstituentIdentifier "=>" Identifier
     ImportedInterfaceIdentifier <- Identifier
 
-# 6.12
-    MainProgramDeclaration  <- ProgramHeading _? ";" :Spacing? MainProgramBlock
-    MainProgramBlock        <- _? Block
+# 6.11.4 Required interfaces TODO
+
+# 6.12 (complete)
+    MainProgramDeclaration  <- ProgramHeading _? ";" :Spacing? MainProgramBlock # BNV Discarding newlines that have no correspondence in D.
     ProgramHeading          <- PROGRAM Comment? BNVProgramName ( Comment? "(" ProgramParameterList ")" )?
     ProgramParameterList    <- IdentifierList
-# BNV extensions
+    MainProgramBlock        <- _? Block
+    # BNV extensions
     BNVProgramName          <- Identifier
 
 # 6.13
     Program             <- _? ProgramBlock _?
     ProgramBlock        <- ( ProgramComponent _? )+
-    ProgramComponent    <- ( MainProgramDeclaration _? "." ) #TODO/ ( ModuleDeclaration _? "." )
+    ProgramComponent    <- ( MainProgramDeclaration _? "." ) / ( ModuleDeclaration _? "." )
 
 # Keywords
-    PROGRAM     <~ "program"i
-    ONLY        <~ "only"i
-    QUALIFIED   <~ "qualified"i
-    BEGIN       <~ "begin"i
-    END         <~ "end"i
-    POW         <~ "pow"i
-    DIV         <~ "div"i
-    MOD         <~ "mod"i
-    AND         <~ "and"i
-    AND_THEN    <~ "and_then"i
-    OR          <~ "or"i
-    OR_ELSE     <~ "or_else"i
-    IN          <~ "in"i
-    NIL         <~ "nil"i
-    NOT         <~ "not"i
-    TYPE        <~ "type"i
-    BINDABLE    <~ "bindable"i
-    RESTRICTED  <~ "restricted"i
-    PACKED      <~ "packed"i
-    ARRAY       <~ "array"i
-    OF          <~ "of"i
-    RECORD      <~ "record"i
-    CASE        <~ "case"i
-    OTHERWISE   <~ "otherwise"i
-    SET         <~ "set"i
-    FILE        <~ "file"i
+    PROGRAM     <- "program"i
+    ONLY        <- "only"i
+    QUALIFIED   <- "qualified"i
+    BEGIN       <- "begin"i
+    END         <- "end"i
+    POW         <- "pow"i
+    DIV         <- "div"i
+    MOD         <- "mod"i
+    AND         <- "and"i
+    AND_THEN    <- "and_then"i
+    OR          <- "or"i
+    OR_ELSE     <- "or_else"i
+    IN          <- "in"i
+    NIL         <- "nil"i
+    NOT         <- "not"i
+    TYPE        <- "type"i
+    BINDABLE    <- "bindable"i
+    RESTRICTED  <- "restricted"i
+    PACKED      <- "packed"i
+    ARRAY       <- "array"i
+    OF          <- "of"i
+    RECORD      <- "record"i
+    CASE        <- "case"i
+    OTHERWISE   <- "otherwise"i
+    SET         <- "set"i
+    FILE        <- "file"i
 
 # Built-ins
     READ        <- "read"i
