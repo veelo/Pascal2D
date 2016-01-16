@@ -83,7 +83,7 @@ string toD(const ref ParseTree p)
             }
         }
 
-        string parseTypeDef(const ref ParseTree p)
+        string parseTypeDefinition(const ref ParseTree p /* EP.TypeDefinition */)
         {
             string typeDefName;
 
@@ -114,8 +114,12 @@ string toD(const ref ParseTree p)
                         typeDefName = contents(p);
                         return "";
                     case "EP.EnumeratedType":
+                        assert(typeDefName.length > 0);
                         return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumDef) ~ "};";
                     default:
+                        if (typeDefName.length > 0)
+                            return "alias " ~ typeDefName ~ " = " ~ parseToCode(p);
+                        writeln("parseTypeDefChild does parseDefaults on ", p);
                         return parseDefaults(p);
                 }
             }
@@ -149,7 +153,7 @@ string toD(const ref ParseTree p)
                 return "";
 
             case "EP.TypeDefinition":
-                return parseTypeDef(p);
+                return parseTypeDefinition(p);
 
             case "EP.StatementPart":
                 return "void main(string[] args)\n" ~ parseChildren(p);
@@ -169,6 +173,17 @@ string toD(const ref ParseTree p)
                 return "'";
             case "EP.WritelnParameterList":
                 return "(" ~ parseChildren(p) ~ ")";
+            case "EP.DiscriminatedSchema":
+                {
+                    if (contents(p.children[0]) == "string")
+                        // Built in schema.
+                        return "immutable(char)[" ~ contents(p.children[1]) ~ "] /* Fixed-length, consider using \"string\" instead. */";
+                    else
+                    {
+                        assert(0, "generic " ~ p.name ~ " is unhandled.");
+                        return "";
+                    }
+                }
 
             // These translate verbally
             case "EP.ProcedureName", "EP.StringCharacter", "EP.Identifier":
@@ -228,7 +243,7 @@ end.
     test("
 PROGRAM arrayc (output);
 
-  { Extended Pascal examples }
+  { Extended Pascal examples http://ideone.com/YXpi4n }
   { Array constant & constant access }
 
 TYPE  days = (sun,mon {First work day},tues,weds,thurs,fri,sat);
