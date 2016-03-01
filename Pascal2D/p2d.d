@@ -79,7 +79,8 @@ string toD(const ref ParseTree p)
                         writeln("LOG: Found literal ", contents(p));
                         return "";
                     }
-                    assert(0, p.name ~ " is unhandled.");
+                    /*assert(0, p.name ~ " is unhandled:\n" ~ p.toString());*/
+                    return "";
             }
         }
 
@@ -119,12 +120,52 @@ string toD(const ref ParseTree p)
                     default:
                         if (typeDefName.length > 0)
                             return "alias " ~ typeDefName ~ " = " ~ parseToCode(p);
-                        writeln("parseTypeDefChild does parseDefaults on ", p);
                         return parseDefaults(p);
                 }
             }
 
             return parseChildren(p, &parseTypeDefChild);
+        }
+
+        string parseVariableDeclaration(const ref ParseTree p /* EP.VariableDeclaration */)
+        {
+            // TODO We could keep a list of declared variables and correct any deviations of case in
+            // subsequent uses.
+
+            import std.range.primitives;
+            string initialValue, type;
+            string[] variables;
+
+            foreach (child; p.children)
+            {
+                switch (child.name)
+                {
+                case "EP.TypeDenoter":
+                    foreach (grandchild; child.children)
+                    {
+                        if (grandchild.name == "EP.InitialStateSpecifier")
+                            initialValue ~= parseToCode(grandchild);
+                        else
+                            type ~= parseToCode(grandchild);
+                    }
+                    break;
+                case "EP.IdentifierList":
+                    foreach (grandchild; child.children)
+                        variables ~= parseToCode(grandchild);
+                    break;
+                default:
+                    // Nothing
+                }
+            }
+
+            if (!initialValue.empty)
+                foreach (i, var; variables)
+                    variables[i] = var ~ "(" ~ initialValue ~ ")";
+
+            string result = type ~ " " ~ variables[0];
+            foreach (var; variables[1..$])
+                result ~= ", " ~ var;
+            return result;
         }
 
         import std.range.primitives;
@@ -141,7 +182,7 @@ string toD(const ref ParseTree p)
                  "EP.WriteParameter",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
-                 "EP.TypeDefinitionPart":
+                 "EP.TypeDefinitionPart", "EP.VariableDeclarationPart":
                 return parseChildren(p);
 
             case "EP.BNVProgramName":
@@ -184,6 +225,10 @@ string toD(const ref ParseTree p)
                         return "";
                     }
                 }
+            case "EP.VariableDeclaration":
+                return parseVariableDeclaration(p);
+            case "EP.TypeName":
+                return contents(p);
 
             // These translate verbally
             case "EP.ProcedureName", "EP.StringCharacter", "EP.Identifier":
@@ -214,7 +259,6 @@ string toD(const ref ParseTree p)
 
 void test(const string pascal)
 {
-    auto test = EP(`bug`);
     auto parseTree = EP(pascal);
     writeln("___________________________");
     writeln(parseTree);
@@ -226,7 +270,11 @@ void test(const string pascal)
 
 void main()
 {
-    test(
+    version (tracer)
+    {
+        traceNothing;
+    }
+    /*test(
 `program MyTest(output);
 
 (* Say
@@ -237,8 +285,48 @@ begin
     writeln('');  {Empty string}
     writeln('a'); {String}
 end.
-`);
+`);*/
 
+    assert(EP.TypeDefinitionPart(
+`TYPE  abbrevs = ARRAY [days] OF
+        PACKED ARRAY [1..5] OF char;`
+    ).successful);
+    assert(EP.ConstantDefinitionPart(
+`CONST DayNames = abbrevs
+        [ sun: 'Sun'; mon: 'Mon'; tues: 'Tues';
+          weds: 'Weds'; thurs: 'Thurs'; fri: 'Fri';
+          sat: 'Satur' ];
+`).successful);
+    assert(EP.ProcedureAndFunctionDeclarationPart(
+`FUNCTION DayName (fd: days): dname;
+    { Elements of the array constant DayNames can be
+      selected with a variable index }
+  TYPE  abbrevs = ARRAY [days] OF
+          PACKED ARRAY [1..5] OF char;
+  CONST DayNames = abbrevs
+    [ sun: 'Sun'; mon: 'Mon'; tues: 'Tues';
+      weds: 'Weds'; thurs: 'Thurs'; fri: 'Fri';
+      sat: 'Satur' ];
+  BEGIN
+    DayName := trim(DayNames[fd]) + 'day';
+  END {DayName};
+`).successful);
+
+    version (tracer)
+    {
+        import std.experimental.logger;
+        sharedLog = new TraceLogger("TraceLog.txt");
+        bool cond (string ruleName)
+        {
+            static startTrace = false;
+            if (ruleName.startsWith("EP.FunctionDeclaration"))
+                startTrace = true;
+            return startTrace && ruleName.startsWith("EP");
+        }
+        /*setTraceConditionFunction(&cond);*/
+        setTraceConditionFunction(ruleName => ruleName.startsWith("EP"));
+        /*traceAll;*/
+    }
 
     test("
 PROGRAM arrayc (output);

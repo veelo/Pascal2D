@@ -22,7 +22,8 @@ EP:
     Letter          <- [a-zA-Z]
 
 # 6.1.3
-    Identifier      <~ Letter ( "_"? ( Letter / Digit ) )*
+    BNVAnyIdentifier    <~ Letter ( "_"? ( Letter / Digit ) )*
+    Identifier          <- BNVAnyIdentifier {failOnWordSymbol}
 
 # 6.1.4 (complete)
     RemoteDirective <- "forward"i / "external"i
@@ -58,7 +59,7 @@ EP:
     StringCharacter <- !"'" .
 
 # 6.1.10 Token separators
-    Spacing         <- blank+   # BNV Do not discard spacing.
+    Spacing         <~ blank+   # BNV Do not discard spacing.
     _               <- ( Spacing / TrailingComment / InlineComment )+
     Comment         <- ( :Spacing / TrailingComment / InlineComment )+
     CommentOpen     <-  "{" / "(*"
@@ -68,14 +69,14 @@ EP:
     TrailingComment <- CommentOpen CommentContent CommentClose &endOfLine
 
 # 6.2.1 (complete)
-    Block                               <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart
+    Block                               <- ImportPart ( _? LabelDeclarationPart / ConstantDefinitionPart / TypeDefinitionPart / VariableDeclarationPart / ProcedureAndFunctionDeclarationPart )* _? StatementPart _?
     ImportPart                          <- (:"import"i _ ( ImportSpecification _? :";" _? )+ )?
     LabelDeclarationPart                <- :"label"i _ Label ( _? "," _? Label )* _? :";" _?
     ConstantDefinitionPart              <- :"const"i _ ( ConstantDefinition _? :";" _? )+
     TypeDefinitionPart                  <- :TYPE _ ( ( TypeDefinition / SchemaDefinition) _? :";" _? )+
     VariableDeclarationPart             <- :"var"i _ ( VariableDeclaration _? :";" _? )+
     ProcedureAndFunctionDeclarationPart <- ( ( ProcedureDeclaration / FunctionDeclaration ) _? :";" _? )*
-    StatementPart                       <- _? CompoundStatement _?
+    StatementPart                       <- CompoundStatement
 
 # 6.3.1 (complete)
     ConstantDefinition  <- Identifier _? "=" _? ConstantExpression
@@ -135,7 +136,7 @@ EP:
     FixedPart           <- RecordSection ( _? ";" _? RecordSection )*
     RecordSection       <- IdentifierList _? ":" _? TypeDenoter
     FieldIdentifier     <- Identifier
-    VariantPart         <- :CASE _ VariantSelector _ :OF _ ( VariantListElement ( _? ";" _? VariantListElement )* _? ( ":"? _? VariantPartCompleter )? / VariantPartCompleter )
+    VariantPart         <- :CASE _ VariantSelector _ :OF _ ( VariantListElement ( _? ";" _? VariantListElement )* ( _? ":"? _? VariantPartCompleter )? / VariantPartCompleter )
     VariantListElement  <- CaseConstantList _? ":" _? VariantDenoter
     VariantPartCompleter    <- OTHERWISE _ VariantDenoter
     VariantDenoter      <- "(" _? FieldList _? ")"
@@ -271,7 +272,7 @@ EP:
 # 6.7.6 Required functions TODO
 
 # 6.8.1 (complete)
-    Expression          <- SimpleExpression _? (RelationalOperator _? SimpleExpression)?
+    Expression          <- SimpleExpression ( _? RelationalOperator _? SimpleExpression)?
     SimpleExpression    <- Sign? _? Term ( _? AddingOperator _? Term )*
     Term                <- Factor ( _? MultiplyingOperator _? Factor )*
     Factor              <- Primary ( _? ExponentiatingOperator _? Primary )?
@@ -280,9 +281,9 @@ EP:
                          / "(" _? Expression _? ")"
                          / NOT _? Primary
                          / StructuredValueConstructor
-                         / SchemaDiscriminant           # BNV Moved after StructuredValueConstructor
-                         / ConstantAccess               # BNV Moved after StructuredValueConstructor
                          / FunctionAccess               # BNV Moved after StructuredValueConstructor
+                         / ConstantAccess               # BNV Moved after StructuredValueConstructor and FunctionAccess
+                         / SchemaDiscriminant           # BNV Moved after StructuredValueConstructor and FunctionAccess
                          / VariableAccess               # BNV Moved after StructuredValueConstructor
                          / DiscriminantIdentifier
     UnsignedConstant    <- UnsignedNumber / CharacterString / NIL / ExtendedNumber
@@ -313,7 +314,7 @@ EP:
 
 
 # 6.8.5 (complete)
-    FunctionDesignator      <- FunctionName _? ActualParameterList?
+    FunctionDesignator      <- FunctionName ( _? ActualParameterList )?
     ActualParameterList     <- "(" _? ActualParameter ( _? "," _? ActualParameter )* _? ")"
     ActualParameter         <- Expression / VariableAccess / ProcedureName / FunctionName
 
@@ -352,7 +353,7 @@ EP:
     FieldListValue      <- ( ( FixedPartValue ( _? ";" _? VariantPartValue )? / VariantPartValue ) _? ";"? )?
     FixedPartValue      <- FieldValue ( _? ";" _? FieldValue )*
     FieldValue          <- FieldIdentifier ( _? ";" FieldIdentifier )* _? ":" _? ComponentValue
-    VariantPartValue    <- CASE _? ( TagFieldIdentifier _? ":" _?)? ConstantTagValue _? OF _? "[" _? FieldListValue _? "]"
+    VariantPartValue    <- CASE _ ( TagFieldIdentifier _? ":" _?)? ConstantTagValue _? OF _? "[" _? FieldListValue _? "]"
     ConstantTagValue    <- ConstantExpression
     TagFieldIdentifier  <- FieldIdentifier
 
@@ -376,7 +377,7 @@ EP:
     SubstringConstant   <- StringConstant _. "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
 # 6.9.1 (complete)
-    Statement   <- ( Label _? ":" _? )? ( SimpleStatement / StructuredStatement )
+    Statement   <- ( Label _? ":" _? )? ( StructuredStatement / SimpleStatement )   # BNV Moved SimpleStatement last, so StructuredStatement is tried before EmptyStatement.
 
 # 6.9.2.1 (complete)
 #    SimpleStatement <- EmptyStatement / AssignmentStatement / ProcedureStatement / GotoStatement # Standard
@@ -401,7 +402,7 @@ EP:
 
 # 6.9.3.1 (complete)
     StructuredStatement <- CompoundStatement / ConditionalStatement / RepetitiveStatement / WithStatement
-    StatementSequence   <- Statement _? ( ";" _? Statement _? )*
+    StatementSequence   <- Statement ( _? ";" _? Statement )*
 
 # 6.9.3.2 (complete)
     CompoundStatement   <- :BEGIN _? StatementSequence _? :END
@@ -429,7 +430,7 @@ EP:
     WhileStatement  <- "while"i _ BooleanExpression _ "do"i _ Statement
 
 # 6.9.3.9.1 (complete)
-    ForStatement    <- "for"i _ ControlVariable _ IterationClause _ "do"i _ Statement
+    ForStatement    <- "for"i _ ControlVariable _? IterationClause _ "do"i _ Statement
     ControlVariable <- EntireVariable
     IterationClause <- SequenceIteration / SetMemberIteration
 
@@ -463,7 +464,7 @@ EP:
     WriteParameter      <- Expression ( _? ":" _? Expression ( _? ":" _? Expression )? )?
 
 # 6.10.4 (complete)
-    WritelnParameterList    <- ( "(" _? ( FileVariable / WriteParameter ) _? ( "," _? WriteParameter _? )* ")" )?
+    WritelnParameterList    <- ( "(" _? ( WriteParameter / FileVariable ) ( _? "," _? WriteParameter )* _? ")" )?   # BNV put WriteParameter before FileVariable.
 
 # 6.11.1 (complete)
     ModuleDeclaration       <- ModuleHeadeing ( _? ";" _? ModuleBlock )? /
@@ -481,7 +482,7 @@ EP:
 # 6.11.2 (complete)
     InterfaceSpecificationPart  <- "export"i _? ( ExportPart _? ";" )+
     ExportPart                  <- Identifier _? "=" _? "(" _? ExportList _? ")"
-    ExportList                  <- ( ExportClause / ExportRange ) _? ( "," _? ( ExportClause / ExportRange ) _? )*
+    ExportList                  <- ( ExportClause / ExportRange ) ( _? "," _? ( ExportClause / ExportRange ) )*
     ExportClause                <- ExportableName / ExportRenamingClause
     ExportRenamingClause        <- ExportableName _? "=>" _? Identifier
     ExportableName              <- ConstantName / TypeName / SchemaName / ( "protected"i? _?VariableName ) / ProcedureName / FunctionName
