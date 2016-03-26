@@ -79,7 +79,8 @@ string toD(const ref ParseTree p)
                         writeln("LOG: Found literal ", contents(p));
                         return "";
                     }
-                    /*assert(0, p.name ~ " is unhandled:\n" ~ p.toString());*/
+                    //assert(0, p.name ~ " is unhandled:\n" ~ p.toString());
+                    writeln(p.name ~ " is unhandled.");
                     return "";
             }
         }
@@ -89,6 +90,7 @@ string toD(const ref ParseTree p)
             string typeDefName;
 
             bool firstIdentifier = true;
+            string aliases;
 
             string parseEnumDef(const ref ParseTree p)
             {
@@ -99,6 +101,8 @@ string toD(const ref ParseTree p)
                     case "EP.Identifier":
                         string result = firstIdentifier ? "" : ", ";
                         firstIdentifier = false;
+                        assert(typeDefName.length > 0);
+                        aliases ~= "\nalias " ~ contents(p) ~ " = " ~ typeDefName ~ "." ~ contents(p) ~ ";\t// EPcompat: In D, enum values are prepended with their enum type.";
                         return result ~ contents(p);
                     default:
                         return parseDefaults(p);
@@ -109,22 +113,29 @@ string toD(const ref ParseTree p)
             {
                 switch(p.name)
                 {
-                    case "EP.TypeDenoter", "EP.NewType", "EP.NewOrdinalType":
+                    case "EP.TypeDenoter":
+                        assert(typeDefName.length > 0);
+                        return "alias " ~ typeDefName ~ " = " ~ parseChildren(p, &parseTypeDefChild) ~ ";";
+                    case "EP.NewType", "EP.NewOrdinalType":
                         return parseChildren(p, &parseTypeDefChild);
                     case "EP.BNVTypeDefName":
                         typeDefName = contents(p);
                         return "";
                     case "EP.EnumeratedType":
                         assert(typeDefName.length > 0);
-                        return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumDef) ~ "};";
+                        return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumDef) ~ "}";
+                    case "EP.DiscriminatedSchema":
+                        if (contents(p).startsWith("string"))
+                            return "string";
+                        goto default;
                     default:
-                        if (typeDefName.length > 0)
-                            return "alias " ~ typeDefName ~ " = " ~ parseToCode(p);
+                        // writeln("parseTypeDefChild does parseDefaults on ", p);
                         return parseDefaults(p);
                 }
             }
 
-            return parseChildren(p, &parseTypeDefChild);
+            string result = parseChildren(p, &parseTypeDefChild);
+            return result ~ aliases;
         }
 
         string parseVariableDeclaration(const ref ParseTree p /* EP.VariableDeclaration */)
@@ -165,7 +176,7 @@ string toD(const ref ParseTree p)
             string result = type ~ " " ~ variables[0];
             foreach (var; variables[1..$])
                 result ~= ", " ~ var;
-            return result;
+            return result ~ ";";
         }
 
         import std.range.primitives;
@@ -182,7 +193,8 @@ string toD(const ref ParseTree p)
                  "EP.WriteParameter",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
-                 "EP.TypeDefinitionPart", "EP.VariableDeclarationPart":
+                 "EP.TypeDefinitionPart", "EP.VariableDeclarationPart",
+                 "EP.ProcedureAndFunctionDeclarationPart":
                 return parseChildren(p);
 
             case "EP.BNVProgramName":
@@ -364,6 +376,56 @@ END.
     Monday
   }
     ");
+
+/*
+    enum code = "
+PROGRAM arrayc (output);
+
+  { Extended Pascal examples http://ideone.com/YXpi4n }
+  { Array constant & constant access }
+
+TYPE  days = (sun,mon {First work day},tues,weds,thurs,fri,sat);
+      dname = string(8);
+
+VAR   d: days;
+
+FUNCTION DayName (fd: days): dname;
+
+    { Elements of the array constant DayNames can be
+      selected with a variable index }
+  TYPE  abbrevs = ARRAY [days] OF
+          PACKED ARRAY [1..5] OF char;
+  CONST DayNames = abbrevs
+    [ sun: 'Sun'; mon: 'Mon'; tues: 'Tues';
+      weds: 'Weds'; thurs: 'Thurs'; fri: 'Fri';
+      sat: 'Satur' ];
+  BEGIN
+    DayName := trim(DayNames[fd]) + 'day';
+  END {DayName};
+
+BEGIN {program}
+  FOR d := fri DOWNTO mon DO writeln(DayName(d));
+END.
+
+  { Generated output is:
+    Friday
+    Thursday
+    Wedsday
+    Tuesday
+    Monday
+  }
+    ";
+
+    void bench()
+    {
+        EP(code);
+    }
+
+    import std.datetime;
+    import std.conv : to;
+    auto r = benchmark!(bench)(1);
+    writeln("Duration ", to!Duration(r[0]));
+    */
 }
 
 
