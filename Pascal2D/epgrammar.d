@@ -84,7 +84,7 @@ EP:
     ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
-    TypeDefinition      <- BNVTypeDefName :_? "=" :_? TypeDenoter
+    TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter
     TypeDenoter         <- :(BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
     NewType             <- NewStructuredType / NewOrdinalType / NewPointerType / RestrictedType # BNV Put NewStructuredType first.
     # SimpleTypeName      <- TypeName   # BNV Semantic only
@@ -109,7 +109,7 @@ EP:
 
 # 6.4.2.3 (complete)
     EnumeratedType      <- "(" _? IdentifierList _? ")"
-    IdentifierList      <- Identifier ( _? "," _? Identifier )*
+    IdentifierList      <- Identifier ( _? COMMA _? Identifier )*
 
 # 6.4.2.4 (complete)
     SubrangeType        <- SubrangeBound _? ".." _? SubrangeBound
@@ -242,8 +242,8 @@ EP:
                                          / ProceduralParameterSpecification
                                          / FunctionalParameterSpecification
                                          / ConformantArrayParameterSpecification    # BNV moved from section 6.7.3.7.1
-    ValueParameterSpecification         <- ("protected"i _ )? IdentifierList _? ":" _? ParameterForm
-    VariableParameterSpecification      <- ("protected"i _ )? "var"i _ IdentifierList _? ":" _? ParameterForm
+    ValueParameterSpecification         <- (PROTECTED _ )? IdentifierList _? ":" _? ParameterForm
+    VariableParameterSpecification      <- (PROTECTED _ )? "var"i _ IdentifierList _? ":" _? ParameterForm
     ParameterForm                       <- TypeName / SchemaName / TypeInquiry
     ParameterIdentifier                 <- Identifier
     ProceduralParameterSpecification    <- ProcedureHeading
@@ -251,7 +251,7 @@ EP:
 
 # 6.7.3.7.1
 #    FormalParameterSection                  <- ConformantArrayParameterSpecification   # BNV Moved to section 6.7.3.1
-    ConformantArrayParameterSpecification   <- ( "protected"i _ )? ( ValueConformantArraySpecification / VariableConformantArraySpecification )
+    ConformantArrayParameterSpecification   <- ( PROTECTED _ )? ( ValueConformantArraySpecification / VariableConformantArraySpecification )
     ValueConformantArraySpecification       <- IdentifierList _? ":" _? ConformantArrayForm
     VariableConformantArraySpecification    <- "var"i _ IdentifierList _? ":" _? ConformantArrayForm
     ConformantArrayForm                     <- PackedConformantArrayForm / UnpackedConformantArrayForm
@@ -485,7 +485,7 @@ EP:
     ExportList                  <- ( ExportClause / ExportRange ) ( _? "," _? ( ExportClause / ExportRange ) )*
     ExportClause                <- ExportableName / ExportRenamingClause
     ExportRenamingClause        <- ExportableName _? "=>" _? Identifier
-    ExportableName              <- ConstantName / TypeName / SchemaName / ( "protected"i? _?VariableName ) / ProcedureName / FunctionName
+    ExportableName              <- ConstantName / TypeName / SchemaName / ( PROTECTED? _?VariableName ) / ProcedureName / FunctionName
     ExportRange                 <- FirstConstantName _? ".." _? LastConstantName
     FirstConstantName           <- ConstantName
     LastConstantName            <- ConstantName
@@ -544,6 +544,10 @@ EP:
     OTHERWISE   <- "otherwise"i
     SET         <- "set"i
     FILE        <- "file"i
+    PROTECTED   <- "protected"i
+
+# Separators
+    COMMA       <- ","
 
 # Built-ins
     READ        <- "read"i
