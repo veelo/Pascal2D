@@ -84,7 +84,7 @@ EP:
     ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
-    TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter
+    TypeDefinition      <- BNVTypeDefName :_? "=" :_? TypeDenoter
     TypeDenoter         <- :(BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
     NewType             <- NewStructuredType / NewOrdinalType / NewPointerType / RestrictedType # BNV Put NewStructuredType first.
     # SimpleTypeName      <- TypeName   # BNV Semantic only

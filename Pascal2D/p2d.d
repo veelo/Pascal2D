@@ -111,10 +111,13 @@ string toD(const ref ParseTree p)
 
             string parseTypeDefChild(const ref ParseTree p)
             {
+                import std.algorithm.searching;
                 switch(p.name)
                 {
                     case "EP.TypeDenoter":
                         assert(typeDefName.length > 0);
+                        if (p.children.canFind!("a.name == b")("EP.NewType"))
+                            return parseChildren(p, &parseTypeDefChild) ~ ";";
                         return "alias " ~ typeDefName ~ " = " ~ parseChildren(p, &parseTypeDefChild) ~ ";";
                     case "EP.NewType", "EP.NewOrdinalType":
                         return parseChildren(p, &parseTypeDefChild);
