@@ -273,12 +273,17 @@ string toD(const ref ParseTree p)
         }
 
         string parseFunctionDeclaration(const ref ParseTree p /* EP.FunctionDeclaration */)
+        in
         {
-            string heading, name, resultVariable, resultType, block;
+            assert(p.name == "EP.FunctionDeclaration");
+        }
+        body
+        {
+            string result, name, resultVariable, resultType, block;
 
-            void parseHeading(const ref ParseTree p /* EP.FunctionHeading */)
+            string parseHeading(const ref ParseTree p /* EP.FunctionHeading */)
             {
-                string comments;
+                string comments, heading;
                 foreach(child; p.children[1..$])
                 {
                     switch (child.name)
@@ -302,11 +307,7 @@ string toD(const ref ParseTree p)
                     }
                 }
                 heading ~= comments;
-            }
-
-            string parseBlock(const ref ParseTree p /* EP.FunctionBlock */)
-            {
-                return "";
+                return heading;
             }
 
             foreach (child; p.children)
@@ -314,17 +315,38 @@ string toD(const ref ParseTree p)
                 switch (child.name)
                 {
                     case "EP.FunctionHeading":
-                        parseHeading(child);
+                        result ~= parseHeading(child);
                         break;
                     case "EP.FunctionBlock":
-                        block = parseBlock(child);
+                        result ~= parseChildren(child);
+                        break;
+                    case "EP._":
+                        result ~= parseDefaults(child);
                         break;
                     default:
-                        writeln(p.name ~ " is unhandled in parseFunctionDeclaration.");
+                        writeln(child.name ~ " is unhandled in parseFunctionDeclaration.");
                 }
             }
 
-            return heading ~ "\n{\n" ~ block ~ "}\n";
+            return result;
+        }
+
+        string parseMainProgramBlock(const ref ParseTree p /* EP.MainProgramBlock || EP.Block */)
+        {
+            string result;
+            foreach (child; p.children)
+                switch (child.name)
+                {
+                    case "EP.Block":
+                        result ~= parseMainProgramBlock(child);
+                        break;
+                    case "EP.StatementPart":
+                        result ~= "int main(string[] args)\n" ~ parseChildren(child);
+                        break;
+                    default:
+                        result ~= parseToCode(child);
+                }
+            return result;
         }
 
         import std.range.primitives;
@@ -335,16 +357,18 @@ string toD(const ref ParseTree p)
                 return parseToCode(p.children[0]);	// The grammar result has only one child: the start rule's parse tree.
             // These just recurse into their children.
             case "EP.BNVCompileUnit",
-                 "EP.Program", "EP.ProgramBlock", "EP.MainProgramBlock", "EP.Block", "EP.ProgramComponent",
+                 "EP.Program", "EP.ProgramBlock", "EP.Block", "EP.ProgramComponent",
                  "EP.MainProgramDeclaration", "EP.ProgramHeading",
                  "EP.StatementSequence", "EP.Statement", "EP.ProcedureStatement",
                  "EP.WriteParameter",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
                  "EP.TypeDefinitionPart", "EP.VariableDeclarationPart",
-                 "EP.ProcedureAndFunctionDeclarationPart":
+                 "EP.ProcedureAndFunctionDeclarationPart",
+                 "EP.StatementPart":
                 return parseChildren(p);
-
+            case "EP.MainProgramBlock":
+                return parseMainProgramBlock(p);
             case "EP.BNVProgramName":
                 programName = contents(p);
                 writeln("LOG: detected program name: ", programName);
@@ -352,13 +376,8 @@ string toD(const ref ParseTree p)
             case "EP.ProgramParameterList":
                 imports.insert("std.stdio");
                 return "";
-
             case "EP.TypeDefinition":
                 return parseTypeDefinition(p);
-
-            case "EP.StatementPart":
-                return "void main(string[] args)\n" ~ parseChildren(p);
-
             case "EP.CompoundStatement":
                 return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
@@ -428,6 +447,8 @@ void test(const string pascal)
     writeln(pascal);
     writeln("\nD:");
     writeln(toD(parseTree));
+    import pegged.tohtml;
+    toHTML(parseTree, "test");
 }
 
 void main()
@@ -490,8 +511,7 @@ end.
         /*traceAll;*/
     }
 
-    test("
-PROGRAM arrayc (output);
+    test("PROGRAM arrayc (output);
 
   { Extended Pascal examples http://ideone.com/YXpi4n }
   { Array constant & constant access }
