@@ -1,15 +1,20 @@
 {
 	"name": "pascal2d",
+	"description": "Transcompiler from Prospero Extended Pascal to D.",
 	"authors": [
 		"Bastiaan N. Veelo"
 	],
 	"dependencies": {
 		"pegged": "~>0.4.2"
 	},
-	"description": "Transcompiler from Prospero Extended Pascal to D.",
 	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC",
 	"license": "boost",
 	"excludedSourceFiles": [
+		"source/epgrammar.d",
+		"source/generate.d",
 		"source/make.d"
+	],
+	"preGenerateCommands": [
+		"cd ./source && rdmd make.d $PEGGED_PACKAGE_DIR"
 	]
 }
