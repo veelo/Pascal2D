@@ -51,8 +51,9 @@ string toD(const ref ParseTree p)
             foreach(child; p.children)  // child is a ParseTree.
                 result ~= parser(child);
             return result;
-        }
+        } // parseChildren
 
+        // In parseToCode.
         string parseDefaults(const ref ParseTree p)
         {
             import std.algorithm.searching;
@@ -83,12 +84,15 @@ string toD(const ref ParseTree p)
                     writeln(p.name ~ " is unhandled.");
                     return "";
             }
-        }
+        } // parseDefaults
 
+        // In parseToCode.
         import std.typecons: Tuple, tuple;
-        Tuple!(string, "name", string, "matches")[] readIdentifierList(const ref ParseTree p /* EP.IdentifierList */)
-        {
+        Tuple!(string, "name", string, "matches")[] readIdentifierList(const ref ParseTree p)
+        in {
             assert(p.name == "EP.IdentifierList");
+        }
+        body {
             Tuple!(string, "name", string, "matches") identifiers[];
             string name, matches;
             foreach (child; p.children)
@@ -109,14 +113,75 @@ string toD(const ref ParseTree p)
             }
             identifiers ~= tuple!("name", "matches")(name, matches);
             return identifiers;
-        }
+        } // readIdentifierList
 
-        string parseTypeDefinition(const ref ParseTree p /* EP.TypeDefinition */)
-        {
+        // In parseToCode.
+        string parseArrayType(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.ArrayType");
+        }
+        body {
+            string lastIndex, result, comments;
+            string indices[];
+
+            foreach(child; p.children)
+            {
+                switch (child.name)
+                {
+                    case "EP.IndexType":
+                        lastIndex = contents(child);
+                        break;
+                    case "EP.COMMA":
+                        if (comments.length > 0) {
+                            lastIndex ~= " " ~ comments;
+                            comments = "";
+                        }
+                        indices ~= indices;
+                        lastIndex = "";
+                        break;
+                    case "EP.ComponentType":
+                        result ~= parseToCode(child);
+                        indices ~= lastIndex;
+                        foreach (index; indices)
+                            result ~= "[" ~ index ~ "]";
+                        result ~= comments;
+                        break;
+                    default:
+                        comments ~= strip(parseDefaults(child));
+                }
+            }
+            return result;
+        } // parseArrayType
+
+        // In parseToCode.
+        // TypeDenoter is used in TypeDefinition, (array) ComponentType, RecordSection, SchemaDefinition, VariableDeclaration
+        // The problem is that D does not have the simple type denoter from Pascal where everything is to the right of ':' or '='.
+        // In D the /kind/ of type (enum, class, struct) comes first, then the identifier (unless anonymous), then the definition.
+        void readTypeDenoter(const ref ParseTree p, ref string type, ref string initialValue, ref string aliases, string typeDefName = "")
+        in {
+            assert(p.name == "EP.TypeDenoter");
+        }
+        body {
+            foreach (child; p.children)
+            {
+                if (child.name == "EP.InitialStateSpecifier")
+                    initialValue ~= parseToCode(child);
+                else
+                    type ~= parseToCode(child);
+            }
+        } // readTypeDenoter
+
+        // In parseToCode.
+        string parseTypeDefinition(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.TypeDefinition");
+        }
+        body {
             string typeDefName;
             string aliases;
 
-            string parseEnumDef(const ref ParseTree p)
+            // In parseTypeDefinition
+            string parseEnumTypeChild(const ref ParseTree p)
             {
                 switch(p.name)
                 {
@@ -134,8 +199,10 @@ string toD(const ref ParseTree p)
                     default:
                         return parseDefaults(p);
                 }
-            }
+            } // parseEnumTypeChild
 
+            /* TODO ongebruikt! */
+            // In parseTypeDefinition
             string parseTypeDefChild(const ref ParseTree p)
             {
                 import std.algorithm.searching;
@@ -146,56 +213,101 @@ string toD(const ref ParseTree p)
                         if (p.children.canFind!("a.name == b")("EP.NewType"))
                             return parseChildren(p, &parseTypeDefChild) ~ ";";
                         return "alias " ~ typeDefName ~ " = " ~ parseChildren(p, &parseTypeDefChild) ~ ";";
-                    case "EP.NewType", "EP.NewOrdinalType":
+                    case "EP.NewType", "EP.NewOrdinalType", "EP.NewStructuredType",
+                         "EP.UnpackedStructuredType":
                         return parseChildren(p, &parseTypeDefChild);
                     case "EP.BNVTypeDefName":
                         typeDefName = contents(p);
                         return "";
                     case "EP.EnumeratedType":
                         assert(typeDefName.length > 0);
-                        return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumDef) ~ "}";
+                        return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumTypeChild) ~ "}";
+                    case "EP.ArrayType":
+                        return parseArrayType(p);
                     case "EP.DiscriminatedSchema":
                         if (contents(p).startsWith("string"))
                             return "string";
                         goto default;
                     default:
-                        // writeln("parseTypeDefChild does parseDefaults on ", p);
-                        return parseDefaults(p);
+                        return parseToCode(p);
+                }
+            } // parseTypeDefChild
+
+            // Body parseTypeDefinition
+            string comments, type, initialValue, additional_statements;
+            foreach (child; p.children)
+            {
+                switch (child.name)
+                {
+                    case "EP.BNVTypeDefName":
+                        typeDefName = contents(child);
+                        break;
+                    case "EP._":
+                        comments ~= strip(parseDefaults(child)); // TODO
+                        break;
+                    case "EP.TypeDenoter":
+                        readTypeDenoter(child, type, initialValue, additional_statements);
+                        break;
+                    default:
+                        assert(0);
                 }
             }
 
-            string result = parseChildren(p, &parseTypeDefChild);
-            return result ~ aliases;
-        }
+            string result = type;
+            return result ~ additional_statements;
+        } // parseTypeDefinition
 
-        string parseVariableDeclaration(const ref ParseTree p /* EP.VariableDeclaration */)
-        {
+        // In parseToCode.
+        string parseTypeInquiry(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.TypeInquiry");
+        }
+        body {
+            string result;
+            foreach(child; p.children)
+            {
+                switch (child.name)
+                {
+                    case "EP._":
+                        result ~= strip(parseToCode(child));
+                        break;
+                    default:
+                        result ~= parseToCode(child);
+                        break;
+                }
+            }
+            return "typeof(" ~ result ~ ")";
+        }   // parseTypeInquiry
+
+        // In parseToCode.
+        string parseVariableDeclaration(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.VariableDeclaration");
+        }
+        body {
             // TODO We could keep a list of declared variables and correct any deviations of case in
             // subsequent uses, to convert from the case-insensitive Pascal to case-sensitive D.
 
             import std.range.primitives;
-            string initialValue, type;
+            string comments, type, initialValue, additional_statements;
             string[] variables;
 
             foreach (child; p.children)
             {
                 switch (child.name)
                 {
-                case "EP.TypeDenoter":
-                    foreach (grandchild; child.children)
-                    {
-                        if (grandchild.name == "EP.InitialStateSpecifier")
-                            initialValue ~= parseToCode(grandchild);
-                        else
-                            type ~= parseToCode(grandchild);
-                    }
-                    break;
                 case "EP.IdentifierList":
                     foreach (grandchild; child.children)
                         variables ~= parseToCode(grandchild);
                     break;
+                case "EP._":
+                    comments ~= strip(parseDefaults(child)); /* TODO */
+                    break;
+                case "EP.TypeDenoter":
+                    readTypeDenoter(child, type, initialValue, additional_statements /*TODO*/);
+                    break;
                 default:
-                    // Nothing
+                    assert(0);
                 }
             }
 
@@ -207,15 +319,25 @@ string toD(const ref ParseTree p)
             foreach (var; variables[1..$])
                 result ~= ", " ~ var;
             return result ~ ";";
-        }
+        } // parseVariableDeclaration
 
-        string parseFormalParameterList(const ref ParseTree p /* EP.FormalParameterList */)
-        {
+        // In parseToCode.
+        string parseFormalParameterList(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.FormalParameterList");
+        }
+        body {
             bool first = true;
-            string parseFormalParameterSection(const ref ParseTree p /* EP.FormalParameterSection */)
-            {
-                string parseValueParameterSpecification(const ref ParseTree p /* EP.ValueParameterSpecification */)
-                {
+            string parseFormalParameterSection(const ref ParseTree p)
+            in {
+                assert(p.name == "EP.FormalParameterSection");
+            }
+            body {
+                string parseValueParameterSpecification(const ref ParseTree p)
+                in {
+                    assert(p.name == "EP.ValueParameterSpecification");
+                }
+                body {
                     bool isConst = false;
                     Tuple!(string, "name", string, "matches") identifiers[];
                     string result, theType, comments;
@@ -246,7 +368,7 @@ string toD(const ref ParseTree p)
                     }
                     result ~= comments;
                     return result;
-                }
+                } // parseValueParameterSpecification
 
                 string result;
                 if (!first)
@@ -261,7 +383,7 @@ string toD(const ref ParseTree p)
                         writeln("TODO: " ~ p.children[0].name);
                 }
                 return result;
-            }
+            } // parseFormalParameterSection
 
             string result;
             foreach (child; p.children)
@@ -270,19 +392,21 @@ string toD(const ref ParseTree p)
                 else
                     result ~= parseDefaults(child);
             return "(" ~ result ~ ")";
-        }
+        } // parseFormalParameterList
 
-        string parseFunctionDeclaration(const ref ParseTree p /* EP.FunctionDeclaration */)
-        in
-        {
+        // In parseToCode.
+        string parseFunctionDeclaration(const ref ParseTree p)
+        in {
             assert(p.name == "EP.FunctionDeclaration");
         }
-        body
-        {
+        body {
             string result, name, resultVariable, resultType, block;
 
-            string parseHeading(const ref ParseTree p /* EP.FunctionHeading */)
-            {
+            string parseHeading(const ref ParseTree p)
+            in {
+                assert(p.name == "EP.FunctionHeading");
+            }
+            body {
                 string comments, heading;
                 foreach(child; p.children[1..$])
                 {
@@ -308,6 +432,15 @@ string toD(const ref ParseTree p)
                 }
                 heading ~= comments;
                 return heading;
+            } // parseHeading
+
+            string parseFunctionBlockChildren(const ref ParseTree p)
+            {
+                if (p.name == "EP.StatementPart") {
+                    assert(p.children.length == 1 && p.children[0].name == "EP.CompoundStatement");
+                    return parseChildren(p.children[0]);    // Omits curly braces of ordinary CompoundStatement.
+                }
+                return parseToCode(p);
             }
 
             foreach (child; p.children)
@@ -318,7 +451,8 @@ string toD(const ref ParseTree p)
                         result ~= parseHeading(child);
                         break;
                     case "EP.FunctionBlock":
-                        result ~= parseChildren(child);
+                        assert(child.children.length == 1 && child.children[0].name == "EP.Block");
+                        result ~= "{" ~ parseChildren(child.children[0], &parseFunctionBlockChildren) ~ "}";
                         break;
                     case "EP._":
                         result ~= parseDefaults(child);
@@ -329,10 +463,14 @@ string toD(const ref ParseTree p)
             }
 
             return result;
-        }
+        }   // parseFunctionDeclaration
 
-        string parseMainProgramBlock(const ref ParseTree p /* EP.MainProgramBlock || EP.Block */)
-        {
+        // In parseToCode.
+        string parseMainProgramBlock(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.MainProgramBlock" || p.name == "EP.Block");
+        }
+        body {
             string result;
             foreach (child; p.children)
                 switch (child.name)
@@ -347,8 +485,9 @@ string toD(const ref ParseTree p)
                         result ~= parseToCode(child);
                 }
             return result;
-        }
+        } // parseMainProgramBlock
 
+        // Body parseToCode
         import std.range.primitives;
         import std.string : translate;
         switch(p.name)
@@ -365,7 +504,9 @@ string toD(const ref ParseTree p)
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
                  "EP.TypeDefinitionPart", "EP.VariableDeclarationPart",
                  "EP.ProcedureAndFunctionDeclarationPart",
-                 "EP.StatementPart":
+                 "EP.StatementPart",
+                 "EP.TypeInquiryObject",
+                 "EP.VariableName":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
                 return parseMainProgramBlock(p);
@@ -378,6 +519,11 @@ string toD(const ref ParseTree p)
                 return "";
             case "EP.TypeDefinition":
                 return parseTypeDefinition(p);
+            case "EP.TypeInquiry":
+                return parseTypeInquiry(p);
+            case "EP.ComponentType":
+                assert(p.children.length == 1 && p.children[0].name == "EP.TypeDenoter");
+                /* TODO */
             case "EP.CompoundStatement":
                 return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
@@ -406,13 +552,17 @@ string toD(const ref ParseTree p)
                 }
             case "EP.VariableDeclaration":
                 return parseVariableDeclaration(p);
-            case "EP.TypeName":
-                return contents(p);
             case "EP.FunctionDeclaration":
                 return parseFunctionDeclaration(p);
 
             // These translate verbally
-            case "EP.ProcedureName", "EP.StringCharacter", "EP.Identifier":
+            case "EP.ProcedureName",
+                 "EP.StringCharacter",
+                 "EP.TypeName",
+                 "EP.Identifier",
+                 "EP.ParameterIdentifier",
+                 "EP.ImportedInterfaceIdentifier",
+                 "EP.DOT":
                 return contents(p);
 
             // These are ignored
@@ -426,7 +576,9 @@ string toD(const ref ParseTree p)
             default:
                 return parseDefaults(p);
         }
-    }
+    } // parseToCode
+
+    // body toD
 
     auto code = parseToCode(p);
 
@@ -436,7 +588,7 @@ string toD(const ref ParseTree p)
     }
 
 	return importDeclaration ~ "\n" ~ code;
-}
+} // toD
 
 void test(const string pascal)
 {
@@ -622,7 +774,7 @@ end.
     assert(equal(toD(parsed),
 `import std.stdio;
 
-void main(string[] args)
+int main(string[] args)
 {
     writeln("Hello D's \"World\"!");
 }

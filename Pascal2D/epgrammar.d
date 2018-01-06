@@ -81,31 +81,31 @@ EP:
 # 6.3.1 (complete)
     ConstantDefinition  <- Identifier _? "=" _? ConstantExpression
     ConstantIdentifier  <- Identifier
-    ConstantName        <- ( ImportedInterfaceIdentifier _? "." _? )? ConstantIdentifier
+    ConstantName        <- ( ImportedInterfaceIdentifier _? DOT _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
     TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter
     TypeDenoter         <- :(BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
     NewType             <- NewStructuredType / NewOrdinalType / NewPointerType / RestrictedType # BNV Put NewStructuredType first.
-    # SimpleTypeName      <- TypeName   # BNV Semantic only
+    #SimpleTypeName      <- TypeName    # BNV Semantic only
     StructuredTypeName  <- ArrayTypeName / RecordTypeName / SetTypeName / FileTypeName
     ArrayTypeName       <- TypeName
     RecordTypeName      <- TypeName
     SetTypeName         <- TypeName
     FileTypeName        <- TypeName
-    PointerTypeName     <- TypeName
+    #PointerTypeName     <- TypeName    # BNV Semantic only
     TypeIdentifier      <- Identifier
-    TypeName            <- ( ImportedInterfaceIdentifier _? "." _? )? TypeIdentifier
+    TypeName            <- ( ImportedInterfaceIdentifier _? DOT _? )? TypeIdentifier
 #BNV extensions
     BNVTypeDefName      <- Identifier
 
 # 6.4.2.1 (complete)
-    SimpleType          <- OrdinalType / RealTypeName / ComplexTypeName
+    #SimpleType          <- OrdinalType / RealTypeName / ComplexTypeName    # BNV Semantic only
     OrdinalType         <- NewOrdinalType / OrdinalTypeName / TypeInquiry / DiscriminatedSchema
     NewOrdinalType      <- EnumeratedType / SubrangeType
     OrdinalTypeName     <- TypeName
-    RealTypeName        <- TypeName
-    ComplexTypeName     <- TypeName
+    #RealTypeName        <- TypeName    # BNV Semantic only
+    #ComplexTypeName     <- TypeName    # BNV Semantic only
 
 # 6.4.2.3 (complete)
     EnumeratedType      <- "(" _? IdentifierList _? ")"
@@ -119,12 +119,12 @@ EP:
     RestrictedType      <- :RESTRICTED _ TypeName
 
 # 6.4.3.1 (complete)
-    StructuredType          <- NewStructuredType / StructuredTypeName
+    #StructuredType          <- NewStructuredType / StructuredTypeName  # BNV Semantic only
     NewStructuredType       <- :PACKED? _? UnpackedStructuredType
     UnpackedStructuredType  <- ArrayType / RecordType / SetType / FileType
 
 # 6.4.3.2 (complete)
-    ArrayType           <- :ARRAY _ "[" _? IndexType ( _? "," _? IndexType )* _? "]" _ OF _ ComponentType
+    ArrayType           <- :ARRAY _ "[" _? IndexType ( _? COMMA _? IndexType )* _? "]" _ :OF _ ComponentType
     IndexType           <- OrdinalType
     ComponentType       <- TypeDenoter
 
@@ -155,7 +155,7 @@ EP:
     FileType            <- :FILE _ ( "[" _? IndexType _? "]" _? )? :OF _ ComponentType
 
 # 6.4.4 (complete)
-    PointerType         <- NewPointerType / PointerTypeName
+    #PointerType         <- NewPointerType / PointerTypeName    # BNV Semantic only
     NewPointerType      <- :"^" _? DomainType
     DomainType          <- TypeName / SchemaName
 
@@ -179,7 +179,7 @@ EP:
 # 6.5.1 (complete)
     VariableDeclaration <- IdentifierList _? ":" _? TypeDenoter
     VariableIdentifier  <- Identifier
-    VariableName        <- ( ImportedInterfaceIdentifier _? "." _? )? VariableIdentifier
+    VariableName        <- ( ImportedInterfaceIdentifier _? DOT _? )? VariableIdentifier
     VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable
 
 # 6.5.2 (complete)
@@ -221,7 +221,7 @@ EP:
     ProcedureIdentification <- "procedure"i _ ProcedureIdentifier
     ProcedureIdentifier     <- Identifier
     ProcedureBlock          <- Block
-    ProcedureName           <- ( ImportedInterfaceIdentifier _? "." _? )? ProcedureIdentifier
+    ProcedureName           <- ( ImportedInterfaceIdentifier _? DOT _? )? ProcedureIdentifier
 
 # 6.7.2 (complete)
     FunctionDeclaration         <- FunctionHeading _? ";" _? RemoteDirective
@@ -233,7 +233,7 @@ EP:
     FunctionIdentifier          <- Identifier
     ResultType                  <- TypeName
     FunctionBlock               <- Block
-    FunctionName                <- ( ImportedInterfaceIdentifier _? "." _? )? FunctionIdentifier
+    FunctionName                <- ( ImportedInterfaceIdentifier _? DOT _? )? FunctionIdentifier
 
 # 6.7.3.1 (complete)
     FormalParameterList                 <- "(" _? FormalParameterSection ( _? ";" _? FormalParameterSection )* _? ")"
@@ -548,6 +548,7 @@ EP:
 
 # Separators
     COMMA       <- ","
+    DOT         <- "."
 
 # Built-ins
     READ        <- "read"i
