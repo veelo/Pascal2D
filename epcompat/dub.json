@@ -1,0 +1,9 @@
+{
+	"name": "epcompat",
+	"authors": [
+		"Bastiaan Veelo"
+	],
+	"description": "Extended Pascal compatibility.",
+    "copyright": "Copyright © 2017, SARC B.V.",
+	"license": "boost"
+}
