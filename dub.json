@@ -1,0 +1,15 @@
+{
+	"name": "pascal2d",
+	"authors": [
+		"Bastiaan N. Veelo"
+	],
+	"dependencies": {
+		"pegged": "~>0.4.2"
+	},
+	"description": "Transcompiler from Prospero Extended Pascal to D.",
+	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC",
+	"license": "boost",
+	"excludedSourceFiles": [
+		"source/make.d"
+	]
+}

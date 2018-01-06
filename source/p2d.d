@@ -548,7 +548,6 @@ string toD(const ref ParseTree p)
                     else
                     {
                         assert(0, "generic " ~ p.name ~ " is unhandled.");
-                        return "";
                     }
                 }
             case "EP.VariableDeclaration":
