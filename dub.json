@@ -4,12 +4,15 @@
 	"authors": [
 		"Bastiaan N. Veelo"
 	],
+	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
+	"license": "boost",
 	"dependencies": {
 		"pegged": "~>0.4.2",
 		"pascal2d:epcompat": "*"
 	},
-	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC",
-	"license": "boost",
+	"subPackages": [
+		"./epcompat"
+	],
 	"excludedSourceFiles": [
 		"source/epgrammar.d",
 		"source/generate.d",
@@ -17,8 +20,5 @@
 	],
 	"preGenerateCommands": [
 		"cd ./source && rdmd make.d $PEGGED_PACKAGE_DIR"
-	],
-	"subPackages": [
-		"./epcompat"
 	]
 }
