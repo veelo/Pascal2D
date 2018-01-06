@@ -1,6 +1,7 @@
 import std.stdio;
 
 import epparser;
+import pegged.peg : equal, strip;
 
 unittest // Extended Pascal comments
 {
@@ -93,7 +94,7 @@ string toD(const ref ParseTree p)
             assert(p.name == "EP.IdentifierList");
         }
         body {
-            Tuple!(string, "name", string, "matches") identifiers[];
+            Tuple!(string, "name", string, "matches")[] identifiers;
             string name, matches;
             foreach (child; p.children)
             {
@@ -122,7 +123,7 @@ string toD(const ref ParseTree p)
         }
         body {
             string lastIndex, result, comments;
-            string indices[];
+            string[] indices;
 
             foreach(child; p.children)
             {
@@ -339,7 +340,7 @@ string toD(const ref ParseTree p)
                 }
                 body {
                     bool isConst = false;
-                    Tuple!(string, "name", string, "matches") identifiers[];
+                    Tuple!(string, "name", string, "matches")[] identifiers;
                     string result, theType, comments;
                     foreach (child; p.children)
                     {
@@ -523,7 +524,7 @@ string toD(const ref ParseTree p)
                 return parseTypeInquiry(p);
             case "EP.ComponentType":
                 assert(p.children.length == 1 && p.children[0].name == "EP.TypeDenoter");
-                /* TODO */
+                return parseToCode(p.children[0]); /* TODO */
             case "EP.CompoundStatement":
                 return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
