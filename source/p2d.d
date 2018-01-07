@@ -482,7 +482,8 @@ string toD(const ref ParseTree p)
                         result ~= parseMainProgramBlock(child);
                         break;
                     case "EP.StatementPart":
-                        result ~= "int main(string[] args)\n" ~ parseChildren(child);
+                        // TODO check whether the return type should be void or int, depending on invocations of "return".
+                        result ~= "void main(string[] args)\n" ~ parseChildren(child);
                         break;
                     default:
                         result ~= parseToCode(child);
@@ -515,8 +516,7 @@ string toD(const ref ParseTree p)
                 return parseMainProgramBlock(p);
             case "EP.BNVProgramName":
                 programName = contents(p);
-                writeln("LOG: detected program name: ", programName);
-                return "";
+                return "// Program name: " ~ programName ~ "\n";
             case "EP.ProgramParameterList":
                 imports.insert("std.stdio");
                 return "";

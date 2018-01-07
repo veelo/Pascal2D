@@ -18,3 +18,4 @@ source/._.DS_Store
 .DS_Store
 source/.DS_Store
 epcompat/pascal2d_epcompat.lib
+examples/hello/source/hello.d

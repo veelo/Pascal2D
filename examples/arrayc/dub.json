@@ -1,0 +1,9 @@
+{
+	"name": "arrayc",
+	"description": "Transcompilation of arrayc.pas.",
+	"authors": [
+		"Bastiaan N. Veelo"
+	],
+	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
+	"license": "boost"
+}

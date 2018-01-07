@@ -11,7 +11,8 @@
 		"pascal2d:epcompat": "*"
 	},
 	"subPackages": [
-		"./epcompat"
+		"./epcompat",
+		"./examples/hello"
 	],
 	"excludedSourceFiles": [
 		"source/epgrammar.d",
@@ -19,6 +20,6 @@
 		"source/make.d"
 	],
 	"preGenerateCommands": [
-		"cd ./source && rdmd make.d $PEGGED_PACKAGE_DIR"
+		"cd $PACKAGE_DIR/source && rdmd make.d $PEGGED_PACKAGE_DIR"
 	]
 }

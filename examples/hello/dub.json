@@ -1,0 +1,24 @@
+{
+	"name": "hello",
+	"description": "Transcompilation of hello world.",
+	"authors": [
+		"Bastiaan N. Veelo"
+	],
+	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
+	"license": "boost",
+	"targetType": "executable",
+	"dependencies": {
+		"pascal2d": {
+			"path": "../..",
+			"version": "*"
+		},
+		"pascal2d:epcompat": {
+			"path": "../..",
+			"version": "*"
+		}
+	},
+	"preGenerateCommands": [
+		"cd $PACKAGE_DIR/source && $PASCAL2D_PACKAGE_DIR/pascal2d hello.pas > hello.d"
+	]
+
+}
