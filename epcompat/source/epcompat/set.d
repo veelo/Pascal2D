@@ -489,25 +489,16 @@ unittest
     static assert(isOrdinalInterval!(typeof(aa)));
 }
 
-template arrayElementType(W : W[])
-{
-    alias arrayElementType = W;
-}
-
-unittest
-{
-    static assert (is(arrayElementType!(int[]) == int));
-}
-
 template areIntervalsCompatibleTo(U, V...)
 {
+    import std.range.primitives: ElementEncodingType;
     static if (V.length == 0)
     {
         enum areIntervalsCompatibleTo = true;
     }
     else static if (isOrdinalInterval!U)
     {
-        static if (areIntervalsCompatibleTo!(arrayElementType!U, V))
+        static if (areIntervalsCompatibleTo!(ElementEncodingType!U, V))
         {
             enum areIntervalsCompatibleTo = true;
         }
@@ -520,7 +511,7 @@ template areIntervalsCompatibleTo(U, V...)
     {
         static if (isOrdinalInterval!(V[0]))
         {
-            static if (is(arrayElementType!(V[0]) == U) && areIntervalsCompatibleTo!(U, V[1..$]))
+            static if (is(ElementEncodingType!(V[0]) == U) && areIntervalsCompatibleTo!(U, V[1..$]))
             {
                 enum areIntervalsCompatibleTo = true;
             }
