@@ -1,1 +1,27 @@
 language: d
+env:
+  global:
+    secure: SiUbtu53naMWkShJ/2jVPPlQlrmH1mdjGYs35Isy3MbS8mO5olncv+uugvplghE8APic/ZSs/8L86FjpIbvHFFMWH1Rs1lcLcg8dL3BuCQfgnEzn/UE5y2q3iHsEE6BPazZVPhHNcC632en5SBaAj7dZtrNSNlzAe8nPfqz/phUnbshGmw21FJzMoSP6GmyWZmN0MaPtvxfk7YAaliqaxZWUW2FpyGqlSr4Unuo7ADrJUTC2amwF1Y2W3L8z0K+hQ4OkzAN2vPO4pbxHzwG5CawX87e7vNvR1Pd4TsRdPTV8fZ7dlc4cjGPlKYwtmsOQLwNjBu52g5avDELEvVa6P4RchgfoSbQh8fiBUUNieTVVrhP4weobtBuR9eEsZ5dnZ69ks+0srr6jxSKNpsPA7+IUT0NgVgV7eojqGykextToelAqrBtUBY27T+9mmmpWU8a/rDE2t8H//yQWSFno80HVOQH0ne5oHSjqeunXXyDYYy8KvukVFz/TD1ksbuLow7+pI17WDLKhBRzH+Syg0NY+B2iiGva8b7BkPCMsM6uN3f4wA1FbN0kqQeH8cqtQGT7bEKOLs5SiMxi2BQ7OXQsaipwqp4MhpAcAQsCf9suEGt8NOS+Q5H+fdmo/K6EpQWldrbyX8XLZlfpttP3QQGjYHKbV4zDao2iqRVhs5EU=
+
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+# Blacklist
+branches:
+  only:
+    - master
+
+# Build steps
+script:
+#  - dub test --compiler=${DC}  # Default: run unittests
+  - dub build -b ddox
+
+# Deploy using travis builtin GitHub Pages support
+deploy:
+  provider: pages
+  skip_cleanup: true
+  #local_dir: $TRAVIS_BUILD_DIR/docs/html
+  local_dir: $TRAVIS_BUILD_DIR
+  github_token: $GITHUB_API_KEY
+  on:
+    branch: master
