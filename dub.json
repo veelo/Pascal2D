@@ -21,5 +21,18 @@
 	],
 	"preGenerateCommands": [
 		"cd $PACKAGE_DIR/source && rdmd make.d $PEGGED_PACKAGE_DIR"
+	],
+	"configurations": [
+		{
+			"COMMENT": "dub build --config=\"ddox\" -b ddox",
+			"name": "ddox",
+			"sourcePaths": [
+				"epcompat/source/epcompat"
+			],
+			"COMMENT": "Because of https://issues.dlang.org/show_bug.cgi?id=18211",
+			"excludedSourceFiles": [
+				"epcompat/source/epcompat/enumeration.d"
+			]
+		}
 	]
 }

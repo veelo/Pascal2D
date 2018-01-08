@@ -14,8 +14,7 @@ branches:
 # Build steps
 script:
 #  - dub test --compiler=${DC}  # Default: run unittests
-#  - dub build -b ddox
-   - dub
+   - dub build --config="ddox" -b ddox
 
 # Deploy using travis builtin GitHub Pages support
 deploy:
