@@ -34,5 +34,10 @@
 				"epcompat/source/epcompat/enumeration.d"
 			]
 		}
-	]
+	],
+	"-ddoxFilterArgs": [
+		"--unittest-examples",
+		"--min-protection=Protected"
+	],
+	"-ddoxTool": "scod"
 }
