@@ -14,6 +14,6 @@ deploy:
   provider: pages
   skip_cleanup: true
   local_dir: "$TRAVIS_BUILD_DIR/docs"
-  github_token: "$GITHUB_API_KEY"
+  github_token: "$GH_REPO_TOKEN"
   on:
     branch: master
