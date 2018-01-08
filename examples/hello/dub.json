@@ -20,5 +20,4 @@
 	"preGenerateCommands": [
 		"cd $PACKAGE_DIR/source && $PASCAL2D_PACKAGE_DIR/pascal2d hello.pas > hello.d"
 	]
-
 }
