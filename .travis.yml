@@ -15,7 +15,6 @@ addons:
   apt:
     packages:
       - libevent-dev
-      - libssl-dev
 
 # Build steps
 script:
