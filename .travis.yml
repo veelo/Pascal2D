@@ -11,6 +11,12 @@ branches:
   only:
     - master
 
+addons:
+  apt:
+    packages:
+      - libevent-dev
+      - libssl-dev
+
 # Build steps
 script:
 #  - dub test --compiler=${DC}  # Default: run unittests
