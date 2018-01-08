@@ -1,32 +1,22 @@
 language: d
 env:
   global:
-    secure: kUbY0hMEoTmFCIZ/EUdaIEQ9BAc7EQr/KgKT99AQGY7IGF1o/h6hu/HqL2lMrG5l4AmojOf4f0TJg8fFVLOZpF9L2YuAZbOuEZibX93GEkvSEjK+dnPXZ5fc7e3kvlZdvbyV7EzKhjUqrLctK+D5P9nIxadJKq3Q30E+oZv2APLITD6eo/ViW0GvRBFvwcmwQF6aOvk+JaaX15r/PB3Fbfl8Ozvy/AWM/e4emwW9nWJAc4sIo0XzBGNgZjoyq/AFoyQ8F8+EZGsxu3e3l54DiX/6nBFBFDJ+rsQwKLCW0ktdPz1mJJJwHI+onqdfEhbaLwtZNIPxEARYwAhSNkFeZWFVbqo0nnrwR4/BhBWmlERwCcnsR5ADjBFj9XMsP8emE8u1vuAkjWSMCjtKGLQr26HsR5Wf5Rithh2C+3gr0Q9nyMNpXmLqcKeMz7tEBn/LTTVsNRAtFmPhhXUWdTIrYnaR2/CNBgqJwYK8uI3t+cwgLWuOE5x38MsRfQqCOGnIRk/vl7TH9cPmvCJWjyZ0w9objoHQIPmr4qp7aFnIXkCDea/pezD+DTYjT4eLXnUfe5mek6pp97SiIGj9qL1PhajxozI0zUY6ySSCbUNi2RcheDew0x6uFIf2LuI4mDeftGh9NvPuB0MXX4Pcj4ggg4frg3Awlf9qObenvTWA2ow=
-
-# This will run on Travis' 'new' container-based infrastructure
+  - secure: SMezbmVmN99lR6j3W8YUMs5KhqlzMPZ82OYh/jLNj3L3Fj3FMNwd4dRAArBcOD0Gna0ALL4cKicWk3LL+ypWOJGys+0zjgwvkVTsBm023gmtvk8/pKnjDhHJBGMWtw5AbbMAGv1jaff5XgBqK8AjrtFZjZcOL0klnvsncE5nvRYuw3DXdaX6qAv5FDFaIjK9mbqShGoHcTmHXz9gKh2riOrTB1gkhpLrh6z20+q87vru46DH9y2TFyb+5jFY76s1mOv0fZ9ygZW2fyHY55A9Zu33LxIPHRfamadOvZpeRLtuhzVb67qXYmJqwPKjU73zHn99ar9iRaIaYFRsQQoI+idgH++kGifWLP53hkyEJdujUIT0YB3DFaY/0ePUHN/e5Ox0xsOhSwzk7ErNoPoSkHHAkULEbJgxTLNCjV/P8Pdx9/b87tR7IsSXZMO7gia3sQ6pw8b6NoTQ8RUz2navQksNHgk5vTlX+XMfeMU0d7GmaWBPe6K2qmkgiDj3FCDrhqrDJN2OzQuhQ02B5yc/ZiHa0cnAdbdjQmHKGu47ypDy51XSqD3qnunhtY2xzfI2Qp6OY1j4i1GDLf4PVR9UBZr11uKh3fLY8KPbZ1q7LXo9E3l+LbqYvJ56wJrN+3bwq9cebg2C+Gsuc0n+1rlFF1VDl/XmQavOHB40QxdhIBw=
 sudo: false
-
-# Blacklist
 branches:
   only:
-    - master
-
+  - master
 addons:
   apt:
     packages:
-      - libevent-dev
-      - libssl-dev
-
-# Build steps
+    - libevent-dev
+    - libssl-dev
 script:
-#  - dub test --compiler=${DC}  # Default: run unittests
-   - dub build --config="ddox" -b ddox
-
-# Deploy using travis builtin GitHub Pages support
+- dub build --config="ddox" -b ddox
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: $TRAVIS_BUILD_DIR/docs
-  github_token: $GITHUB_API_KEY
+  local_dir: "$TRAVIS_BUILD_DIR/docs"
+  github_token: "$GITHUB_API_KEY"
   on:
     branch: master
