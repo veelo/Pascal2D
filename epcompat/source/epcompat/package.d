@@ -18,7 +18,7 @@ $(TABLE
     $(TR $(TD $(LINK2 epcompat/initial, initial)) $(TD
         Changes `.init` to a custom default value.
     ))
-    $(TR $(TD $(LINK2 epcompat/ordinal ordinal)) $(TD
+    $(TR $(TD $(LINK2 epcompat/ordinal, ordinal)) $(TD
         An integral type with specific inclusive bounds.
     ))
     $(TR $(TD $(LINK2 epcompat/set, set)) $(TD
