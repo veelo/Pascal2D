@@ -8,7 +8,7 @@ supplied as a dub sub package so it supports that use case.
 $(TABLE,
     $(TR $(TH Module) $(TH Purpose))
 
-    $(TR $(TD $(LINK2 epcompat/array array)) $(TD
+    $(TR $(TD $(LINK2 epcompat/array, array)) $(TD
         Fixed length array types that can start at any index.
     ))
     $(TR $(TD enumeration) $(TD
