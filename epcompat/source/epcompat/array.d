@@ -5,20 +5,21 @@ module epcompat.array;
 
 
 /**
-    A fixed-length array with an index that runs from $(D_PARAM first) to
-    $(D_PARAM last) inclusive. The bounds are supplied at compile-time.
+A fixed-length array on type T with an index that runs from $(D_PARAM first) to
+$(D_PARAM last) inclusive. The bounds are supplied at compile-time.
  */
+
 align(1):
 struct Array(T, ptrdiff_t first, ptrdiff_t last) {
   align(1):
-    T[last - first + 1] _payload;
+    private T[last - first + 1] _payload;
 
     alias _payload this;
 
     /**
         Indexing operators yield or modify the value at a specified $(D_PARAM index).
 
-        Precondition: $(D first <= index <= last)
+        Precondition: `first <= index <= last`
 
         Complexity: $(BIGOH 1)
     */
@@ -64,13 +65,17 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
         return result;
     }
 
-    // Write to binary file.
+    /**
+    Write to binary file with `File` descriptor f.
+    */
     import std.stdio;
     void toFile(File f)
     {
         f.rawWrite(_payload);
     }
-    // Write to binary file.
+    /**
+    Write to binary file with file name fileName.
+    */
     void toFile(string fileName)
     {
         auto f = File(fileName, "wb");
