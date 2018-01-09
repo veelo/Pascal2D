@@ -5,8 +5,9 @@ module epcompat.array;
 
 
 /**
-A fixed-length array on type T with an index that runs from $(D_PARAM first) to
-$(D_PARAM last) inclusive. The bounds are supplied at compile-time.
+A fixed-length array on type $(D_PARAM T) with an index that runs from
+$(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are supplied at
+compile-time.
  */
 
 align(1):
@@ -23,6 +24,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
 
         Complexity: $(BIGOH 1)
     */
+
     // Support e = arr[5];
     ref inout(T) opIndex(ptrdiff_t index) inout {
         assert(index >= first);
@@ -30,6 +32,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
         return _payload[index - first];
     }
 
+    /// ditto
     // Support arr[5] = e;
     void opIndexAssign(U : T)(auto ref U value, ptrdiff_t index) {
         assert(index >= first);
@@ -37,6 +40,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
         _payload[index - first] = value;
     }
 
+    /// ditto
     // Support foreach(e; arr).
     int opApply(scope int delegate(ref T) dg)
     {
@@ -51,6 +55,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
         return result;
     }
 
+    /// ditto
     // Support foreach(i, e; arr).
     int opApply(scope int delegate(ptrdiff_t index, ref T) dg)
     {
@@ -65,17 +70,15 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
         return result;
     }
 
-    /**
-    Write to binary file with `File` descriptor f.
-    */
     import std.stdio;
+    /**
+    Write to binary file.
+    */
     void toFile(File f)
     {
         f.rawWrite(_payload);
     }
-    /**
-    Write to binary file with file name fileName.
-    */
+    /// ditto
     void toFile(string fileName)
     {
         auto f = File(fileName, "wb");
@@ -85,6 +88,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
     }
 }
 
+///
 unittest {
     Array!(int, -10, 10) arr;
     assert(arr.length == 21);
@@ -111,19 +115,25 @@ unittest {
 
 
 /**
-    A fixed-length array with an index that runs from $(D_PARAM first) to
-    $(D_PARAM last) inclusive. The bounds are supplied at run-time.
+A fixed-length array on type $(D_PARAM T) with an index that runs from
+$(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are supplied at
+run-time.
  */
 align(1):
 struct RTArray(T) {
   align(1):
+private:
     immutable ptrdiff_t first;
     immutable ptrdiff_t last;
     T[] _payload;
+public:
 
     alias _payload this;
 
     @disable this();    // No default constructor;
+    /**
+    Construct an RTArray from first to last inclusive.
+    */
     this(ptrdiff_t first, ptrdiff_t last)
     {
         this.first = first;
@@ -209,7 +219,7 @@ struct RTArray(T) {
     }
 }
 
-
+///
 unittest {
     auto arr = RTArray!int(-10, 10);
     assert(arr.length == 21);
@@ -235,7 +245,7 @@ unittest {
     assert(arr[5]   == 15);
 }
 
-
+///
 unittest {  // schema array toFile/fromFile
     // type s(low,high:integer) = array[low..high] of integer;
     struct s
