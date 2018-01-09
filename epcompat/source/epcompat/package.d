@@ -5,31 +5,31 @@ This is the library that translated Pascal sources rely on. It also provides
 features that can be of value in hand-written D code. The epcompat library is
 supplied as a dub sub package so it supports that use case.
 
-$(TABLE,
+$(TABLE
     $(TR $(TH Module) $(TH Purpose))
 
     $(TR $(TD $(LINK2 epcompat/array, array)) $(TD
         Fixed length array types that can start at any index.
     ))
-    $(TR $(TD enumeration) $(TD
+    $(TR $(TD $(LINK2 epcompat/enumeration, enumeration)) $(TD
         Brings the members of an enumeration into scope, as if the following
         code would be in a `with` block.
     ))
-    $(TR $(TD initial) $(TD
+    $(TR $(TD $(LINK2 epcompat/initial, initial)) $(TD
         Changes `.init` to a custom default value.
     ))
-    $(TR $(TD ordinal) $(TD
+    $(TR $(TD $(LINK2 epcompat/ordinal ordinal)) $(TD
         An integral type with specific inclusive bounds.
     ))
-    $(TR $(TD set) $(TD
+    $(TR $(TD $(LINK2 epcompat/set, set)) $(TD
         Sets of integral values, ordinal values or members of enumerations.
     ))
-    $(TR $(TD string) $(TD
+    $(TR $(TD $(LINK2 epcompat/string, string)) $(TD
         String types that are compatible with native D `string`, and binary
         compatible with Prospero Extended Pascal strings in file i/o. 
     ))
 )
- */
+*/
 
 module epcompat;
 
