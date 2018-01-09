@@ -3,12 +3,12 @@ Provides type compatibility with, and comparable features to Extended Pascal.
 
 This is the library that translated Pascal sources rely on. It also provides
 features that can be of value in hand-written D code. The epcompat library is
-supplied as a dub subpackage so it supports that use case.
+supplied as a dub sub package so it supports that use case.
 
 $(TABLE,
     $(TR $(TH Module) $(TH Purpose))
 
-    $(TR $(TD array) $TD(
+    $(TR $(TD $(LINK2 epcompat/array array)) $(TD
         Fixed length array types that can start at any index.
     ))
     $(TR $(TD enumeration) $(TD
