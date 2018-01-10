@@ -5,5 +5,27 @@
 	],
 	"description": "Extended Pascal compatibility.",
     "copyright": "Copyright © 2017, SARC B.V.",
-	"license": "boost"
+	"license": "boost",
+	"configurations": [
+		{
+			"name": "library"
+		},
+		{
+			"name": "unittest"
+		},
+		{
+			"COMMENT": "dub build --config=\"ddox\" -b ddox",
+			"name": "ddox",
+			"COMMENT": "Because of https://issues.dlang.org/show_bug.cgi?id=18211",
+			"excludedSourceFiles": [
+				"source/epcompat/enumeration.d"
+			],
+			"versions": ["ddox"]
+		}
+	],
+	"-ddoxFilterArgs": [
+		"--unittest-examples",
+		"--min-protection=Protected"
+	],
+	"-ddoxTool": "scod"
 }
