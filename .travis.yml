@@ -19,15 +19,15 @@ addons:
 # Build steps
 script:
    - dub test --compiler=${DC}
-   - cd epcompat && dub build --config="ddox" -b ddox
    # undefined identifier `__va_list_tag`:
    #- dub test pascal2d:epcompat --compiler=${DC}
+   - cd epcompat && dub build --config="ddox" -b ddox
 
 # Deploy using travis builtin GitHub Pages support
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: "$TRAVIS_BUILD_DIR/epcompat/docs"
+  #local_dir: "$TRAVIS_BUILD_DIR/epcompat/docs"
   github_token: "$GH_REPO_TOKEN"
   on:
     branch: master
