@@ -7,10 +7,6 @@
 	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
 	"license": "boost",
 	"targetType": "executable",
-	"dependencies": {
-		"pegged": "~>0.4.2",
-		"pascal2d:epcompat": "*"
-	},
 	"subPackages": [
 		"./epcompat",
 		"./examples/hello"
@@ -25,10 +21,18 @@
 	],
 	"configurations": [
 		{
-			"name": "application"
+			"name": "application",
+			"dependencies": {
+				"pegged": "~>0.4.2",
+				"pascal2d:epcompat": "*"
+			}
 		},
 		{
-			"name": "unittest"
+			"name": "unittest",
+			"dependencies": {
+				"pegged": "~>0.4.2",
+				"pascal2d:epcompat": "*"
+			}
 		},
 		{
 			"COMMENT": "dub build --config=\"ddox\" -b ddox",
@@ -39,7 +43,11 @@
 			"COMMENT": "Because of https://issues.dlang.org/show_bug.cgi?id=18211",
 			"excludedSourceFiles": [
 				"epcompat/source/epcompat/enumeration.d"
-			]
+			],
+			"versions": ["ddox"],
+			"dependencies": {
+				"pegged": "~>0.4.2"
+			}
 		}
 	],
 	"-ddoxFilterArgs": [
