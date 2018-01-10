@@ -8,16 +8,19 @@
 	"license": "boost",
 	"targetType": "executable",
 	"dependencies": {
-		"pascal2d": {
-			"path": "../..",
-			"version": "*"
-		},
 		"pascal2d:epcompat": {
 			"path": "../..",
 			"version": "*"
 		}
 	},
+	"configurations":  [
+		{
+			"name": "application",
+			"targetType": "executable"
+		}
+	],
 	"preGenerateCommands": [
-		"cd $PACKAGE_DIR/source && $PASCAL2D_PACKAGE_DIR/pascal2d hello.pas > hello.d"
+		"cd ../.. && dub build",
+		"cd $PACKAGE_DIR/source && $PACKAGE_DIR/../../pascal2d hello.pas > hello.d"
 	]
 }
