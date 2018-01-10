@@ -51,10 +51,7 @@ import std.stdio;
 // Program name: hello
 void main(string[] args)
 {
-
     writeln("Hello D's \"World\"!");
-
 }
-
 
 ```
