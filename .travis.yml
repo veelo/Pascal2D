@@ -18,7 +18,7 @@ addons:
 
 # Build steps
 script:
-#  - dub test --compiler=${DC}  # If you want to run unittests
+   - dub test --compiler=${DC}
    - dub build --config="ddox" -b ddox
 
 # Deploy using travis builtin GitHub Pages support

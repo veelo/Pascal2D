@@ -6,6 +6,7 @@
 	],
 	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
 	"license": "boost",
+	"targetType": "executable",
 	"dependencies": {
 		"pegged": "~>0.4.2",
 		"pascal2d:epcompat": "*"
@@ -23,6 +24,12 @@
 		"cd $PACKAGE_DIR/source && rdmd make.d $PEGGED_PACKAGE_DIR"
 	],
 	"configurations": [
+		{
+			"name": "application"
+		},
+		{
+			"name": "unittest"
+		},
 		{
 			"COMMENT": "dub build --config=\"ddox\" -b ddox",
 			"name": "ddox",
