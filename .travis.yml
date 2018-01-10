@@ -19,6 +19,7 @@ addons:
 # Build steps
 script:
    - dub test --compiler=${DC}
+   - dub test pascal2d:epcompat --compiler=${DC}
    - cd epcompat && dub build --config="ddox" -b ddox
 
 # Deploy using travis builtin GitHub Pages support
