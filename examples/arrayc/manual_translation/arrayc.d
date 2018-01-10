@@ -1,3 +1,5 @@
+// rdmd -I"..\..\..\epcompat\source" arrayc.d
+
 /*
 PROGRAM arrayc (output);
 
@@ -23,9 +25,11 @@ END.
 */
 
 import std.stdio;
+import epcompat;
 
 enum days {sun, man, tues, weds, thurs, fri, sat};
-alias sun = days.sun;
+mixin withEnum!days;
+
 alias dname = string; // Variable length instead of fixed.
 
 days d;
@@ -37,14 +41,9 @@ dname DayName(days fd)
     /*alias abbrevs = char
     [5 - 1][days];*/
     alias abbrevs = string[days];
-    immutable abbrevs DayNames = [sun: "Sun", days.man: "Man", days.tues: "Tues",
-                                  days.weds: "Weds", days.thurs: "Thurs", days.fri: "Fri",
-                                  days.sat: "Satur"];
-    /*with (days) {
-        immutable abbrevs DayNames = [sun: "Sun", man: "Man", tues: "Tues",
-                                      weds: "Weds", thurs: "Thurs", fri: "Fri",
-                                      sat: "Satur"];
-    }*/
+    immutable abbrevs DayNames = [sun: "Sun", man: "Man", tues: "Tues",
+                                  weds: "Weds", thurs: "Thurs", fri: "Fri",
+                                  sat: "Satur"];
     return DayNames[fd] ~ "day";
 }
 
