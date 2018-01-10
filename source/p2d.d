@@ -60,6 +60,8 @@ string toD(const ref ParseTree p)
         string parseDefaults(const ref ParseTree p)
         {
             import std.algorithm.searching;
+            import std.algorithm.iteration: filter;
+            import std.conv;
             switch(p.name)
             {
                 case "EP._", "EP.Comment":
@@ -73,7 +75,7 @@ string toD(const ref ParseTree p)
                     return "/*" ~ contentString ~ "*/"; // Ordinary comment.
                     // These translate verbally
                 case "EP.Spacing":
-                    return contents(p);
+                    return contents(p).filter!(a => a != '\r').to!string; // Remove '\r', is inserted depending on platform. 
                 case "fail":
                     writeln("PARSE ERROR: " ~ p.toString);
                     assert(0, "Parse unsuccessful");
