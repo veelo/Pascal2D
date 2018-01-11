@@ -36,6 +36,7 @@ module epcompat;
 public import epcompat.array;
 public import epcompat.string;
 public import epcompat.initial;
+public import epcompat.interval;
 public import epcompat.set;
 public import epcompat.ordinal;
 version(ddox) {} else // https://issues.dlang.org/show_bug.cgi?id=18211
