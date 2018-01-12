@@ -314,7 +314,7 @@ Nog een ander alternatief is gebruik van D slices:
 
 Hier wordt 1 element te veel gealloceerd, wat zou werken voor kleine positive offsets, maar je moet
 oppassen dat je b gebruikt voor indiceren en _b voor opslag. Bij inlezen is ook weer conversie
-nodig.
+nodig. Dit werkt niet voor negatieve offsets.
 
 Daarom is gekozen om het zelfde te doen als Prospero: elke index corrigeren, zonder dat dat in de
 code zichtbaar is.
