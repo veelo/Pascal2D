@@ -2,7 +2,7 @@ module epcompat.array;
 
 // Test with rdmd -m64 -main -unittest -debug -g source\epcompat\array.d
 
-
+// TODO multi-dimansional arrays. Need to support different types for different dimensions?
 
 /**
 A fixed-length array on type $(D_PARAM T) with an index that runs from
@@ -116,9 +116,9 @@ unittest {
 import epcompat.interval;
 
 /**
-A fixed-length array on type $(D_PARAM T) with an index that runs from
-$(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are supplied at
-run-time.
+A fixed-length array on type $(D_PARAM T) with an index of type $(D_PARAM I)
+that runs from $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are
+supplied at run-time.
  */
 align(1):
 struct RTArray(T, I = ptrdiff_t) {
@@ -126,9 +126,8 @@ struct RTArray(T, I = ptrdiff_t) {
 private:
     immutable I first;
     immutable I last;
-    T[] _payload;
 public:
-
+    T[] _payload;
     alias _payload this;
 
     @disable this();    // No default constructor;
@@ -312,6 +311,7 @@ unittest
     arr2['b'] = 4;
     assert(arr2['b'] == 4);
 
+    // See also http://forum.dlang.org/post/akibggljgcmmacsbahmm@forum.dlang.org
     import epcompat.enumeration;
     enum E {One, Two, Three, Four}
     mixin withEnum!E;
