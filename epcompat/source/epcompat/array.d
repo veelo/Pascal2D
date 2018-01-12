@@ -113,6 +113,7 @@ unittest {
 }
 
 
+import epcompat.interval;
 
 /**
 A fixed-length array on type $(D_PARAM T) with an index that runs from
@@ -120,11 +121,11 @@ $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are supplied at
 run-time.
  */
 align(1):
-struct RTArray(T) {
+struct RTArray(T, I = ptrdiff_t) {
   align(1):
 private:
-    immutable ptrdiff_t first;
-    immutable ptrdiff_t last;
+    immutable I first;
+    immutable I last;
     T[] _payload;
 public:
 
@@ -134,10 +135,19 @@ public:
     /**
     Construct an RTArray from first to last inclusive.
     */
-    this(ptrdiff_t first, ptrdiff_t last)
+    this(I first, I last)
     {
         this.first = first;
         this.last = last;
+        _payload = new T[last - first + 1];
+    }
+    /**
+    Construct an RTArray on an interval i.
+    */
+    this(Interval!I i)
+    {
+        first = i.low;
+        last = i.high;
         _payload = new T[last - first + 1];
     }
 
@@ -149,14 +159,14 @@ public:
         Complexity: $(BIGOH 1)
     */
     // Support e = arr[5];
-    ref inout(T) opIndex(ptrdiff_t index) inout {
+    ref inout(T) opIndex(I index) inout {
         assert(index >= first);
         assert(index <= last);
         return _payload[index - first];
     }
 
     // Support arr[5] = e;
-    void opIndexAssign(U : T)(auto ref U value, ptrdiff_t index) {
+    void opIndexAssign(U : T)(auto ref U value, I index) {
         assert(index >= first);
         assert(index <= last);
         _payload[index - first] = value;
@@ -177,13 +187,14 @@ public:
     }
 
     // Support foreach(i, e; arr).
-    int opApply(scope int delegate(ptrdiff_t index, ref T) dg)
+    int opApply(scope int delegate(I index, ref T) dg)
     {
+        import std.conv;
         int result = 0;
 
-        for (size_t i = 0; i < _payload.length; i++)
+        for (ptrdiff_t i = 0; i < _payload.length; i++)
         {
-            result = dg(i + first, _payload[i]);
+            result = dg(to!I(i + to!ptrdiff_t(first)), _payload[i]);
             if (result)
                 break;
         }
@@ -283,6 +294,35 @@ unittest {  // schema array toFile/fromFile
     t2.fromFile(tmp);
     assert(t2 == t1);
 }
+
+///
+unittest
+{
+    auto arr = RTArray!char(interval(5, 25));
+    assert(arr.length == 21);
+    arr[5] = 'a';
+    assert(arr[5] == 'a');
+    arr[25] = 'b';
+    assert(arr[25] == 'b');
+
+    auto arr2 = RTArray!(int, char)(interval('a', 'g'));
+    assert(arr2.length == 7);
+    arr2['a'] = 2;
+    assert(arr2['a'] == 2);
+    arr2['b'] = 4;
+    assert(arr2['b'] == 4);
+
+    import epcompat.enumeration;
+    enum E {One, Two, Three, Four}
+    mixin withEnum!E;
+    auto arr3 = RTArray!(int, E)(One, Four);
+    assert(arr3.length == 4);
+    arr3[Two] = 2;
+    assert(arr3[Two] == 2);
+    arr3[Four] = 4;
+    assert(arr3[Four] == 4);
+}
+ 
 
 
 /* Notitie aangaande alternatieve implementaties.
