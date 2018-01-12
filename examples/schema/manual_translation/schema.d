@@ -1,3 +1,5 @@
+// rdmd -I"..\..\..\epcompat\source" schema.d
+
 /*
 
 // http://www.gnu-pascal.de/gpc/Schema-Types.html
@@ -17,35 +19,22 @@ end.
 */
 
 import std.stdio;
+import epcompat;
 
-alias double Real;
-
-/+
-template RealArray(int discVal)
-{
-    immutable int n = discVal;
-    //Real[n + 1];
-}
-
-RealArray!(42) foo; // foo is an array of 42 Reals. // Error: RealArray!42 is used as a type
-
-void main()
-{
-    writeln(foo.n);
-}
-+/
+alias PositiveInteger = Ordinal!(1, int.max);
 
 struct RealArray
 {
-private:
-    Real payload[];
-public:
-    int n;
-    this(int discriminant)
+    @disable this();
+    this(int n)
     {
-        n = discriminant;
-        payload.length = n;
+        this.n = n;
+        _payload = RTArray!double(1, n);
     }
+    immutable int n;
+private:
+    RTArray!double _payload;
+    alias _payload this;
 }
 
 auto foo = RealArray(42);
@@ -53,11 +42,21 @@ auto foo = RealArray(42);
 void main()
 {
     writeln(foo.n);
+    foo[1] = 10;
+    writeln(foo[1]);
+
+    idiomatic;
 }
 
-/*
-template schema(SchemaName, alias DiscriminantValue)
+template RealArr(int n)
 {
-
+  alias RealArr = Array!(double, 1, n);
 }
-*/
+
+void idiomatic()
+{
+  RealArr!(42) bar;
+  writeln(bar.length);
+  bar[1] = 10;
+  writeln(bar[1]);
+}

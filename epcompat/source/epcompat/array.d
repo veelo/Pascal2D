@@ -13,7 +13,7 @@ compile-time.
 align(1):
 struct Array(T, ptrdiff_t first, ptrdiff_t last) {
   align(1):
-    private T[last - first + 1] _payload;
+    T[last - first + 1] _payload;   // Cannot be private.
 
     alias _payload this;
 
