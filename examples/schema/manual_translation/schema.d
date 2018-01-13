@@ -11,6 +11,7 @@ type
 
 var
   Foo: RealArray (42);
+  Bar: Matrix(10, 20);
 
 begin
   WriteLn (Foo.n)  { yields 42 }
