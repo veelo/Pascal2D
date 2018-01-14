@@ -12,11 +12,11 @@ struct StaticArray(T, E) if (is(E == enum))
     alias _payload this;
 
     /**
-        Indexing operators yield or modify the value at a specified $(D_PARAM index).
+    Indexing operators yield or modify the value at a specified $(D_PARAM index).
 
-        Precondition: `first <= index <= last`
+    Precondition: `first <= index <= last`
 
-        Complexity: $(BIGOH 1)
+    Complexity: $(BIGOH 1)
     */
 
     // Support e = arr[5];
@@ -88,12 +88,27 @@ unittest
     import epcompat.enumeration;
     enum E {One, Two, Three, Four}
     mixin withEnum!E;
-    StaticArray!(int, E) arr4;
-    assert(arr4.length == 4);
-    arr4[Two] = 2;
-    assert(arr4[Two] == 2);
-    arr4[Four] = 4;
-    assert(arr4[Four] == 4);
+    StaticArray!(int, E) arr1;
+    assert(arr1.length == 4);
+    arr1[Two] = 2;
+    assert(arr1[Two] == 2);
+    arr1[Four] = 4;
+    assert(arr1[Four] == 4);
+
+    StaticArray!(StaticArray!(int, E), -1, 1) arr2;
+    arr2[-1][One]   = 10;
+    arr2[ 0][Two]   = 20;
+    arr2[ 1][Three] = 30;
+    arr2[-1][Four]  = 40;
+    arr2[ 0][One]   = 50;
+    arr2[ 1][Four]  = 60;
+    assert(arr2[-1][One]   == 10);
+    assert(arr2[ 0][Two]   == 20);
+    assert(arr2[ 1][Three] == 30);
+    assert(arr2[-1][Four]  == 40);
+    assert(arr2[ 0][One]   == 50);
+    assert(arr2[ 1][Four]  == 60);
+    assert(!__traits(compiles, arr2[One][-1]));
 }
 
 
@@ -112,11 +127,11 @@ struct StaticArray(T, ptrdiff_t first, ptrdiff_t last)
     alias _payload this;
 
     /**
-        Indexing operators yield or modify the value at a specified $(D_PARAM index).
+    Indexing operators yield or modify the value at a specified $(D_PARAM index).
 
-        Precondition: `first <= index <= last`
+    Precondition: `first <= index <= last`
 
-        Complexity: $(BIGOH 1)
+    Complexity: $(BIGOH 1)
     */
 
     // Support e = arr[5];
@@ -246,11 +261,11 @@ public:
     }
 
     /**
-        Indexing operators yield or modify the value at a specified $(D_PARAM index).
+    Indexing operators yield or modify the value at a specified $(D_PARAM index).
 
-        Precondition: $(D first <= index <= last)
+    Precondition: $(D first <= index <= last)
 
-        Complexity: $(BIGOH 1)
+    Complexity: $(BIGOH 1)
     */
     // Support e = arr[5];
     ref inout(T) opIndex(I index) inout {
