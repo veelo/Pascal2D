@@ -11,7 +11,7 @@ compile-time.
  */
 
 align(1):
-struct Array(T, ptrdiff_t first, ptrdiff_t last) {
+struct StaticArray(T, ptrdiff_t first, ptrdiff_t last) {
   align(1):
     T[last - first + 1] _payload;   // Cannot be private.
 
@@ -90,7 +90,7 @@ struct Array(T, ptrdiff_t first, ptrdiff_t last) {
 
 ///
 unittest {
-    Array!(int, -10, 10) arr;
+    StaticArray!(int, -10, 10) arr;
     assert(arr.length == 21);
     assert(arr.sizeof == arr.length * int.sizeof);
 
@@ -121,7 +121,7 @@ that runs from $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are
 supplied at run-time.
  */
 align(1):
-struct RTArray(T, I = ptrdiff_t) {
+struct Array(T, I = ptrdiff_t) {
   align(1):
 private:
     immutable I first;
@@ -132,7 +132,7 @@ public:
 
     @disable this();    // No default constructor;
     /**
-    Construct an RTArray from first to last inclusive.
+    Construct an Array from first to last inclusive.
     */
     this(I first, I last)
     {
@@ -141,7 +141,7 @@ public:
         _payload = new T[last - first + 1];
     }
     /**
-    Construct an RTArray on an interval i.
+    Construct an Array on an interval i.
     */
     this(Interval!I i)
     {
@@ -231,7 +231,7 @@ public:
 
 ///
 unittest {
-    auto arr = RTArray!int(-10, 10);
+    auto arr = Array!int(-10, 10);
     assert(arr.length == 21);
     import std.stdio;
     // writeln("arr.length * int.sizeof = ", arr.length * int.sizeof);
@@ -265,11 +265,11 @@ unittest {  // schema array toFile/fromFile
         {
             this.low = low;
             this.high = high;
-            _payload = RTArray!int(low, high);
+            _payload = Array!int(low, high);
         }
         immutable int low, high;
       private:
-        RTArray!int _payload;
+        Array!int _payload;
         alias _payload this;
     }
 
@@ -297,14 +297,14 @@ unittest {  // schema array toFile/fromFile
 ///
 unittest
 {
-    auto arr = RTArray!char(interval(5, 25));
+    auto arr = Array!char(interval(5, 25));
     assert(arr.length == 21);
     arr[5] = 'a';
     assert(arr[5] == 'a');
     arr[25] = 'b';
     assert(arr[25] == 'b');
 
-    auto arr2 = RTArray!(int, char)(interval('a', 'g'));
+    auto arr2 = Array!(int, char)(interval('a', 'g'));
     assert(arr2.length == 7);
     arr2['a'] = 2;
     assert(arr2['a'] == 2);
@@ -315,7 +315,7 @@ unittest
     import epcompat.enumeration;
     enum E {One, Two, Three, Four}
     mixin withEnum!E;
-    auto arr3 = RTArray!(int, E)(One, Four);
+    auto arr3 = Array!(int, E)(One, Four);
     assert(arr3.length == 4);
     arr3[Two] = 2;
     assert(arr3[Two] == 2);

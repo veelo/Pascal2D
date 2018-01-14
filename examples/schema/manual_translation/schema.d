@@ -26,20 +26,20 @@ alias PositiveInteger = Ordinal!(1, int.max);
 
 struct RealArray
 {
-    RTArray!double _payload;
+    Array!double _payload;
     alias _payload this;
     immutable int n;
     @disable this();
     this(int n)
     {
         this.n = n;
-        _payload = RTArray!double(1, n);
+        _payload = Array!double(1, n);
     }
 }
 
 //struct Matrix
 //{
-//    RTArray!(RTArray!PositiveInteger) _payload;
+//    Array!(Array!PositiveInteger) _payload;
 //    alias _payload this;
 //    immutable PositiveInteger n, m;
 //    @disable this();
@@ -47,7 +47,7 @@ struct RealArray
 //    {
 //        this.n = n;
 //        this.m = m;
-//        _payload = RTArray!(RTArray!PositiveInteger(1, n), 1, m); // TODO Can't do multi-dimansional arrays yet.
+//        _payload = Array!(Array!PositiveInteger(1, n), 1, m); // TODO Can't do multi-dimansional arrays yet.
 //    }
 //}
 
