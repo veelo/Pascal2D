@@ -138,7 +138,7 @@ public:
     {
         this.first = first;
         this.last = last;
-        _payload = new T[last - first + 1];
+        _payload = new T[last - first + 1]; // ND: see https://dlang.org/library/std/array/uninitialized_array.html
     }
     /**
     Construct an Array on an interval i.
