@@ -11,7 +11,8 @@ compile-time.
  */
 
 align(1):
-struct StaticArray(T, ptrdiff_t first, ptrdiff_t last) {
+struct StaticArray(T, ptrdiff_t first, ptrdiff_t last)
+{
   align(1):
     T[last - first + 1] _payload;   // Cannot be private.
 
@@ -121,7 +122,8 @@ that runs from $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are
 supplied at run-time.
  */
 align(1):
-struct Array(T, I = ptrdiff_t) {
+struct Array(T, I = ptrdiff_t)
+{
   align(1):
 private:
     immutable I first;
