@@ -4,6 +4,99 @@ module epcompat.array;
 
 // TODO multi-dimansional arrays. Need to support different types for different dimensions?
 
+
+struct StaticArray(T, E) if (is(E == enum))
+{
+    T[E.max - E.min + 1] _payload;
+
+    alias _payload this;
+
+    /**
+        Indexing operators yield or modify the value at a specified $(D_PARAM index).
+
+        Precondition: `first <= index <= last`
+
+        Complexity: $(BIGOH 1)
+    */
+
+    // Support e = arr[5];
+    ref inout(T) opIndex(E index) inout {
+        assert(index >= E.min);
+        assert(index <= E.max);
+        return _payload[index - E.min];
+    }
+
+    /// ditto
+    // Support arr[5] = e;
+    void opIndexAssign(U : T)(auto ref U value, E index) {
+        assert(index >= E.min);
+        assert(index <= E.max);
+        _payload[index - E.min] = value;
+    }
+
+    /// ditto
+    // Support foreach(e; arr).
+    int opApply(scope int delegate(ref T) dg)
+    {
+        int result = 0;
+
+        for (int i = 0; i < _payload.length; i++)
+        {
+            result = dg(_payload[i]);
+            if (result)
+                break;
+        }
+        return result;
+    }
+
+    /// ditto
+    // Support foreach(i, e; arr).
+    int opApply(scope int delegate(E index, ref T) dg)
+    {
+        import std.conv;
+        int result = 0;
+
+        for (size_t i = 0; i < _payload.length; i++)
+        {
+            result = dg(to!E(i + to!ptrdiff_t(E.min)), _payload[i]);
+            if (result)
+                break;
+        }
+        return result;
+    }
+
+    import std.stdio;
+    /**
+    Write to binary file.
+    */
+    void toFile(File f)
+    {
+        f.rawWrite(_payload);
+    }
+    /// ditto
+    void toFile(string fileName)
+    {
+        auto f = File(fileName, "wb");
+        f.lock;
+        toFile(f);
+        f.unlock;
+    }
+}
+
+unittest
+{
+    import epcompat.enumeration;
+    enum E {One, Two, Three, Four}
+    mixin withEnum!E;
+    StaticArray!(int, E) arr4;
+    assert(arr4.length == 4);
+    arr4[Two] = 2;
+    assert(arr4[Two] == 2);
+    arr4[Four] = 4;
+    assert(arr4[Four] == 4);
+}
+
+
 /**
 A fixed-length array on type $(D_PARAM T) with an index that runs from
 $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are supplied at
