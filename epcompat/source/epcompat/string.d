@@ -947,3 +947,12 @@ unittest    // Run-time capacity
     assert(ptr.length == 0);
     assert(sptr == "");
 }
+
+/**
+Returns a string with any whitespace trimmed from str.
+*/
+string trim(string str)
+{
+    import std.string;
+    return strip(fromStringz(str.ptr));
+}

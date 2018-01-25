@@ -36,15 +36,44 @@ days d;
 
 dname DayName(days fd)
 {
-    /*alias abbrevs = char[days][5 - 1];*/
-    /*alias abbrevs = string[];*/
-    /*alias abbrevs = char
-    [5 - 1][days];*/
+    /* Idiomatic D, using associate array.
     alias abbrevs = string[days];
     immutable abbrevs DayNames = [sun: "Sun", mon: "Mon", tues: "Tues",
                                   weds: "Weds", thurs: "Thurs", fri: "Fri",
                                   sat: "Satur"];
-    return DayNames[fd] ~ "day";
+    */
+    alias abbrevs = StaticArray!(StaticArray!(char, 1, 5), days);
+    // http://forum.dlang.org/post/wbxaefufzeytvjkjfpyv@forum.dlang.org
+    // https://dlang.org/phobos/std_exception.html#assumeUnique
+    immutable abbrevs DayNames = {
+      abbrevs ret;
+      foreach(i, ref e; ret)
+        final switch (i) {
+          case sun:
+            e = "Sun";
+            break;
+          case mon:
+            e = "Mon";
+            break;
+          case tues:
+            e = "Tues";
+            break;
+          case weds:
+            e = "Weds";
+            break;
+          case thurs:
+            e = "Thurs";
+            break;
+          case fri:
+            e = "Fri";
+            break;
+          case sat:
+            e = "Satur";
+            break;
+        }
+      return cast(immutable(abbrevs)) ret;
+    }();
+    return trim(DayNames[fd]) ~ "day";
 }
 
 void main()
