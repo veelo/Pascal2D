@@ -225,7 +225,7 @@ unittest {
 import epcompat.interval;
 
 /**
-A fixed-length array on type $(D_PARAM T) with an index of type $(D_PARAM I)
+A variable-length array on type $(D_PARAM T) with an index of type $(D_PARAM I)
 that runs from $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are
 supplied at run-time.
  */
@@ -234,30 +234,55 @@ struct Array(T, I = ptrdiff_t)
 {
   align(1):
 private:
-    immutable I first;
-    immutable I last;
+    I m_first;
+    I m_last;
 public:
     T[] _payload;
     alias _payload this;
+    @property I first() const {return m_first;}
+    @property I last() const {return m_last;}
+    /**
+    Sets new first index.
 
-    @disable this();    // No default constructor;
+    Existing values will move.
+    */
+    @property I first(I new_first) {
+        _payload.length = m_last - new_first + 1;
+        return m_first = new_first; 
+    }
+    /**
+    Resize to new last index.
+    */
+    @property I last(I new_last) {
+        _payload.length = new_last - m_first + 1;
+        return m_last = new_last; 
+    }
+    /**
+    Resize to new first and last boundaries.
+
+    If the first index is changed, existing values will move.
+    */
+    void resize(I new_first, I new_last) {
+        // New elements are default initialized.
+        // To leave out initialisation see https://dlang.org/library/std/array/uninitialized_array.html
+        _payload.length = new_last - new_first + 1;
+        m_first = new_first;
+        m_last = new_last;
+    }
+
     /**
     Construct an Array from first to last inclusive.
     */
     this(I first, I last)
     {
-        this.first = first;
-        this.last = last;
-        _payload = new T[last - first + 1]; // ND: see https://dlang.org/library/std/array/uninitialized_array.html
+        resize(first, last);
     }
     /**
     Construct an Array on an interval i.
     */
     this(Interval!I i)
     {
-        first = i.low;
-        last = i.high;
-        _payload = new T[last - first + 1];
+        resize(i.low, i.high);
     }
 
     /**
