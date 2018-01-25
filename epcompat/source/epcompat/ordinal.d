@@ -19,7 +19,7 @@ struct Ordinal(alias lower, alias upper) if (isIntegral!(typeof(lower)) &&
 
     private mixin template implementation(T)
     {
-        private T _payload = init;
+        T _payload = init;
         static T init()
         {
             return lower;
