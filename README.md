@@ -57,4 +57,4 @@ void main(string[] args)
 ```
 
 ## Compatibility library *epcompat*
-Translated sources depend on the [epcompat sub package](tree/master/epcompat), which is a library that provides type compatibility with and implements features of Extended Pascal. Some of its modules can be of value in hand written D code as wel, the [*epcompat* API](https://veelo.github.io/Pascal2D/) is available online.
+Translated sources depend on the [epcompat sub package](https://github.com/veelo/Pascal2D/tree/master/epcompat), which is a library that provides type compatibility with and implements features of Extended Pascal. Some of its modules can be of value in hand written D code as wel, the [*epcompat* API](https://veelo.github.io/Pascal2D/) is available online.
