@@ -7,6 +7,10 @@
 	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
 	"license": "boost",
 	"dependencies": {
+		"pascal2d": {
+			"path": "../..",
+			"version": "*"
+		},
 		"pascal2d:epcompat": {
 			"path": "../..",
 			"version": "*"
