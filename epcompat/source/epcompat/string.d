@@ -448,6 +448,10 @@ void toFile(S)(S s, File f) if (is(S == struct))
         version (VerboseStdOut) { writeln(s); }
     }
     else
+        // FIXME handle anonimous unions https://forum.dlang.org/post/zwpctoccawmkwfoqkoyf@forum.dlang.org
+        // Currently, all overlapping members are written to file.
+        // http://192.168.36.202/SARCwiki/index.php/Fileformaat
+        // Best is to not support unions, detect them at compile time.
         foreach(field; FieldNameTuple!S)
         {
             version (VerboseStdOut) { write("toFile: ", __traits(identifier, S), ".", field, " "); }
@@ -699,6 +703,9 @@ void fromFile(S)(ref S s, File f) if (is(S == struct))
                 //version (VerboseStdOut) { writeln(__traits(identifier, __traits(getMember, s, field).fromFile(f))); }
                 __traits(getMember, s, field).fromFile(f);
             }
+            // FIXME https://forum.dlang.org/post/zwpctoccawmkwfoqkoyf@forum.dlang.org
+            // http://192.168.36.202/SARCwiki/index.php/Fileformaat
+            // Best is to not support unions, detect them at compile time.
 /*            else static if (is(typeof(__traits(getMember, s, field)) == union))
             {
                 static if (!hasIndirections!(typeof(field)))
