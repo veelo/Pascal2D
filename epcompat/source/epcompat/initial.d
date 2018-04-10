@@ -4,6 +4,10 @@ module epcompat.initial;
 
 /**
 Creates a type that is mostly $(PARAM T), only with a different initial value of $(PARAM val).
+
+It differs from https://dlang.org/library/std/typecons/typedef.html in that `typedef` takes care to
+create a new type that does not implicitly convert to the base type, whereas we try to stay
+compatible with the base type.
 */
 struct Initial(T, T val)
 {
