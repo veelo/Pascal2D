@@ -5,8 +5,6 @@ import p2d;
 void test(const string pascal)
 {
     auto parseTree = EP(pascal);
-    writeln("___________________________");
-    writeln(parseTree);
     writeln("PASCAL:");
     writeln(pascal);
     writeln("\nD:");

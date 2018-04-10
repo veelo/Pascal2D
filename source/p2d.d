@@ -5,6 +5,8 @@ import std.stdio;
 import epparser;
 import std.string: strip;
 import std.algorithm: equal;
+import std.uni : icmp;
+import std.ascii : newline;
 
 unittest // Extended Pascal comments
 {
@@ -163,17 +165,41 @@ string toD(const ref ParseTree p)
         // TypeDenoter is used in TypeDefinition, (array) ComponentType, RecordSection, SchemaDefinition, VariableDeclaration
         // The problem is that D does not have the simple type denoter from Pascal where everything is to the right of ':' or '='.
         // In D the /kind/ of type (enum, class, struct) comes first, then the identifier (unless anonymous), then the definition.
-        void readTypeDenoter(const ref ParseTree p, ref string type, ref string initialValue, ref string aliases, string typeDefName = "")
+        void readTypeDenoter(const ref ParseTree p, ref string type, ref string initialValue, ref string additional_statements, ref string annotation)
         in {
             assert(p.name == "EP.TypeDenoter");
         }
         body {
             foreach (child; p.children)
             {
-                if (child.name == "EP.InitialStateSpecifier")
-                    initialValue ~= parseToCode(child);
-                else
-                    type ~= parseToCode(child);
+                switch (child.name)
+                {
+                    case "EP.DiscriminatedSchema": {
+                        assert(child.children[0].name == "EP.SchemaName");
+                        auto schemaname = contents(child.children[0]);
+                        import std.algorithm.searching;
+                        auto c = countUntil!"a.name == b"(child.children, "EP.ActualDiscriminantPart");
+                        assert(c >= 0);
+                        assert(child.children[c].name == "EP.ActualDiscriminantPart");
+                        if (icmp(schemaname, "string") == 0) {
+                            annotation = "@EPString" ~ contents(child.children[c]);
+                            type = "string";
+                        }
+                        else if (icmp(schemaname, "shortstring") == 0) {
+                            annotation = "@EPShortString" ~ contents(child.children[c]);
+                            type = "string";
+                        }
+                        else
+                            type ~= parseToCode(child); // Other discriminated schema.
+                        break;
+                    }
+                    case "EP.InitialStateSpecifier":
+                        initialValue ~= parseToCode(child);
+                        break;
+                    default:
+                        type ~= parseToCode(child);
+                        break;
+                }
             }
         } // readTypeDenoter
 
@@ -240,7 +266,7 @@ string toD(const ref ParseTree p)
             } // parseTypeDefChild
 
             // Body parseTypeDefinition
-            string comments, type, initialValue, additional_statements;
+            string comments, type, initialValue, additional_statements, annotation;
             foreach (child; p.children)
             {
                 switch (child.name)
@@ -252,15 +278,16 @@ string toD(const ref ParseTree p)
                         comments ~= strip(parseDefaults(child)); // TODO
                         break;
                     case "EP.TypeDenoter":
-                        readTypeDenoter(child, type, initialValue, additional_statements);
+                        readTypeDenoter(child, type, initialValue /*TODO*/, additional_statements, annotation);
                         break;
                     default:
                         assert(0);
                 }
             }
 
-            string result = type;
-            return result ~ additional_statements;
+            if (annotation.length > 0) annotation ~= " ";
+            string result = annotation ~ "alias " ~ typeDefName ~ " = " ~ type ~ ";";
+            return result ~ additional_statements ~ newline;
         } // parseTypeDefinition
 
         // In parseToCode.
@@ -295,7 +322,7 @@ string toD(const ref ParseTree p)
             // subsequent uses, to convert from the case-insensitive Pascal to case-sensitive D.
 
             import std.range.primitives;
-            string comments, type, initialValue, additional_statements;
+            string comments, type, initialValue, additional_statements, annotation;
             string[] variables;
 
             foreach (child; p.children)
@@ -310,7 +337,7 @@ string toD(const ref ParseTree p)
                     comments ~= strip(parseDefaults(child)); /* TODO */
                     break;
                 case "EP.TypeDenoter":
-                    readTypeDenoter(child, type, initialValue, additional_statements /*TODO*/);
+                    readTypeDenoter(child, type, initialValue, additional_statements /*TODO*/, annotation /*TODO*/);
                     break;
                 default:
                     assert(0);
@@ -547,13 +574,8 @@ string toD(const ref ParseTree p)
                 return "(" ~ parseChildren(p) ~ ")";
             case "EP.DiscriminatedSchema":
                 {
-                    if (contents(p.children[0]) == "string")
-                        // Built in schema.
-                        return "immutable(char)[" ~ contents(p.children[1]) ~ "] /* Fixed-length, consider using \"string\" instead. */";
-                    else
-                    {
-                        assert(0, "generic " ~ p.name ~ " is unhandled.");
-                    }
+                    assert(icmp(contents(p.children[0]), "string") != 0, "string schema should have been handled in readTypeDenoter");
+                    assert(0, "generic " ~ p.name ~ " is unhandled.");
                 }
             case "EP.VariableDeclaration":
                 return parseVariableDeclaration(p);
