@@ -3,7 +3,8 @@ module p2d;
 import std.stdio;
 
 import epparser;
-import pegged.peg : equal, strip;
+import std.string: strip;
+import std.algorithm: equal;
 
 unittest // Extended Pascal comments
 {
