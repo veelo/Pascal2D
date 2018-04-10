@@ -20,7 +20,7 @@ complete coverage eventually or even support for other Pascal dialects.
 ## Getting started
 Given you have installed a [D compiler](https://dlang.org/download.html) and a [git client](https://git-scm.com/downloads/),
 clone the Pascal2D repository and do
-```
+```shell
 cd Pascal2D
 dub build
 ```
@@ -58,3 +58,9 @@ void main(string[] args)
 
 ## Compatibility library *epcompat*
 Translated sources depend on the [epcompat sub package](https://github.com/veelo/Pascal2D/tree/master/epcompat), which is a library that provides type compatibility with and implements features of Extended Pascal. Some of its modules can be of value in hand written D code as wel, the [*epcompat* API](https://veelo.github.io/Pascal2D/) is available online.
+
+## Running tests
+The following script will run unit tests, transcompile examples, run them and check their output to make sure they work as expected:
+```shell
+rdmd runtests.d
+```
