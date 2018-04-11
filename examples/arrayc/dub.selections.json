@@ -1,0 +1,7 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"pascal2d": {"path":"../.."},
+		"pegged": "0.4.3"
+	}
+}
