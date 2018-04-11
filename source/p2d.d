@@ -165,11 +165,13 @@ string toD(const ref ParseTree p)
         // TypeDenoter is used in TypeDefinition, (array) ComponentType, RecordSection, SchemaDefinition, VariableDeclaration
         // The problem is that D does not have the simple type denoter from Pascal where everything is to the right of ':' or '='.
         // In D the /kind/ of type (enum, class, struct) comes first, then the identifier (unless anonymous), then the definition.
-        void readTypeDenoter(const ref ParseTree p, ref string type, ref string initialValue, ref string additional_statements, ref string annotation)
+        enum TypeDenoterKind {Alias, Enum}
+        void readTypeDenoter(const ref ParseTree p, ref string type, ref string initialValue, ref string additional_statements, ref string annotation, ref TypeDenoterKind kind)
         in {
             assert(p.name == "EP.TypeDenoter");
         }
         body {
+            kind = TypeDenoterKind.Alias;
             foreach (child; p.children)
             {
                 switch (child.name)
@@ -182,10 +184,12 @@ string toD(const ref ParseTree p)
                         assert(c >= 0);
                         assert(child.children[c].name == "EP.ActualDiscriminantPart");
                         if (icmp(schemaname, "string") == 0) {
+                            imports.insert("epcompat");
                             annotation = "@EPString" ~ contents(child.children[c]);
                             type = "string";
                         }
                         else if (icmp(schemaname, "shortstring") == 0) {
+                            imports.insert("epcompat");
                             annotation = "@EPShortString" ~ contents(child.children[c]);
                             type = "string";
                         }
@@ -196,6 +200,45 @@ string toD(const ref ParseTree p)
                     case "EP.InitialStateSpecifier":
                         initialValue ~= parseToCode(child);
                         break;
+                    case "EP.NewType": {
+                        auto newTypeChild = child.children[0];
+                        switch (newTypeChild.name) {
+                            case "EP.NewOrdinalType": {
+                                auto newOrdinalChild = newTypeChild.children[0];
+                                final switch (newOrdinalChild.name) {
+                                    case "EP.EnumeratedType": {
+                                        kind = TypeDenoterKind.Enum;
+                                        type ~= "{";
+                                        foreach (enumChild; newOrdinalChild.children) {
+                                            final switch (enumChild.name) {
+                                                case "EP._":
+                                                    type ~= strip(parseDefaults(enumChild));
+                                                    break;
+                                                case "EP.IdentifierList": {
+                                                    foreach(i, ident; readIdentifierList(enumChild))
+                                                    {
+                                                        if (i > 0)
+                                                            type ~= ", ";
+                                                        type ~= ident.matches;
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        type ~= "}";
+                                        break;
+                                    }
+                                    case "EP.SubrangeType":
+                                        writeln(newOrdinalChild.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                                        break;
+                                }
+                                break;
+                            }
+                            default:
+                                writeln(newTypeChild.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                        }
+                        break;
+                    }
                     default:
                         type ~= parseToCode(child);
                         break;
@@ -267,6 +310,7 @@ string toD(const ref ParseTree p)
 
             // Body parseTypeDefinition
             string comments, type, initialValue, additional_statements, annotation;
+            TypeDenoterKind kind;
             foreach (child; p.children)
             {
                 switch (child.name)
@@ -278,16 +322,27 @@ string toD(const ref ParseTree p)
                         comments ~= strip(parseDefaults(child)); // TODO
                         break;
                     case "EP.TypeDenoter":
-                        readTypeDenoter(child, type, initialValue /*TODO*/, additional_statements, annotation);
+                        readTypeDenoter(child, type, initialValue /*TODO*/, additional_statements, annotation, kind);
                         break;
                     default:
                         assert(0);
                 }
             }
 
-            if (annotation.length > 0) annotation ~= " ";
-            string result = annotation ~ "alias " ~ typeDefName ~ " = " ~ type ~ ";";
-            return result ~ additional_statements ~ newline;
+            final switch (kind)
+            {
+                case TypeDenoterKind.Alias: {
+                    if (annotation.length > 0) annotation ~= " ";
+                    if (comments.length > 0) comments ~= " ";
+                    string result = annotation ~ "alias " ~ typeDefName ~ " = " ~ comments ~ type ~ ";";
+                    return result ~ additional_statements ~ newline;                    
+                }
+                case TypeDenoterKind.Enum: {
+                    imports.insert("epcompat");
+                    return "enum " ~ typeDefName ~ " " ~ type ~ ";" ~ newline ~
+                           "mixin withEnum!" ~ typeDefName ~ ";";
+                }
+            }
         } // parseTypeDefinition
 
         // In parseToCode.
@@ -324,6 +379,7 @@ string toD(const ref ParseTree p)
             import std.range.primitives;
             string comments, type, initialValue, additional_statements, annotation;
             string[] variables;
+            TypeDenoterKind kind;
 
             foreach (child; p.children)
             {
@@ -337,7 +393,7 @@ string toD(const ref ParseTree p)
                     comments ~= strip(parseDefaults(child)); /* TODO */
                     break;
                 case "EP.TypeDenoter":
-                    readTypeDenoter(child, type, initialValue, additional_statements /*TODO*/, annotation /*TODO*/);
+                    readTypeDenoter(child, type, initialValue, additional_statements /*TODO*/, annotation /*TODO*/, kind /*TODO*/);
                     break;
                 default:
                     assert(0);
