@@ -99,7 +99,7 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.IdentifierList");
         }
-        body {
+        do {
             Tuple!(string, "name", string, "matches")[] identifiers;
             string name, matches;
             foreach (child; p.children)
@@ -131,14 +131,14 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.TypeDenoter");
         }
-        body {
+        do {
             // In readTypeDenoter.
             // TODO nog ongebruikt.
             string parseArrayType(const ref ParseTree p)
             in {
                 assert(p.name == "EP.ArrayType");
             }
-            body {
+            do {
                 string lastIndex, result, component, comments;
                 //string[] indices;
 
@@ -317,7 +317,7 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.TypeDefinition");
         }
-        body {
+        do {
             string typeDefName;
 
             // Body parseTypeDefinition
@@ -362,7 +362,7 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.TypeInquiry");
         }
-        body {
+        do {
             string result;
             foreach(child; p.children)
             {
@@ -384,7 +384,7 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.VariableDeclaration");
         }
-        body {
+        do {
             // TODO We could keep a list of declared variables and correct any deviations of case in
             // subsequent uses, to convert from the case-insensitive Pascal to case-sensitive D.
 
@@ -427,18 +427,18 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.FormalParameterList");
         }
-        body {
+        do {
             bool first = true;
             string parseFormalParameterSection(const ref ParseTree p)
             in {
                 assert(p.name == "EP.FormalParameterSection");
             }
-            body {
+            do {
                 string parseValueParameterSpecification(const ref ParseTree p)
                 in {
                     assert(p.name == "EP.ValueParameterSpecification");
                 }
-                body {
+                do {
                     bool isConst = false;
                     Tuple!(string, "name", string, "matches")[] identifiers;
                     string result, theType, comments;
@@ -500,14 +500,14 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.FunctionDeclaration");
         }
-        body {
+        do {
             string result, name, resultVariable, resultType, block;
 
             string parseHeading(const ref ParseTree p)
             in {
                 assert(p.name == "EP.FunctionHeading");
             }
-            body {
+            do {
                 string comments, heading;
                 foreach(child; p.children[1..$])
                 {
@@ -571,7 +571,7 @@ string toD(const ref ParseTree p)
         in {
             assert(p.name == "EP.MainProgramBlock" || p.name == "EP.Block");
         }
-        body {
+        do {
             string result;
             foreach (child; p.children)
                 switch (child.name)
