@@ -88,8 +88,7 @@ string toD(const ref ParseTree p)
                         writeln("LOG: Found literal ", contents(p));
                         return "";
                     }
-                    //assert(0, p.name ~ " is unhandled:\n" ~ p.toString());
-                    writeln(p.name ~ " is unhandled.");
+                    writeln(p.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
                     return "";
             }
         } // parseDefaults
@@ -124,44 +123,6 @@ string toD(const ref ParseTree p)
         } // readIdentifierList
 
         // In parseToCode.
-        string parseArrayType(const ref ParseTree p)
-        in {
-            assert(p.name == "EP.ArrayType");
-        }
-        body {
-            string lastIndex, result, comments;
-            string[] indices;
-
-            foreach(child; p.children)
-            {
-                switch (child.name)
-                {
-                    case "EP.IndexType":
-                        lastIndex = contents(child);
-                        break;
-                    case "EP.COMMA":
-                        if (comments.length > 0) {
-                            lastIndex ~= " " ~ comments;
-                            comments = "";
-                        }
-                        indices ~= indices;
-                        lastIndex = "";
-                        break;
-                    case "EP.ComponentType":
-                        result ~= parseToCode(child);
-                        indices ~= lastIndex;
-                        foreach (index; indices)
-                            result ~= "[" ~ index ~ "]";
-                        result ~= comments;
-                        break;
-                    default:
-                        comments ~= strip(parseDefaults(child));
-                }
-            }
-            return result;
-        } // parseArrayType
-
-        // In parseToCode.
         // TypeDenoter is used in TypeDefinition, (array) ComponentType, RecordSection, SchemaDefinition, VariableDeclaration
         // The problem is that D does not have the simple type denoter from Pascal where everything is to the right of ':' or '='.
         // In D the /kind/ of type (enum, class, struct) comes first, then the identifier (unless anonymous), then the definition.
@@ -171,6 +132,91 @@ string toD(const ref ParseTree p)
             assert(p.name == "EP.TypeDenoter");
         }
         body {
+            // In readTypeDenoter.
+            // TODO nog ongebruikt.
+            string parseArrayType(const ref ParseTree p)
+            in {
+                assert(p.name == "EP.ArrayType");
+            }
+            body {
+                string lastIndex, result, component, comments;
+                //string[] indices;
+
+                string readIndexType(const ref ParseTree p)
+                in {
+                    assert(p.name == "EP.IndexType" ||
+                           p.name == "EP.OrdinalType" ||
+                           p.name == "EP.NewOrdinalType");
+                }
+                do {
+                    string result;
+                    foreach (child; p.children)
+                    {
+                        switch (child.name)
+                        {
+                            case "EP.OrdinalType", "EP.NewOrdinalType":
+                                return readIndexType(child);
+                            case "EP.SubrangeType": {
+                                short boundCount = 0;
+                                foreach (subrangeChild; child.children)
+                                {
+                                    final switch (subrangeChild.name)
+                                    {
+                                        case "EP._":
+                                            result ~= strip(parseDefaults(subrangeChild));
+                                            break;
+                                        case "EP.SubrangeBound":
+                                            if (boundCount++ > 0)
+                                                result ~= ", ";
+                                            result ~= parseToCode(subrangeChild);
+                                            break;
+                                    }
+                                }
+                                break;
+                            }
+                            default:
+                                result ~= parseToCode(child);
+                                break;
+                        }
+                    }
+                    return result;
+                }
+
+                foreach(child; p.children)
+                {
+                    final switch (child.name)
+                    {
+                        case "EP.IndexType":
+                            lastIndex = readIndexType(child);
+                            break;
+                        case "EP.COMMA":
+                            assert(0, "Multi-dimansional array needs work.");
+                            //if (comments.length > 0) {
+                            //    lastIndex ~= " " ~ comments;
+                            //    comments = "";
+                            //}
+                            //indices ~= indices;
+                            //lastIndex = "";
+                            //break;
+                        case "EP.ComponentType": {
+                            string ini, add, ann;
+                            TypeDenoterKind kind;
+                            assert(child.children[0].name == "EP.TypeDenoter");
+                            readTypeDenoter(child.children[0], component, ini, add, ann, kind);
+                            // We don't really know what to do with these yet, but we probably don't need to:
+                            assert(ini.length == 0);
+                            assert(add.length == 0);
+                            assert(ann.length == 0);
+                            break;
+                        }
+                        case "EP._":
+                            comments ~= strip(parseDefaults(child)); //TODO
+                    }
+                }
+                imports.insert("epcompat");
+                return "StaticArray!(" ~ component ~ ", " ~ lastIndex ~ ")";
+            } // parseArrayType
+
             kind = TypeDenoterKind.Alias;
             foreach (child; p.children)
             {
@@ -234,6 +280,26 @@ string toD(const ref ParseTree p)
                                 }
                                 break;
                             }
+                            case "EP.NewStructuredType": {
+                                foreach (newStructuredChild; newTypeChild.children)
+                                    final switch (newStructuredChild.name) {
+                                        case "EP._":
+                                            type ~= strip(parseDefaults(newStructuredChild));
+                                            break;
+                                        case "EP.UnpackedStructuredType": {
+                                            auto unpackedStructuredChild = newStructuredChild.children[0];
+                                            final switch (unpackedStructuredChild.name) {
+                                                case "EP.ArrayType":
+                                                    type ~= parseArrayType(unpackedStructuredChild);
+                                                    break;
+                                                case "EP.RecordType", "EP.SetType", "EP.FileType":
+                                                    writeln(unpackedStructuredChild.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                break;
+                            }
                             default:
                                 writeln(newTypeChild.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
                         }
@@ -253,60 +319,6 @@ string toD(const ref ParseTree p)
         }
         body {
             string typeDefName;
-            string aliases;
-
-            // In parseTypeDefinition
-            string parseEnumTypeChild(const ref ParseTree p)
-            {
-                switch(p.name)
-                {
-                    case "EP.IdentifierList":
-                        string result;
-                        foreach(i, ident; readIdentifierList(p))
-                        {
-                            if (i > 0)
-                                result ~= ",";
-                            result ~= ident.matches;
-                            assert(typeDefName.length > 0);
-                            aliases ~= "\nalias " ~ ident.name ~ " = " ~ typeDefName ~ "." ~ ident.name ~ ";\t// EPcompat: In D, enum values are prepended with their enum type.";
-                        }
-                        return result;
-                    default:
-                        return parseDefaults(p);
-                }
-            } // parseEnumTypeChild
-
-            /* TODO ongebruikt! */
-            // In parseTypeDefinition
-            string parseTypeDefChild(const ref ParseTree p)
-            {
-                import std.algorithm.searching;
-                switch(p.name)
-                {
-                    case "EP.TypeDenoter":
-                        assert(typeDefName.length > 0);
-                        if (p.children.canFind!("a.name == b")("EP.NewType"))
-                            return parseChildren(p, &parseTypeDefChild) ~ ";";
-                        return "alias " ~ typeDefName ~ " = " ~ parseChildren(p, &parseTypeDefChild) ~ ";";
-                    case "EP.NewType", "EP.NewOrdinalType", "EP.NewStructuredType",
-                         "EP.UnpackedStructuredType":
-                        return parseChildren(p, &parseTypeDefChild);
-                    case "EP.BNVTypeDefName":
-                        typeDefName = contents(p);
-                        return "";
-                    case "EP.EnumeratedType":
-                        assert(typeDefName.length > 0);
-                        return "enum " ~ typeDefName ~ " {" ~ parseChildren(p, &parseEnumTypeChild) ~ "}";
-                    case "EP.ArrayType":
-                        return parseArrayType(p);
-                    case "EP.DiscriminatedSchema":
-                        if (contents(p).startsWith("string"))
-                            return "string";
-                        goto default;
-                    default:
-                        return parseToCode(p);
-                }
-            } // parseTypeDefChild
 
             // Body parseTypeDefinition
             string comments, type, initialValue, additional_statements, annotation;
@@ -547,7 +559,7 @@ string toD(const ref ParseTree p)
                         result ~= parseDefaults(child);
                         break;
                     default:
-                        writeln(child.name ~ " is unhandled in parseFunctionDeclaration.");
+                        writeln(child.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
                 }
             }
 
@@ -596,7 +608,11 @@ string toD(const ref ParseTree p)
                  "EP.ProcedureAndFunctionDeclarationPart",
                  "EP.StatementPart",
                  "EP.TypeInquiryObject",
-                 "EP.VariableName":
+                 "EP.VariableName",
+                 "EP.SubrangeBound",
+                 "EP.OrdinalTypeName",
+                 "EP.UnsignedNumber",
+                 "EP.UnsignedInteger":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
                 return parseMainProgramBlock(p);
@@ -631,7 +647,8 @@ string toD(const ref ParseTree p)
             case "EP.DiscriminatedSchema":
                 {
                     assert(icmp(contents(p.children[0]), "string") != 0, "string schema should have been handled in readTypeDenoter");
-                    assert(0, "generic " ~ p.name ~ " is unhandled.");
+                    writeln("generic " ~ p.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                    return "";
                 }
             case "EP.VariableDeclaration":
                 return parseVariableDeclaration(p);
@@ -645,7 +662,8 @@ string toD(const ref ParseTree p)
                  "EP.Identifier",
                  "EP.ParameterIdentifier",
                  "EP.ImportedInterfaceIdentifier",
-                 "EP.DOT":
+                 "EP.DOT",
+                 "EP.DigitSequence":
                 return contents(p);
 
             // These are ignored
