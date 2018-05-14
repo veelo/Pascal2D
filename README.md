@@ -29,6 +29,8 @@ so:
 ```
 pascal2d example.pas > example.d
 ```
+Optionally, the syntax tree of the Pascal file can be produced in HTML format by passing the `--syntax_tree` or `-s` argument.
+
 
 ## Example
 In [examples/hello/source/hello.pas](examples/hello/source/hello.pas) you will find this Pascal source:
