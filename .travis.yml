@@ -18,6 +18,8 @@ addons:
 
 # Build steps
 script:
+   # Workaround https://github.com/dlang/dub/issues/1474
+   - dub generate sublimetext
    - dub test --compiler=${DC}
    # undefined identifier `__va_list_tag`:
    #- dub test pascal2d:epcompat --compiler=${DC}
