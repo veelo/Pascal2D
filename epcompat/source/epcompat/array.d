@@ -230,7 +230,7 @@ that runs from $(D_PARAM first) to $(D_PARAM last) inclusive. The bounds are
 supplied at run-time.
  */
 align(1):
-struct Array(T, I = ptrdiff_t)
+struct Array(T, I = int)
 {
   align(1):
 private:
