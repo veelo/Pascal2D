@@ -21,8 +21,7 @@ script:
    # Workaround https://github.com/dlang/dub/issues/1474
    - dub generate sublimetext
    - dub test --compiler=${DC}
-   # undefined identifier `__va_list_tag`:
-   #- dub test pascal2d:epcompat --compiler=${DC}
+   - dub test pascal2d:epcompat --compiler=${DC}
    - cd epcompat && dub build --config="ddox" -b ddox && cd ..
 
 # Deploy using travis builtin GitHub Pages support
