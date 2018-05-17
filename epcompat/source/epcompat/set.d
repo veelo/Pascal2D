@@ -246,7 +246,7 @@ of Sets implemented on an explicitly supplied base type.
 struct SetFactory(T)
 {
     @disable this();
-    static Transfer opSlice(size_t pos)(T start, T end)
+    static Transfer opSlice(int pos)(T start, T end)
     {
         return Transfer(start, end);
     }
