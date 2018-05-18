@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/veelo/Pascal2D.svg?branch=master)](https://travis-ci.org/veelo/Pascal2D)
+
 # Pascal2D
 _This is very much work in progress._
 
