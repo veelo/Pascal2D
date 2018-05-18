@@ -245,6 +245,7 @@ of Sets implemented on an explicitly supplied base type.
 */
 struct SetFactory(T)
 {
+    import core.stdc.stdarg; // Necessary on Posix.
     @disable this();
     static Transfer opSlice(size_t pos)(T start, T end)
     {
