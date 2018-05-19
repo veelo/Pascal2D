@@ -152,7 +152,7 @@ EP:
     BaseType            <- OrdinalType
 
 # 6.4.3.6 (complete)
-    FileType            <- :FILE _ ( "[" _? IndexType _? "]" _? )? :OF _ ComponentType
+    FileType            <- :FILE ( _? "[" _? IndexType _? "]" )? _ :OF _ ComponentType
 
 # 6.4.4 (complete)
     #PointerType         <- NewPointerType / PointerTypeName    # BNV Semantic only
@@ -180,7 +180,8 @@ EP:
     VariableDeclaration <- IdentifierList _? ":" _? TypeDenoter
     VariableIdentifier  <- Identifier
     VariableName        <- ( ImportedInterfaceIdentifier _? DOT _? )? VariableIdentifier
-    VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable
+    #VariableAccess      <- EntireVariable / ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable
+    VariableAccess      <- ComponentVariable / IdentifiedVariable / BufferVariable / SubstringVariable / FunctionIdentifiedVariable / EntireVariable # BNV moved EntireVariable last
 
 # 6.5.2 (complete)
     EntireVariable      <- VariableName
@@ -189,7 +190,7 @@ EP:
     ComponentVariable   <- IndexedVariable / FieldDesignator
 
 # 6.5.3.2 (complete)
-    IndexedVariable     <- (ArrayVariable _? "[" _? IndexExpression ( _? "," _? IndexExpression )* _? "]" ) / ( StringVariable _? "[" _? IndexExpression _? "]" )
+    IndexedVariable     <- (ArrayVariable _? ^"[" _? IndexExpression ( _? ^"," _? IndexExpression )* _? ^"]" ) / ( StringVariable _? ^"[" _? IndexExpression _? ^"]" )
     ArrayVariable       <- VariableAccess
     StringVariable      <- VariableAccess
     IndexExpression     <- Expression
@@ -374,7 +375,7 @@ EP:
     RecordConstant          <- ConstantAccess
 
 # 6.8.8.4 (complete)
-    SubstringConstant   <- StringConstant _. "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
+    SubstringConstant   <- StringConstant _? "[" _? IndexExpression _? ".." _? IndexExpression _? "]"
 
 # 6.9.1 (complete)
     Statement   <- ( Label _? ":" _? )? ( StructuredStatement / SimpleStatement )   # BNV Moved SimpleStatement last, so StructuredStatement is tried before EmptyStatement.
@@ -385,7 +386,7 @@ EP:
     EmptyStatement  <- eps
 
 # 6.9.2.2 (complete)
-    AssignmentStatement <- ( VariableAccess / FunctionIdentifier ) _? ":=" _? Expression
+    AssignmentStatement <- ( VariableAccess / FunctionIdentifier ) _? ^":=" _? Expression
 
 # 6.9.2.3 (complete) #BNV Extended for required procedures.
     ProcedureStatement  <-
@@ -435,7 +436,7 @@ EP:
     IterationClause <- SequenceIteration / SetMemberIteration
 
 # 6.9.3.9.2 (complete)
-    SequenceIteration   <- ":=" _? InitialValue _ ( "to"i / "downto"i ) _ FinalValue
+    SequenceIteration   <- ":=" _? InitialValue _ ( TO / DOWNTO ) _ FinalValue
     InitialValue        <- Expression
     FinalValue          <- Expression
 
@@ -545,6 +546,8 @@ EP:
     SET         <- "set"i
     FILE        <- "file"i
     PROTECTED   <- "protected"i
+    TO          <- "to"i
+    DOWNTO      <- "downto"i
 
 # Separators
     COMMA       <- ","

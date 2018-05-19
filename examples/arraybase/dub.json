@@ -1,0 +1,30 @@
+{
+	"name": "arraybase",
+	"description": "Transcompilation of arraybase.pas.",
+	"authors": [
+		"Bastiaan N. Veelo"
+	],
+	"copyright": "Copyright © 2018, Bastiaan N. Veelo, SARC B.V.",
+	"license": "boost",
+	"targetType": "executable",
+	"dependencies": {
+		"pascal2d": {
+			"path": "../..",
+			"version": "*"
+		},
+		"pascal2d:epcompat": {
+			"path": "../..",
+			"version": "*"
+		}
+	},
+	"configurations":  [
+		{
+			"name": "application",
+			"targetType": "executable"
+		}
+	],
+	"preGenerateCommands": [
+		"cd ../.. && dub build",
+		"cd $PACKAGE_DIR/source && $PACKAGE_DIR/../../pascal2d arraybase.pas > arraybase.d"
+	]
+}

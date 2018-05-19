@@ -3,7 +3,7 @@ module p2d;
 import std.stdio;
 
 import epparser;
-import std.string: strip;
+import std.string: strip, stripLeft;
 import std.algorithm: equal;
 import std.uni : icmp;
 import std.ascii : newline;
@@ -566,6 +566,68 @@ string toD(const ref ParseTree p)
             return result;
         }   // parseFunctionDeclaration
 
+        string parseForStatement(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.ForStatement");
+        }
+        do {
+            string result = "for ";
+            string variable;
+
+            string parseSequenceIteration(const ref ParseTree iteration)
+            {
+                string initial_val, final_val, comment;
+                bool increasing = true;
+                foreach (child; iteration.children)
+                    final switch (child.name)
+                    {
+                        case "EP.InitialValue":
+                            initial_val = parseToCode(child.children[0]);
+                            break;
+                        case "EP.TO":
+                            break;
+                        case "EP.DOWNTO":
+                            increasing = false;
+                            break;
+                        case "EP.FinalValue":
+                            final_val = parseToCode(child.children[0]);
+                            break;
+                        case "EP._":
+                            comment ~= stripLeft(parseDefaults(child));
+                            break;
+                    }
+                    return "(" ~ variable ~ " = " ~ initial_val ~ "; " ~
+                                 variable ~ (increasing ? " <= " : " >= ") ~ final_val ~ "; " ~
+                                 variable ~ (increasing ? "++" : "--") ~ ")" ~ comment;
+            }
+
+            foreach (child; p.children)
+                final switch (child.name)
+                {
+                    case "EP.ControlVariable":
+                        variable = contents(child);
+                        break;
+                    case "EP.IterationClause":
+                        final switch (child.children[0].name)
+                        {
+                            case "EP.SequenceIteration":
+                                result ~= parseSequenceIteration(child.children[0]);
+                                break;
+                            case "EP.SetMemberIteration":
+                                writeln(child.children[0].name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                                break;
+                        }
+                        break;
+                    case "EP.Statement":
+                        result ~= parseToCode(child);
+                        break;
+                    case "EP._":
+                        result ~= parseDefaults(child);
+                        break;
+                }
+            return result;
+        }
+
         // In parseToCode.
         string parseMainProgramBlock(const ref ParseTree p)
         in {
@@ -618,7 +680,22 @@ string toD(const ref ParseTree p)
                  "EP.RequiredConstantIdentifier",
                  "EP.UnsignedNumber",
                  "EP.UnsignedInteger",
-                 "EP.ConstantDefinitionPart":
+                 "EP.ConstantDefinitionPart",
+                 "EP.StructuredStatement",
+                 "EP.RepetitiveStatement",
+                 "EP.AssignmentStatement",
+                 "EP.VariableAccess",
+                 "EP.ComponentVariable",
+                 "EP.IndexedVariable",
+                 "EP.ArrayVariable",
+                 "EP.FieldDesignator",
+                 "EP.FieldDesignatorIdentifier",
+                 "EP.IndexExpression",
+                 "EP.FunctionAccess",
+                 "EP.EntireFunctionAccess",
+                 "EP.FunctionDesignator",
+                 "EP.FunctionName",
+                 "EP.FunctionIdentifier":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
                 return parseMainProgramBlock(p);
@@ -660,6 +737,10 @@ string toD(const ref ParseTree p)
                 return parseVariableDeclaration(p);
             case "EP.FunctionDeclaration":
                 return parseFunctionDeclaration(p);
+            case "EP.ForStatement":
+                return parseForStatement(p);
+            case "literal!(\":=\")":
+                return "=";
 
             // These translate verbally
             case "EP.ProcedureName",
@@ -668,7 +749,9 @@ string toD(const ref ParseTree p)
                  "EP.ParameterIdentifier",
                  "EP.ImportedInterfaceIdentifier",
                  "EP.DOT",
-                 "EP.DigitSequence":
+                 "EP.DigitSequence",
+                 "literal!(\"[\")",
+                 "literal!(\"]\")":
                 return contents(p);
 
             // These are ignored
