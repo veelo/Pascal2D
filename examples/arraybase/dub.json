@@ -25,6 +25,7 @@
 	],
 	"preGenerateCommands": [
 		"cd ../.. && dub build",
-		"cd $PACKAGE_DIR/source && $PACKAGE_DIR/../../pascal2d arraybase.pas > arraybase.d"
+		"cd $PACKAGE_DIR/source && $PACKAGE_DIR/../../pascal2d arraybase.pas > arraybase.d",
+		"dub run dfmt -- --inplace $PACKAGE_DIR/source/arraybase.d"
 	]
 }
