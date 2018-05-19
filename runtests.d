@@ -27,6 +27,17 @@ int main()
     writeln("=== runtests: completed \"dub test\"");
 
 
+    writeln("=== runtests: starting \"dub test pascal2d:epcompat\"");
+    pid = spawnProcess(["dub", "test", "pascal2d:epcompat"],
+                            std.stdio.stdin,
+                            std.stdio.stdout,
+                            std.stdio.stderr);
+    if (wait(pid) != 0) {
+        return 0;
+    }
+    writeln("=== runtests: completed \"dub test pascal2d:epcompat\"");
+
+
     writeln("=== runtests: testing example \"hello\"");
     pid = spawnProcess(["dub", "build"],
                         std.stdio.stdin,
