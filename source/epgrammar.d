@@ -80,7 +80,7 @@ EP:
 
 # 6.3.1 (complete)
     ConstantDefinition  <- Identifier _? "=" _? ConstantExpression
-    ConstantIdentifier  <- Identifier
+    ConstantIdentifier  <- RequiredConstantIdentifier / Identifier
     ConstantName        <- ( ImportedInterfaceIdentifier _? DOT _? )? ConstantIdentifier
 
 # 6.4.1 (complete)
@@ -94,7 +94,7 @@ EP:
     SetTypeName         <- TypeName
     FileTypeName        <- TypeName
     #PointerTypeName     <- TypeName    # BNV Semantic only
-    TypeIdentifier      <- Identifier
+    TypeIdentifier      <- RequiredTypeIdentifier / Identifier
     TypeName            <- ( ImportedInterfaceIdentifier _? DOT _? )? TypeIdentifier
 #BNV extensions
     BNVTypeDefName      <- Identifier
@@ -557,4 +557,21 @@ EP:
     WRITE       <- "write"i
     WRITELN     <- "writeln"i
     WRITESTR    <- "writestr"i
+
+# Required simple types and constant identifiers (6.4.2.2)
+    RequiredTypeIdentifier <- INTEGER / REAL / BOOLEAN / CHAR / COMPLEX
+    INTEGER     <- "integer"i
+    REAL        <- "real"i
+    BOOLEAN     <- "boolean"i
+    CHAR        <- "char"i
+    COMPLEX     <- "complex"i
+    RequiredConstantIdentifier <- MAXINT / MINREAL / MAXREAL / EPSREAL / FALSE / TRUE / MINCHAR / MAXCHAR
+    MAXINT      <- "maxint"i
+    MINREAL     <- "minreal"i
+    MAXREAL     <- "maxreal"i
+    EPSREAL     <- "epsreal"i
+    FALSE       <- "false"i
+    TRUE        <- "true"i
+    MINCHAR     <- "minchar"i
+    MAXCHAR     <- "maxchar"i
 `;

@@ -218,7 +218,7 @@ string toD(const ref ParseTree p)
             } // parseArrayType
 
             kind = TypeDenoterKind.Alias;
-            foreach (child; p.children)
+            foreach (child; p.children) // Children of TypeDenoter
             {
                 switch (child.name)
                 {
@@ -610,9 +610,15 @@ string toD(const ref ParseTree p)
                  "EP.TypeInquiryObject",
                  "EP.VariableName",
                  "EP.SubrangeBound",
+                 "EP.TypeName",
                  "EP.OrdinalTypeName",
+                 "EP.TypeIdentifier",
+                 "EP.RequiredTypeIdentifier",
+                 "EP.ConstantIdentifier",
+                 "EP.RequiredConstantIdentifier",
                  "EP.UnsignedNumber",
-                 "EP.UnsignedInteger":
+                 "EP.UnsignedInteger",
+                 "EP.ConstantDefinitionPart":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
                 return parseMainProgramBlock(p);
@@ -658,7 +664,6 @@ string toD(const ref ParseTree p)
             // These translate verbally
             case "EP.ProcedureName",
                  "EP.StringCharacter",
-                 "EP.TypeName",
                  "EP.Identifier",
                  "EP.ParameterIdentifier",
                  "EP.ImportedInterfaceIdentifier",
@@ -673,6 +678,25 @@ string toD(const ref ParseTree p)
             // Required procedures
             case "EP.WRITELN":
                 return "writeln";
+
+            // Required simple type identifiers
+            case "EP.INTEGER": return "int";
+            case "EP.REAL":    return "double";
+            case "EP.BOOLEAN": return "bool";
+            case "EP.CHAR":    return "char";
+            case "EP.COMPLEX": 
+                writeln(p.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
+                return "";
+
+            // Required constant identifiers
+            case "EP.MAXINT":  return "int.max";
+            case "EP.MINREAL": return "double.min_normal";
+            case "EP.MAXREAL": return "double.max";
+            case "EP.EPSREAL": return "double.epsilon";
+            case "EP.FALSE":   return "false";
+            case "EP.TRUE":    return "true";
+            case "EP.MINCHAR": return "char.min";
+            case "EP.MAXCHAR": return "char.max";
 
             default:
                 return parseDefaults(p);
