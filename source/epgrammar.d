@@ -124,7 +124,7 @@ EP:
     UnpackedStructuredType  <- ArrayType / RecordType / SetType / FileType
 
 # 6.4.3.2 (complete)
-    ArrayType           <- :ARRAY _ "[" _? IndexType ( _? COMMA _? IndexType )* _? "]" _ :OF _ ComponentType
+    ArrayType           <- :ARRAY _? "[" _? IndexType ( _? COMMA _? IndexType )* _? "]" _? :OF _ ComponentType
     IndexType           <- OrdinalType
     ComponentType       <- TypeDenoter
 
