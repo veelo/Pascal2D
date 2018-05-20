@@ -566,6 +566,7 @@ string toD(const ref ParseTree p)
             return result;
         }   // parseFunctionDeclaration
 
+        // In parseToCode.
         string parseForStatement(const ref ParseTree p)
         in {
             assert(p.name == "EP.ForStatement");
@@ -626,6 +627,61 @@ string toD(const ref ParseTree p)
                         break;
                 }
             return result;
+        } // parseForStatement
+
+        // In parseToCode.
+        string parseLocalSizeof(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.LocalSizeof");
+        }
+        do {
+            string comment, subject;
+            foreach (child; p.children)
+                final switch (child.name)
+                {
+                    case "EP._":
+                        comment ~= strip(parseDefaults(child));
+                        break;
+                    case "EP.VariableAccess",
+                         "EP.TypeName":
+                        subject = contents(child);
+                        break;
+                }
+            return subject ~ ".sizeof" ~ comment;
+        } // parseLocalSizeof
+
+        // In parseToCode.
+        string parseWriteParameter(const ref ParseTree p)
+        {
+            import std.string;
+            string[] expressions;
+            string comment;
+            foreach (child; p.children)
+                final switch (child.name)
+                {
+                    case "EP.Expression":
+                        expressions ~= parseToCode(child);
+                        break;
+                    case "EP._":
+                        comment ~= stripLeft(parseDefaults(child));
+                        break;
+                }
+            if (expressions.length == 1) {
+                bool numeric = expressions[0].isNumeric;
+                bool floating = numeric && expressions[0].indexOf('.') >= 0;
+                if (floating)   // default width for reals: 14
+                    return expressions[0] ~ ".format!\"%14g\"";
+                if (numeric)    // default width for integers: 6
+                    return expressions[0] ~ ".format!\"%6d\"";
+                return expressions[0];
+            }
+            if (expressions.length == 2) {
+                if (cmp(expressions[1], "1") == 0)
+                    return expressions[0];
+                return expressions[0] ~ ".format!\"%" ~ expressions[1] ~ "s\"";
+            }
+            assert(expressions.length == 3);
+            return expressions[0] ~ ".format!\"%" ~ expressions[1] ~ "." ~ expressions[2] ~ "g\"";
         }
 
         // In parseToCode.
@@ -663,7 +719,7 @@ string toD(const ref ParseTree p)
                  "EP.Program", "EP.ProgramBlock", "EP.Block", "EP.ProgramComponent",
                  "EP.MainProgramDeclaration", "EP.ProgramHeading",
                  "EP.StatementSequence", "EP.Statement", "EP.ProcedureStatement",
-                 "EP.WriteParameter",
+                 "EP.WritelnParameterList",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
                  "EP.TypeDefinitionPart", "EP.VariableDeclarationPart",
@@ -695,7 +751,10 @@ string toD(const ref ParseTree p)
                  "EP.EntireFunctionAccess",
                  "EP.FunctionDesignator",
                  "EP.FunctionName",
-                 "EP.FunctionIdentifier":
+                 "EP.FunctionIdentifier",
+                 "EP.ActualParameterList",
+                 "EP.ActualParameter",
+                 "EP.LocalFunctionAccess":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
                 return parseMainProgramBlock(p);
@@ -725,8 +784,8 @@ string toD(const ref ParseTree p)
                 return "\"" ~ escapeString(result) ~ "\"";
             case "EP.ApostropheImage":
                 return "'";
-            case "EP.WritelnParameterList":
-                return "(" ~ parseChildren(p) ~ ")";
+            case "EP.WriteParameter":
+                return parseWriteParameter(p);
             case "EP.DiscriminatedSchema":
                 {
                     assert(icmp(contents(p.children[0]), "string") != 0, "string schema should have been handled in readTypeDenoter");
@@ -741,6 +800,8 @@ string toD(const ref ParseTree p)
                 return parseForStatement(p);
             case "literal!(\":=\")":
                 return "=";
+            case "EP.LocalSizeof":
+                return parseLocalSizeof(p);
 
             // These translate verbally
             case "EP.ProcedureName",
@@ -750,6 +811,9 @@ string toD(const ref ParseTree p)
                  "EP.ImportedInterfaceIdentifier",
                  "EP.DOT",
                  "EP.DigitSequence",
+                 "literal!(\",\")",
+                 "literal!(\"(\")",
+                 "literal!(\")\")",
                  "literal!(\"[\")",
                  "literal!(\"]\")":
                 return contents(p);

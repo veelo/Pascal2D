@@ -2,7 +2,7 @@
 
 import std.process;
 import std.stdio;
-import std.file : remove, exists, read;
+import std.file : remove, exists, readText;
 import std.algorithm;
 import std.ascii;
 
@@ -56,7 +56,7 @@ int main()
     if (wait(pid) != 0) {
         return 0;
     } else {
-        string actual = cast(string)read(outlog);
+        string actual = readText(outlog);
         auto expected = "Hello D's \"World\"!" ~ newline;
         if (cmp(actual, expected) != 0) {
             writeln("Unexpected output. See " ~ outlog ~ ".");
@@ -73,7 +73,7 @@ int main()
 
 
     writeln("=== runtests: testing example \"arraybase\"");
-    pid = spawnProcess(["dub", "run"],
+    pid = spawnProcess(["dub", "build"],
                         std.stdio.stdin,
                         std.stdio.stdout,
                         std.stdio.stderr,
@@ -81,6 +81,7 @@ int main()
     if (wait(pid) != 0) {
         return 0;
     }
+    outfile = File(outlog, "w");
     pid = spawnProcess(["examples\\arraybase\\arraybase.exe"],
                         std.stdio.stdin,
                         outfile,
@@ -89,18 +90,18 @@ int main()
     if (wait(pid) != 0) {
         return 0;
     } else {
-        //string actual = cast(string)read(outlog);
-        //auto expected = "" ~ newline;
-        //if (cmp(actual, expected) != 0) {
-        //    writeln("Unexpected output. See " ~ outlog ~ ".");
-        //    writeln("EXPECTED OUTPUT:");
-        //    writeln(expected);
-        //    writeln("ACTUAL OUTPUT:");
-        //    writeln(actual);
-        //    return 0;
-        //} else {
-        //    remove(outlog);
-        //}
+        string actual = readText(outlog);
+        auto expected = "Size of t in bytes is 76" ~ newline;
+        if (cmp(actual, expected) != 0) {
+            writeln("Unexpected output. See " ~ outlog ~ ".");
+            writeln("EXPECTED OUTPUT:");
+            writeln(expected);
+            writeln("ACTUAL OUTPUT:");
+            writeln(actual);
+            return 0;
+        } else {
+            remove(outlog);
+        }
     }
     writeln("=== runtests: completed example \"arraybase\"");
 

@@ -282,6 +282,7 @@ EP:
                          / "(" _? Expression _? ")"
                          / NOT _? Primary
                          / StructuredValueConstructor
+                         / LocalFunctionAccess          # BNV Local Prospero language additions
                          / FunctionAccess               # BNV Moved after StructuredValueConstructor
                          / ConstantAccess               # BNV Moved after StructuredValueConstructor and FunctionAccess
                          / SchemaDiscriminant           # BNV Moved after StructuredValueConstructor and FunctionAccess
@@ -316,7 +317,7 @@ EP:
 
 # 6.8.5 (complete)
     FunctionDesignator      <- FunctionName ( _? ActualParameterList )?
-    ActualParameterList     <- "(" _? ActualParameter ( _? "," _? ActualParameter )* _? ")"
+    ActualParameterList     <- ^"(" _? ActualParameter ( _? ^"," _? ActualParameter )* _? ^")"
     ActualParameter         <- Expression / VariableAccess / ProcedureName / FunctionName
 
 # 6.8.6.1 (complete)
@@ -465,7 +466,7 @@ EP:
     WriteParameter      <- Expression ( _? ":" _? Expression ( _? ":" _? Expression )? )?
 
 # 6.10.4 (complete)
-    WritelnParameterList    <- ( "(" _? ( WriteParameter / FileVariable ) ( _? "," _? WriteParameter )* _? ")" )?   # BNV put WriteParameter before FileVariable.
+    WritelnParameterList    <- ( ^"(" _? ( WriteParameter / FileVariable ) ( _? ^"," _? WriteParameter )* _? ^")" )?   # BNV put WriteParameter before FileVariable.
 
 # 6.11.1 (complete)
     ModuleDeclaration       <- ModuleHeadeing ( _? ";" _? ModuleBlock )? /
@@ -553,7 +554,7 @@ EP:
     COMMA       <- ","
     DOT         <- "."
 
-# Built-ins
+# Required procedures (6.7.4)
     READ        <- "read"i
     READLN      <- "readln"i
     READSTR     <- "readstr"i
@@ -577,4 +578,8 @@ EP:
     TRUE        <- "true"i
     MINCHAR     <- "minchar"i
     MAXCHAR     <- "maxchar"i
+
+# Local Prospero language extensions
+    LocalFunctionAccess <- LocalSizeof
+    LocalSizeof <- "sizeof"i _? "(" _? ( VariableAccess / TypeName ) _? ")"
 `;
