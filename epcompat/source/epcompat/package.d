@@ -15,6 +15,9 @@ $(TABLE
         Brings the members of an enumeration into scope, as if the following
         code would be in a `with` block.
     ))
+    $(TR $(TD $(LINK2 epcompat/file, file)) $(TD
+        Implementation of EP file i/o and local Prospero extensions.
+    ))
     $(TR $(TD $(LINK2 epcompat/initial, initial)) $(TD
         Changes `.init` to a custom default value.
     ))
@@ -35,6 +38,7 @@ module epcompat;
 
 public import epcompat.array;
 public import epcompat.string;
+public import epcompat.file;
 public import epcompat.initial;
 public import epcompat.interval;
 public import epcompat.set;

@@ -133,15 +133,12 @@ string toD(const ref ParseTree p)
         }
         do {
             // In readTypeDenoter.
-            // TODO nog ongebruikt.
             string parseArrayType(const ref ParseTree p)
             in {
                 assert(p.name == "EP.ArrayType");
             }
             do {
                 string lastIndex, result, component, comments;
-                //string[] indices;
-
                 string readIndexType(const ref ParseTree p)
                 in {
                     assert(p.name == "EP.IndexType" ||
@@ -217,11 +214,15 @@ string toD(const ref ParseTree p)
                 return "StaticArray!(" ~ component ~ ", " ~ lastIndex ~ ")";
             } // parseArrayType
 
+            bool isBindable = false;
             kind = TypeDenoterKind.Alias;
             foreach (child; p.children) // Children of TypeDenoter
             {
                 switch (child.name)
                 {
+                    case "EP.BINDABLE":
+                        isBindable = true;
+                        break;
                     case "EP.DiscriminatedSchema": {
                         assert(child.children[0].name == "EP.SchemaName");
                         auto schemaname = contents(child.children[0]);
@@ -292,7 +293,31 @@ string toD(const ref ParseTree p)
                                                 case "EP.ArrayType":
                                                     type ~= parseArrayType(unpackedStructuredChild);
                                                     break;
-                                                case "EP.RecordType", "EP.SetType", "EP.FileType":
+                                                case "EP.FileType":
+                                                    assert(isBindable);
+                                                    foreach (fileChild; unpackedStructuredChild.children)
+                                                        final switch (fileChild.name) {
+                                                            case "EP._":
+                                                                type ~= strip(parseDefaults(fileChild));
+                                                                break;
+                                                            case "EP.IndexType":
+                                                                writeln("EP.IndexType is unhandled at ", __FILE__, ":", __LINE__);
+                                                                break;
+                                                            case "EP.ComponentType":
+                                                                string ini, add, ann, component;
+                                                                TypeDenoterKind componentKind;
+                                                                assert(fileChild.children[0].name == "EP.TypeDenoter");
+                                                                readTypeDenoter(fileChild.children[0], component, ini, add, ann, componentKind);
+                                                                // We don't really know what to do with these yet, but we probably don't need to:
+                                                                assert(ini.length == 0);
+                                                                assert(add.length == 0);
+                                                                assert(ann.length == 0);
+                                                                assert(componentKind == TypeDenoterKind.Alias);
+                                                                type ~= "Bindable!" ~ component;
+                                                                break;
+                                                        }
+                                                    break;
+                                                case "EP.RecordType", "EP.SetType":
                                                     writeln(unpackedStructuredChild.name ~ " is unhandled at ", __FILE__, ":", __LINE__);
                                                     break;
                                             }
@@ -630,6 +655,38 @@ string toD(const ref ParseTree p)
         } // parseForStatement
 
         // In parseToCode.
+        string parseIfStatement(const ref ParseTree p)
+        in {
+            assert(p.name == "EP.IfStatement");
+        }
+        do {
+            string result;
+            foreach (child; p.children)
+                final switch (child.name)
+                {
+                    case "EP.IF":
+                        result ~= "if";
+                        break;
+                    case "EP.BooleanExpression":
+                        result ~= "(" ~ parseToCode(child) ~ ")";
+                        break;
+                    case "EP.Statement":
+                        result ~= parseToCode(child);
+                        break;
+                    case "EP._":
+                        result ~= parseDefaults(child);
+                        break;
+                    case "EP.ELSE":
+                        result ~= "else";
+                        break;
+                    case "EP.ElsePart":
+                        result ~= parseIfStatement(child);
+                        break;
+                }
+            return result;
+        } // parseIfStatement
+
+        // In parseToCode.
         string parseLocalSizeof(const ref ParseTree p)
         in {
             assert(p.name == "EP.LocalSizeof");
@@ -719,7 +776,9 @@ string toD(const ref ParseTree p)
                  "EP.Program", "EP.ProgramBlock", "EP.Block", "EP.ProgramComponent",
                  "EP.MainProgramDeclaration", "EP.ProgramHeading",
                  "EP.StatementSequence", "EP.Statement", "EP.ProcedureStatement",
+                 "EP.WriteParameterList",
                  "EP.WritelnParameterList",
+                 "EP.FileVariable",
                  "EP.Expression", "EP.SimpleExpression", "EP.Term", "EP.Factor",
                  "EP.Primary", "EP.UnsignedConstant", "EP.StringElement",
                  "EP.TypeDefinitionPart", "EP.VariableDeclarationPart",
@@ -754,6 +813,8 @@ string toD(const ref ParseTree p)
                  "EP.FunctionIdentifier",
                  "EP.ActualParameterList",
                  "EP.ActualParameter",
+                 "EP.ConditionalStatement",
+                 "EP.BooleanExpression",
                  "EP.LocalFunctionAccess":
                 return parseChildren(p);
             case "EP.MainProgramBlock":
@@ -768,9 +829,6 @@ string toD(const ref ParseTree p)
                 return parseTypeDefinition(p);
             case "EP.TypeInquiry":
                 return parseTypeInquiry(p);
-            case "EP.ComponentType":
-                assert(p.children.length == 1 && p.children[0].name == "EP.TypeDenoter");
-                return parseToCode(p.children[0]); /* TODO */
             case "EP.CompoundStatement":
                 return "{" ~ parseChildren(p) ~ "}";
             case "EP.SimpleStatement":
@@ -798,6 +856,8 @@ string toD(const ref ParseTree p)
                 return parseFunctionDeclaration(p);
             case "EP.ForStatement":
                 return parseForStatement(p);
+            case "EP.IfStatement":
+                return parseIfStatement(p);
             case "literal!(\":=\")":
                 return "=";
             case "EP.LocalSizeof":
@@ -823,6 +883,8 @@ string toD(const ref ParseTree p)
                 return "";
 
             // Required procedures
+            case "EP.WRITE":
+                return "epcompat.write";
             case "EP.WRITELN":
                 return "writeln";
 

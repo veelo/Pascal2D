@@ -85,7 +85,7 @@ EP:
 
 # 6.4.1 (complete)
     TypeDefinition      <- BNVTypeDefName _? "=" _? TypeDenoter
-    TypeDenoter         <- :(BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
+    TypeDenoter         <- (BINDABLE _ )? ( DiscriminatedSchema / NewType / TypeInquiry / TypeName ) _? InitialStateSpecifier? # BNV Put DiscriminatedSchema first, TypeName last.
     NewType             <- NewStructuredType / NewOrdinalType / NewPointerType / RestrictedType # BNV Put NewStructuredType first.
     #SimpleTypeName      <- TypeName    # BNV Semantic only
     StructuredTypeName  <- ArrayTypeName / RecordTypeName / SetTypeName / FileTypeName
@@ -413,8 +413,8 @@ EP:
     ConditionalStatement    <- IfStatement / CaseStatement
 
 # 6.9.3.4 (complete)
-    IfStatement <- "if"i _ BooleanExpression _ "then"i _ Statement ElsePart?
-    ElsePart    <- "else"i _ Statement
+    IfStatement <- IF _? BooleanExpression _? "then"i _? Statement ElsePart?
+    ElsePart    <- ELSE _? Statement
 
 # 6.9.3.5 (complete)
     CaseStatement           <- "case"i _ CaseIndex _ "of"i _ ( CaseListElement ( _? ";" _? CaseListElement )* ( _? ";"? _? CaseStatementCompleter )? / _? CaseStatementCompleter ) _? ";"? _? "end"i
@@ -462,7 +462,7 @@ EP:
     ReadlnParameterList <- ( "(" _? ( FileVariable / VariableAccess ) ( _? "," _? VariableAccess )* _? ")" )?
 
 # 6.10.3 (complete)
-    WriteParameterList  <- "(" _? ( FileVariable _? "," _? )? WriteParameter ( _? "," _? WriteParameter )* _? ")"
+    WriteParameterList  <- ^"(" _? ( FileVariable _? ^"," _? )? WriteParameter ( _? ^"," _? WriteParameter )* _? ^")"
     WriteParameter      <- Expression ( _? ":" _? Expression ( _? ":" _? Expression )? )?
 
 # 6.10.4 (complete)
@@ -549,6 +549,8 @@ EP:
     PROTECTED   <- "protected"i
     TO          <- "to"i
     DOWNTO      <- "downto"i
+    IF          <- "if"i
+    ELSE        <- "else"i
 
 # Separators
     COMMA       <- ","

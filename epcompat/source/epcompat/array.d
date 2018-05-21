@@ -65,10 +65,17 @@ struct StaticArray(T, E) if (is(E == enum))
         return result;
     }
 
-    import std.stdio;
     /**
     Write to binary file.
     */
+    import epcompat.file;
+    void toFile(T)(Bindable!T f)
+    {
+        f.f.lock;
+        toFile(f.f);
+        f.f.unlock;
+    }
+    import std.stdio;
     void toFile(File f)
     {
         f.rawWrite(_payload);
@@ -179,10 +186,17 @@ struct StaticArray(T, ptrdiff_t first, ptrdiff_t last)
         return result;
     }
 
-    import std.stdio;
     /**
     Write to binary file.
     */
+    import epcompat.file;
+    void toFile(T)(Bindable!T f)
+    {
+        f.f.lock;
+        toFile(f.f);
+        f.f.unlock;
+    }
+    import std.stdio;
     void toFile(File f)
     {
         f.rawWrite(_payload);
@@ -336,6 +350,13 @@ public:
     }
 
     // Write to binary file.
+    import epcompat.file;
+    void toFile(T)(Bindable!T f)
+    {
+        f.f.lock;
+        toFile(f.f);
+        f.f.unlock;
+    }
     import std.stdio;
     void toFile(File f)
     {
