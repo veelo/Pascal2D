@@ -34,7 +34,7 @@ pascal2d example.pas > example.d
 Optionally, the syntax tree of the Pascal file can be produced in HTML format by passing the `--syntax_tree` or `-s` argument.
 
 
-## Example
+## Minimal example
 In [examples/hello/source/hello.pas](examples/hello/source/hello.pas) you will find this Pascal source:
 ```Pascal
 program hello(output);
@@ -57,11 +57,56 @@ void main(string[] args)
 {
     writeln("Hello D's \"World\"!");
 }
-
 ```
 
 ## Compatibility library *epcompat*
 Translated sources depend on the [epcompat sub package](https://github.com/veelo/Pascal2D/tree/master/epcompat), which is a library that provides type compatibility with and implements features of Extended Pascal. Some of its modules can be of value in hand written D code as wel, the [*epcompat* API](https://veelo.github.io/Pascal2D/) is available online.
+
+## Array example
+In Extended Pascal, arrays can start at any index value. The example [examples/arraybase](examples/arraybase) shows how this is translated, including writing such array's to binary file. This is the Extended Pascal source:
+```Pascal
+program arraybase(input,output);
+
+type t = array[2..20] of integer;
+var a : t;
+    n : integer;
+    f : bindable file of t;
+
+begin
+  for n := 2 to 20 do
+    a[n] := n;
+  writeln('Size of t in bytes is ',sizeof(a):1);
+  if openwrite(f,'array.dat') then
+    begin
+      write(f,a);
+      close(f);
+    end;
+end.
+```
+Calling `dub` in that directory translates this into the following working D code, using [dfmt](https://code.dlang.org/packages/dfmt) to fixup formatting:
+```D
+import epcompat;
+import std.stdio;
+
+// Program name: arraybase
+alias t = StaticArray!(int, 2, 20);
+
+t a;
+int n;
+Bindable!t f;
+
+void main(string[] args)
+{
+    for (n = 2; n <= 20; n++)
+        a[n] = n;
+    writeln("Size of t in bytes is ", a.sizeof);
+    if (openwrite(f, "array.dat"))
+    {
+        epcompat.write(f, a);
+        close(f);
+    }
+}
+```
 
 ## Running tests
 The following script will run unit tests, transcompile examples, run them and check their output to make sure they work as expected:
