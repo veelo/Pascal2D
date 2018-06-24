@@ -1,23 +1,23 @@
 [![Build Status](https://travis-ci.org/veelo/Pascal2D.svg?branch=master)](https://travis-ci.org/veelo/Pascal2D)
 
 # Pascal2D
-_This is very much work in progress._
 
-**Pascal2D** is a transcompiler that translates [ISO 10206 Extended Pascal](http://pascal-central.com/docs/iso10206.pdf) to D,
+**Pascal2D** is a transcompiler that translates [ISO 10206 Extended Pascal](http://pascal-central.com/docs/iso10206.pdf) (EP) to D,
 with support for some non-standard [Prospero](https://web.archive.org/web/20131023234615/http://www.prosperosoftware.com:80/)
 extensions.
 
-## Current status
-The [parser](source/epgrammar.d) in *Pascal2D* is almost comlete and should be able to parse most Extended Pascal programs. The
-[translator](source/p2d.d) is very incomplete and can only translate a small set of simple programs, see below. The goal is to
-translate around 500 kloc of proprietary source code, see the
+The goal is to translate around 500 kloc of proprietary source code, see the
 [DConf 2017 talk](https://www.youtube.com/watch?v=t5y9dVMdI7I&list=PL3jwVPmk_PRxo23yyoc0Ip_cP3-rCm7eB&index=21) (with
-[continuation](https://www.youtube.com/watch?v=3ugQ1FFGkLY)) for some background information.
+[continuation](https://www.youtube.com/watch?v=3ugQ1FFGkLY)) for some background information. You can also read
+[how an engineering company chose tomigrate to D](https://dlang.org/blog/2018/06/20/how-an-engineering-company-chose-to-migrate-to-d/).
 
-As soon as I reach that goal, my interest in Pascal2D is likely to drop dramatically, and that might happen before it covers
-100% of the language perfectly. We may consider rewriting some of the Pascal code if that removes difficulties in
-translation to speed up the process. Nevertheless, I am likely to accept contributions by others and I wouldn't rule out
-complete coverage eventually or even support for other Pascal dialects.
+## Current status
+
+What you see here is the initial development of *Pascal2D*, developed in open source prior to the decision of
+[SARC](https://www.sarc.nl) to go ahead with translation of all its EP code. _For the time being, SARC management has decided to fund
+further development off-line. If you have any interest in this project, for any reason, please
+[do get in contact](https://www.sarc.nl/contact/), we'd love to hear from you_. We are very reasonable people and I'm sure we can work
+something out.
 
 ## Getting started
 Given you have installed a [D compiler](https://dlang.org/download.html) and a [git client](https://git-scm.com/downloads/),
