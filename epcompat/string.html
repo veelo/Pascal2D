@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Module epcompat.string</title>
+		<link rel="stylesheet" href="../css/style.min.css"/>
+		<script type="text/javascript" src="../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Module epcompat.string</h1><p>Provides compatibility between D strings and the binary Extended Pascal formats
+of ShortString and String, for file i/o using the fromFile and toFile methods.
+</p><section><p>Special care is given to strings embedded in aggregate types such as structs and unions.
+</p>
+</section>
+
+				<section></section>
+				<section>
+					<h2>Functions</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="fromFile" class="public" href="../epcompat/string/fromFile.html">fromFile</a><span class="decoration">(s, f)</span>
+								</code>
+							</td>
+							<td>Reads structs from file.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="fromFile" class="public" href="../epcompat/string/fromFile.html">fromFile</a><span class="decoration">(f)</span>
+								</code>
+							</td>
+							<td>Where s is an alias to a string annotated with either an <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPString.html"></span><span class="typ">EPString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA or <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPShortString.html"></span><span class="typ">EPShortString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA,
+reads s from file f in the appropriate Prospero formats.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="readEPShortString" class="public" href="../epcompat/string/readEPShortString.html">readEPShortString</a><span class="decoration">(capacity, file)</span>
+								</code>
+							</td>
+							<td>Reads a string in standard Pascal shortstring format.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="readEPString" class="public" href="../epcompat/string/readEPString.html">readEPString</a><span class="decoration">(capacity, file)</span>
+								</code>
+							</td>
+							<td>Reads a string in standard Extended Pascal string format.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="toFile" class="public" href="../epcompat/string/toFile.html">toFile</a><span class="decoration">(s, f)</span>
+								</code>
+							</td>
+							<td>Writes structs to file.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="toFile" class="public" href="../epcompat/string/toFile.html">toFile</a><span class="decoration">(f)</span>
+								</code>
+							</td>
+							<td>Where s is an alias to a string annotated with either an <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPString.html"></span><span class="typ">EPString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA or <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPShortString.html"></span><span class="typ">EPShortString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA,
+writes s to file f in the appropriate Prospero formats.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="trim" class="public" href="../epcompat/string/trim.html">trim</a><span class="decoration">(str)</span>
+								</code>
+							</td>
+							<td>Returns a string with any whitespace trimmed from str.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="writeAsEPShortString" class="public" href="../epcompat/string/writeAsEPShortString.html">writeAsEPShortString</a><span class="decoration">(str, capacity, file)</span>
+								</code>
+							</td>
+							<td>Writes a string to file in standard Pascal shortstring format.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="writeAsEPString" class="public" href="../epcompat/string/writeAsEPString.html">writeAsEPString</a><span class="decoration">(str, capacity, file)</span>
+								</code>
+							</td>
+							<td>Writes a string to file in standard Extended Pascal string format.
+</td>
+						</tr>
+					</table>
+				</section>
+				<section>
+					<h2>Structs</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="EPShortString" class="public" href="../epcompat/string/EPShortString.html">EPShortString</a>
+								</code>
+							</td>
+							<td>To be used as an attribute to string members of structs for specifying the file format.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="EPString" class="public" href="../epcompat/string/EPString.html">EPString</a>
+								</code>
+							</td>
+							<td>To be used as an attribute to string members of structs for specifying the file format.
+</td>
+						</tr>
+					</table>
+				</section>
+			</div>
+			<footer>
+				<div id="license-info">
+					<p>Bastiaan Veelo
+</p>
+
+					<p>SARC B.V.
+</p>
+
+					<p>Boost.
+</p>
+
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

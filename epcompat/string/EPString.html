@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Struct EPString</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Struct EPString</h1><p>To be used as an attribute to string members of structs for specifying the file format.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">EPString</span>
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				<section></section>
+
+				<section><h2>Fields</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/string/EPString.capacity.html" class="public"><code>capacity</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="typ">ushort</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Examples</h2>
+<pre class="code"><code class="lang-d"><span class="typ">Struct </span><span class="pln">S
+</span><span class="pun">{
+    @</span><span class="typ">EPString</span><span class="pun">(</span><span class="lit">80</span><span class="pun">) </span><span class="typ">string </span><span class="pln">str </span><span class="pun">= </span><span class="str">"Hello"</span><span class="pun">;
+}</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					<p>Bastiaan Veelo
+</p>
+
+					<p>SARC B.V.
+</p>
+
+					<p>Boost.
+</p>
+
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

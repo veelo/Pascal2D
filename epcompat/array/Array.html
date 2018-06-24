@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Struct Array</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Struct Array</h1><p>A variable-length array on type <i>T</i> with an index of type <i>I</i>
+that runs from <i>first</i> to <i>last</i> inclusive. The bounds are
+supplied at run-time.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">Array</span>(T, I)
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				<section><p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+</section>
+
+				<section><h2>Constructors</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td>Construct an Array from first to last inclusive.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td>Construct an Array on an interval i.
+</td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Fields</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array._payload.html" class="public"><code>_payload</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span><span class="pun">[]</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.m_first.html" class="public"><code>m_first</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.m_last.html" class="public"><code>m_last</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Properties</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.first.html" class="public property"><code>first</code></a><span class="tableEntryAnnotation">[get]</span>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.first.html" class="public property"><code>first</code></a><span class="tableEntryAnnotation">[set]</span>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td>Sets new first index.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.last.html" class="public property"><code>last</code></a><span class="tableEntryAnnotation">[get]</span>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.last.html" class="public property"><code>last</code></a><span class="tableEntryAnnotation">[set]</span>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">I</span></code></td><td>Resize to new last index.
+</td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Methods</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.fromFile.html" class="public">
+									<code>fromFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.fromFile.html" class="public">
+									<code>fromFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.opApply.html" class="public">
+									<code>opApply</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.opApply.html" class="public">
+									<code>opApply</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.opIndex.html" class="public">
+									<code>opIndex</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.opIndexAssign.html" class="public">
+									<code>opIndexAssign</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.resize.html" class="public">
+									<code>resize</code>
+								</a>
+							</td>
+							<td>Resize to new first and last boundaries.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/Array.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Example</h2>
+<p>A variable-length array on type <i>T</i> with an index of type <i>I</i>
+that runs from <i>first</i> to <i>last</i> inclusive. The bounds are
+supplied at run-time.
+</p>
+
+<p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+<pre class="code"><code class="lang-d"><span class="kwd">auto </span><span class="pln">arr </span><span class="pun">= </span><span class="typ">Array</span><span class="pun">!</span><span class="typ">int</span><span class="pun">(-</span><span class="lit">10</span><span class="pun">, </span><span class="lit">10</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">21</span><span class="pun">);
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio</span><span class="pun">;
+</span><span class="com">// writeln("arr.length * int.sizeof = ", arr.length * int.sizeof);
+// assert(arr.sizeof == arr.length * int.sizeof);  // 94 != 32 (in 64 bit) 94 != 16 (in 32 bit). FIXME
+
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="kwd">ref </span><span class="pln">e</span><span class="pun">; </span><span class="pln">arr</span><span class="pun">)
+    </span><span class="pln">e </span><span class="pun">= </span><span class="lit">42</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[-</span><span class="lit">10</span><span class="pun">] == </span><span class="lit">42</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]   == </span><span class="lit">42</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">10</span><span class="pun">]  == </span><span class="lit">42</span><span class="pun">);
+
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">conv </span><span class="pun">: </span><span class="pln">to</span><span class="pun">;
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="pln">i</span><span class="pun">, </span><span class="kwd">ref </span><span class="pln">e</span><span class="pun">; </span><span class="pln">arr</span><span class="pun">)
+    </span><span class="pln">e </span><span class="pun">= </span><span class="pln">i<wbr/></span><span class="pun">.</span><span class="pln">to</span><span class="pun">!</span><span class="typ">int</span><span class="pun">;   </span><span class="com">// i is of type size_t.
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[-</span><span class="lit">10</span><span class="pun">] == -</span><span class="lit">10</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]   ==   </span><span class="lit">0</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">]   ==   </span><span class="lit">5</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">10</span><span class="pun">]  ==  </span><span class="lit">10</span><span class="pun">);
+
+</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">] = </span><span class="lit">15</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">]   == </span><span class="lit">15</span><span class="pun">);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+<p>A variable-length array on type <i>T</i> with an index of type <i>I</i>
+that runs from <i>first</i> to <i>last</i> inclusive. The bounds are
+supplied at run-time.
+</p>
+
+<p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+<pre class="code"><code class="lang-d"><span class="pln">  </span><span class="com">// schema array toFile/fromFile
+// type s(low,high:integer) = array[low..high] of integer;
+</span><span class="kwd">struct </span><span class="pln">s
+</span><span class="pun">{
+    </span><span class="kwd">@disable this</span><span class="pun">();
+    </span><span class="kwd">this</span><span class="pun">(</span><span class="typ">int </span><span class="pln">low</span><span class="pun">, </span><span class="typ">int </span><span class="pln">high</span><span class="pun">)
+    {
+        </span><span class="kwd">this<wbr/></span><span class="pun">.</span><span class="pln">low </span><span class="pun">= </span><span class="pln">low</span><span class="pun">;
+        </span><span class="kwd">this<wbr/></span><span class="pun">.</span><span class="pln">high </span><span class="pun">= </span><span class="pln">high</span><span class="pun">;
+        <a href="../../epcompat/array/Array._payload.html"></span><span class="pln">_payload</span></a><span class="pln"> </span><span class="pun">= </span><span class="typ">Array</span><span class="pun">!</span><span class="typ">int</span><span class="pun">(</span><span class="pln">low</span><span class="pun">, </span><span class="pln">high</span><span class="pun">);
+    }
+    </span><span class="kwd">immutable </span><span class="typ">int </span><span class="pln">low</span><span class="pun">, </span><span class="pln">high</span><span class="pun">;
+  </span><span class="kwd">private</span><span class="pun">:
+    </span><span class="typ">Array</span><span class="pun">!</span><span class="typ">int <a href="../../epcompat/array/Array._payload.html"></span><span class="pln">_payload</span></a><span class="pun">;
+    </span><span class="kwd">alias <a href="../../epcompat/array/Array._payload.html"></span><span class="pln">_payload</span></a><span class="pln"> </span><span class="kwd">this</span><span class="pun">;
+}
+
+</span><span class="pln">s t1 </span><span class="pun">= </span><span class="pln">s</span><span class="pun">(-</span><span class="lit">5</span><span class="pun">, </span><span class="lit">5</span><span class="pun">);
+</span><span class="kwd">for </span><span class="pun">(</span><span class="typ">int </span><span class="pln">n </span><span class="pun">= </span><span class="pln">t1<wbr/></span><span class="pun">.</span><span class="pln">low</span><span class="pun">; </span><span class="pln">n </span><span class="pun">&lt;= </span><span class="pln">t1<wbr/></span><span class="pun">.</span><span class="pln">high</span><span class="pun">; </span><span class="pln">n</span><span class="pun">++)
+    </span><span class="pln">t1</span><span class="pun">[</span><span class="pln">n</span><span class="pun">] = </span><span class="pln">n </span><span class="pun">* </span><span class="lit">3</span><span class="pun">;
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio</span><span class="pun">;
+</span><span class="typ">File </span><span class="pln">tmp </span><span class="pun">= </span><span class="typ">File<wbr/></span><span class="pun">.</span><span class="pln">tmpfile</span><span class="pun">();
+</span><span class="pln">t1<wbr/></span><span class="pun">.</span><span class="pln">toFile</span><span class="pun">(</span><span class="pln">tmp</span><span class="pun">);
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">flush</span><span class="pun">;
+
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size </span><span class="pun">== </span><span class="lit">11 </span><span class="pun">* </span><span class="typ">int<wbr/></span><span class="pun">.</span><span class="pln">sizeof</span><span class="pun">);
+
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rewind</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">buf </span><span class="pun">= </span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rawRead</span><span class="pun">(</span><span class="kwd">new </span><span class="typ">int</span><span class="pun">[</span><span class="kwd">cast</span><span class="pun">(</span><span class="typ">uint</span><span class="pun">)(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size</span><span class="pun">)]);
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="pln">i</span><span class="pun">, </span><span class="pln">b</span><span class="pun">; </span><span class="pln">buf</span><span class="pun">)
+    </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== (</span><span class="pln">i </span><span class="pun">- </span><span class="lit">5</span><span class="pun">) * </span><span class="lit">3</span><span class="pun">);
+
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rewind</span><span class="pun">;
+</span><span class="pln">s t2 </span><span class="pun">= </span><span class="pln">s</span><span class="pun">(-</span><span class="lit">5</span><span class="pun">, </span><span class="lit">5</span><span class="pun">);
+</span><span class="pln">t2<wbr/></span><span class="pun">.</span><span class="pln">fromFile</span><span class="pun">(</span><span class="pln">tmp</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">t2 </span><span class="pun">== </span><span class="pln">t1</span><span class="pun">);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+<p>A variable-length array on type <i>T</i> with an index of type <i>I</i>
+that runs from <i>first</i> to <i>last</i> inclusive. The bounds are
+supplied at run-time.
+</p>
+
+<p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+<pre class="code"><code class="lang-d"><span class="kwd">auto </span><span class="pln">arr </span><span class="pun">= </span><span class="typ">Array</span><span class="pun">!</span><span class="typ">char</span><span class="pun">(</span><span class="pln">interval</span><span class="pun">(</span><span class="lit">5</span><span class="pun">, </span><span class="lit">25</span><span class="pun">));
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">21</span><span class="pun">);
+</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">] = </span><span class="str">'a'</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">] == </span><span class="str">'a'</span><span class="pun">);
+</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">25</span><span class="pun">] = </span><span class="str">'b'</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">25</span><span class="pun">] == </span><span class="str">'b'</span><span class="pun">);
+
+</span><span class="kwd">auto </span><span class="pln">arr2 </span><span class="pun">= </span><span class="typ">Array</span><span class="pun">!(</span><span class="typ">int</span><span class="pun">, </span><span class="typ">char</span><span class="pun">)(</span><span class="pln">interval</span><span class="pun">(</span><span class="str">'a'</span><span class="pun">, </span><span class="str">'g'</span><span class="pun">));
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr2<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">7</span><span class="pun">);
+</span><span class="pln">arr2</span><span class="pun">[</span><span class="str">'a'</span><span class="pun">] = </span><span class="lit">2</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr2</span><span class="pun">[</span><span class="str">'a'</span><span class="pun">] == </span><span class="lit">2</span><span class="pun">);
+</span><span class="pln">arr2</span><span class="pun">[</span><span class="str">'b'</span><span class="pun">] = </span><span class="lit">4</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr2</span><span class="pun">[</span><span class="str">'b'</span><span class="pun">] == </span><span class="lit">4</span><span class="pun">);
+
+</span><span class="com">// See also http://forum.dlang.org/post/akibggljgcmmacsbahmm@forum.dlang.org
+</span><span class="kwd">import </span><span class="pln">epcompat<wbr/></span><span class="pun">.</span><span class="pln">enumeration</span><span class="pun">;
+</span><span class="kwd">enum </span><span class="pln">E </span><span class="pun">{</span><span class="typ">One</span><span class="pun">, </span><span class="typ">Two</span><span class="pun">, </span><span class="typ">Three</span><span class="pun">, </span><span class="typ">Four</span><span class="pun">}
+</span><span class="kwd">mixin </span><span class="pln">withEnum</span><span class="pun">!</span><span class="pln">E</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">arr3 </span><span class="pun">= </span><span class="typ">Array</span><span class="pun">!(</span><span class="typ">int</span><span class="pun">, </span><span class="pln">E</span><span class="pun">)(</span><span class="typ">One</span><span class="pun">, </span><span class="typ">Four</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr3<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">4</span><span class="pun">);
+</span><span class="pln">arr3</span><span class="pun">[</span><span class="typ">Two</span><span class="pun">] = </span><span class="lit">2</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr3</span><span class="pun">[</span><span class="typ">Two</span><span class="pun">] == </span><span class="lit">2</span><span class="pun">);
+</span><span class="pln">arr3</span><span class="pun">[</span><span class="typ">Four</span><span class="pun">] = </span><span class="lit">4</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr3</span><span class="pun">[</span><span class="typ">Four</span><span class="pun">] == </span><span class="lit">4</span><span class="pun">);
+</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Module epcompat.set</title>
+		<link rel="stylesheet" href="../css/style.min.css"/>
+		<script type="text/javascript" src="../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Module epcompat.set</h1><p>Implements sets of values of ordinal type, including <code class="lang-d"><span class="typ">char</span></code> and <code class="lang-d"><span class="kwd">enum</span></code> members.
+</p>
+				<section></section>
+				<section>
+					<h2>Functions</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="set" class="public" href="../epcompat/set/set.html">set</a><span class="decoration">()</span>
+								</code>
+							</td>
+							<td>Constructor of a <code class="lang-d"><a href="../epcompat/set/Set.html"><span class="typ">Set</span></a></code> on an implicitly derived base type with a given
+sequence of intervals.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="set" class="public" href="../epcompat/set/set.html">set</a><span class="decoration">()</span>
+								</code>
+							</td>
+							<td>Constructor of the empty set.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="set" class="public" href="../epcompat/set/set.html">set</a><span class="decoration">(args)</span>
+								</code>
+							</td>
+							<td>Constructor of <code class="lang-d"><a href="../epcompat/set/Set.html"><span class="typ">Set</span></a></code>s on an implicitly derived base type. It cannot support
+the range-like notation for <code class="lang-d"><span class="typ">Interval</span></code>s like <code class="lang-d"><a href="../epcompat/set/SetFactory.html"><span class="typ">SetFactory</span></a></code> does, but offers
+a 2-element array notation for intervals.
+</td>
+						</tr>
+					</table>
+				</section>
+				<section>
+					<h2>Structs</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="Set" class="public" href="../epcompat/set/Set.html">Set</a>
+								</code>
+							</td>
+							<td>The Set type supports set operations. Sets can be instantiated with an explicitly
+specified base type, in which case the range of values that the Set can contain
+is limited by the base type. Sets can also be constructed with an implicitly
+derived base type using the set() functions, where the underlying data is managed
+dynamically and the range of values that the set can contain is only limited by
+the available memory. Base types are ordinal types like the standard signed and
+unsigned integer types of various sizes, but also char types, booleans and custom
+enumerations.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<code>
+									<a id="SetFactory" class="public" href="../epcompat/set/SetFactory.html">SetFactory</a>
+								</code>
+							</td>
+							<td>This struct serves only a range-based interface for convenient construction
+of Sets implemented on an explicitly supplied base type.
+</td>
+						</tr>
+					</table>
+				</section>
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Module epcompat</title>
+		<link rel="stylesheet" href="./css/style.min.css"/>
+		<script type="text/javascript" src="./js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="./symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "./";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package selected">
+							<a href="./epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="./epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="./epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Module epcompat</h1><p>Provides type compatibility with, and comparable features to Extended Pascal.
+</p><section><p>This is the library that translated Pascal sources rely on. It also provides
+features that can be of value in hand-written D code. The epcompat library is
+supplied as a dub sub package so it supports that use case.
+</p>
+
+<p><table>    <tr><th>Module</th> <th>Purpose</th></tr>
+    <tr><td><a href="epcompat/array">array</a></td> <td>        Fixed length array types that can start at any index.
+    </td></tr>
+    <tr><td><a href="epcompat/enumeration">enumeration</a></td> <td>        Brings the members of an enumeration into scope, as if the following
+        code would be in a <code class="lang-d"><span class="kwd">with</span></code> block.
+    </td></tr>
+    <tr><td><a href="epcompat/file">file</a></td> <td>        Implementation of EP file i/o and local Prospero extensions.
+    </td></tr>
+    <tr><td><a href="epcompat/initial">initial</a></td> <td>        Changes <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">init</span></code> to a custom default value.
+    </td></tr>
+    <tr><td><a href="epcompat/ordinal">ordinal</a></td> <td>        An integral type with specific inclusive bounds.
+    </td></tr>
+    <tr><td><a href="epcompat/set">set</a></td> <td>        Sets of integral values, ordinal values or members of enumerations.
+    </td></tr>
+    <tr><td><a href="epcompat/string">string</a></td> <td>        String types that are compatible with native D <code class="lang-d"><span class="typ">string</span></code>, and binary
+        compatible with Prospero Extended Pascal strings in file i/o.
+    </td></tr>
+</table>
+</p>
+</section>
+
+				<section></section>
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Function writeAsEPString</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Function writeAsEPString</h1><p>Writes a string to file in standard Extended Pascal string format.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="typ">void</span> <span class="pln">writeAsEPString</span>
+				<span class="pun">(</span>
+				<br/>
+				&nbsp;&nbsp;<span class="typ">string</span> <span class="pln">str</span><span class="pun">,</span>
+				<br/>
+				&nbsp;&nbsp;<span class="typ">ushort</span> <span class="pln">capacity</span><span class="pun">,</span>
+				<br/>
+				&nbsp;&nbsp;<span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio<wbr/></span><span class="pun">.</span><span class="typ">File</span> <span class="pln">file</span>
+				<br/>
+				<span class="pun">)</span><span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				<section><p>This format consists of the string contents, truncated or padded with <code class="lang-d"><span class="str">'\0'</span></code> upto <code class="lang-d"><a href="../../epcompat/string/writeAsEPString.html#capacity"><span class="pln">capacity</span></a></code>, followed by
+two bytes (<code class="lang-d"><span class="typ">ushort</span></code>) stating the length of the padding.
+</p>
+</section>
+
+				<section><h2>Parameters</h2>
+<table><col class="caption"><tr><th>Name</th><th>Description</th></tr>
+<tr><td id="str">str</td><td> The string to write.</td></tr>
+<tr><td id="capacity">capacity</td><td> The length of the written data section. If the length of <code class="lang-d"><a href="../../epcompat/string/writeAsEPString.html#str"><span class="pln">str</span></a></code> exceeds <code class="lang-d"><a href="../../epcompat/string/writeAsEPString.html#capacity"><span class="pln">capacity</span></a></code> then trunctation
+                  will happen. The written string is padded with <code class="lang-d"><span class="str">'\0'</span></code> upto <code class="lang-d"><a href="../../epcompat/string/writeAsEPString.html#capacity"><span class="pln">capacity</span></a></code>.</td></tr>
+<tr><td id="file">file</td><td> The file to write to.</td></tr>
+</table>
+</section>
+<section><h2>Throws</h2>
+<p>Exception (only in debug mode) if <code class="lang-d"><span class="pln">str<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">&gt; <a href="../../epcompat/string/writeAsEPString.html#capacity"></span><span class="pln">capacity</span></a></code>.
+</p>
+</section>
+<section><h2>See Also</h2>
+<p>readEPString, writeAsEPShortString.
+</p>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					<p>Bastiaan Veelo
+</p>
+
+					<p>SARC B.V.
+</p>
+
+					<p>Boost.
+</p>
+
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

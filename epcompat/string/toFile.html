@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>toFile - multiple declarations</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>toFile - multiple declarations</h1>
+				<nav class="page-nav">
+					<ul>
+						<li>
+							<a href="#0">
+								Function <code>toFile</code>
+							</a>
+						</li>
+						<li>
+							<a href="#1">
+								Function <code>toFile</code>
+							</a>
+						</li>
+					</ul>
+				</nav><h2 id="0">Function toFile</h2><p>Writes structs to file.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="typ">void</span> <span class="pln">toFile</span>(S)
+				<span class="pun">(</span>
+				<br/>
+				&nbsp;&nbsp;<span class="pln">S</span> <span class="pln">s</span><span class="pun">,</span>
+				<br/>
+				&nbsp;&nbsp;<span class="typ">File</span> <span class="pln">f</span>
+				<br/>
+				<span class="pun">)</span>
+				<br/>
+				<span class="kwd">if</span> <span class="pun">(</span><span class="kwd">is</span><span class="pun">(</span><span class="pln">S </span><span class="pun">== </span><span class="kwd">struct</span><span class="pun">)</span><span class="pun">);</span>
+						</div>
+					</code>
+				</div>
+				<section><p>It looks at the members of the struct and selects the appropriate method:
+<ul><li>If the type of the member has a <code class="lang-d"><span class="pln">toFile</span></code> member, it calls <code class="lang-d"><span class="pln">toFile</span><span class="pun">(<a href="../../epcompat/string/toFile.html#f"></span><span class="pln">f</span></a><span class="pun">)</span></code> on it.</li>
+<li>If the member is itself a struct, it recurses by calling <code class="lang-d"><span class="pln">toFile</span><span class="pun">(<a href="../../epcompat/string/toFile.html#f"></span><span class="pln">f</span></a><span class="pun">)</span></code> on it.</li>
+<li>If the member is a string, it checks that its format and capacity are defined
+     with either an <code class="lang-d"><span class="pun">@<a href="../../epcompat/string/EPString.html"></span><span class="typ">EPString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA or <code class="lang-d"><span class="pun">@<a href="../../epcompat/string/EPShortString.html"></span><span class="typ">EPShortString</span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA, and then calls
+     <code class="lang-d"><a href="../../epcompat/string/writeAsEPString.html"><span class="pln">writeAsEPString</span></a></code> or <code class="lang-d"><a href="../../epcompat/string/writeAsEPShortString.html"><span class="pln">writeAsEPShortString</span></a></code> respectively. A missing UDA is an error
+     and reported at compile time.</li>
+<li>In all other cases the member is written using <code class="lang-d"><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio<wbr/></span><span class="pun">.</span><span class="typ">File<wbr/></span><span class="pun">.</span><span class="pln">rawWrite</span></code>.</li>
+</ul>
+</p>
+</section>
+
+				<section><h3>Parameters</h3>
+<table><col class="caption"><tr><th>Name</th><th>Description</th></tr>
+<tr><td id="s">s</td><td> The struct variable to write.</td></tr>
+<tr><td id="f">f</td><td> The File to write to.</td></tr>
+</table>
+</section>
+<section><h3>See Also</h3>
+<p>fromFile.
+</p>
+</section>
+<h2 id="1">Function toFile</h2><p>Where s is an alias to a string annotated with either an <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPString.html"></span><span class="typ"><a href="../../epcompat/string/EPString.html"><span class="typ">EPString</span></a></span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA or <code class="lang-d"><span class="pun">@<a href="../epcompat/string/EPShortString.html"></span><span class="typ"><a href="../../epcompat/string/EPShortString.html"><span class="typ">EPShortString</span></a></span></a><span class="pun">(</span><span class="pln">n</span><span class="pun">)</span></code> UDA,
+writes s to file f in the appropriate Prospero formats.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="typ">void</span> <span class="pln">toFile</span>(alias s)
+				<span class="pun">(</span>
+				<br/>
+				&nbsp;&nbsp;<span class="typ">File</span> <span class="pln">f</span>
+				<br/>
+				<span class="pun">)</span><span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				
+				<section><h3>Example</h3>
+
+<pre class="code"><code class="lang-d"><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio</span><span class="pun">;
+
+</span><span class="kwd">struct </span><span class="typ">MyType
+</span><span class="pun">{
+    </span><span class="typ">ubyte </span><span class="pln">b </span><span class="pun">= </span><span class="lit">0xF</span><span class="pun">;
+    @<a href="../../epcompat/string/EPShortString.html"></span><span class="typ">EPShortString</span></a><span class="pun">(</span><span class="lit">5</span><span class="pun">) </span><span class="typ">string </span><span class="pln">str </span><span class="pun">= </span><span class="str">"Hello"</span><span class="pun">;
+    </span><span class="com">// string error; // Must produce a compile time error. OK.
+</span><span class="pun">}
+</span><span class="kwd">struct </span><span class="typ">Record
+</span><span class="pun">{
+    </span><span class="typ">int </span><span class="pln">i</span><span class="pun">;
+    @<a href="../../epcompat/string/EPString.html"></span><span class="typ">EPString</span></a><span class="pun">(</span><span class="lit">10</span><span class="pun">) </span><span class="typ">string </span><span class="pln">str </span><span class="pun">= </span><span class="str">"World!"</span><span class="pun">;
+    </span><span class="typ">MyType </span><span class="pln">n</span><span class="pun">;
+}
+
+</span><span class="typ">Record </span><span class="pln">r</span><span class="pun">;
+</span><span class="pln">r<wbr/></span><span class="pun">.</span><span class="pln">str </span><span class="pun">= </span><span class="str">"Mars!"</span><span class="pun">;
+</span><span class="pln">r<wbr/></span><span class="pun">.</span><span class="pln">n<wbr/></span><span class="pun">.</span><span class="pln">str </span><span class="pun">= </span><span class="str">"Bye"</span><span class="pun">;
+
+</span><span class="typ">File </span><span class="pln">tmp </span><span class="pun">= </span><span class="typ">File<wbr/></span><span class="pun">.</span><span class="pln">tmpfile</span><span class="pun">();
+</span><span class="pln">r<wbr/></span><span class="pun">.</span><span class="pln">toFile</span><span class="pun">(</span><span class="pln">tmp</span><span class="pun">);  </span><span class="com">// &lt;===
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">flush</span><span class="pun">;
+
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size </span><span class="pun">== </span><span class="lit">4   </span><span class="com">// int i
+                 </span><span class="pun">+ </span><span class="lit">10  </span><span class="com">// String
+                 </span><span class="pun">+ </span><span class="lit">2   </span><span class="com">// String unused length
+                 </span><span class="pun">+ </span><span class="lit">1   </span><span class="com">// ubyte
+                 </span><span class="pun">+ </span><span class="lit">1   </span><span class="com">// ShortString length
+                 </span><span class="pun">+ </span><span class="lit">5   </span><span class="com">// ShortString
+                 </span><span class="pun">);
+
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rewind</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">buf </span><span class="pun">= </span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rawRead</span><span class="pun">(</span><span class="kwd">new </span><span class="typ">ubyte</span><span class="pun">[</span><span class="kwd">cast</span><span class="pun">(</span><span class="typ">uint</span><span class="pun">)(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size</span><span class="pun">)]);
+
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="pln">i</span><span class="pun">, </span><span class="pln">b</span><span class="pun">; </span><span class="pln">buf</span><span class="pun">)
+{
+    </span><span class="kwd">final switch </span><span class="pun">(</span><span class="pln">i</span><span class="pun">)
+    {
+        </span><span class="kwd">case </span><span class="lit">0</span><span class="pun">, </span><span class="lit">1</span><span class="pun">, </span><span class="lit">2</span><span class="pun">, </span><span class="lit">3</span><span class="pun">, </span><span class="lit">9</span><span class="pun">, </span><span class="lit">10</span><span class="pun">, </span><span class="lit">11</span><span class="pun">, </span><span class="lit">12</span><span class="pun">, </span><span class="lit">13</span><span class="pun">, </span><span class="lit">15</span><span class="pun">, </span><span class="lit">21</span><span class="pun">, </span><span class="lit">22</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">0x0</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">4</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'M'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">5</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'a'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">6</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'r'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">7</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'s'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">8</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'!'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">14</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">5</span><span class="pun">); </span><span class="com">// unused length EP string
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">16</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">0xF</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">17</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">3</span><span class="pun">); </span><span class="com">// length of EP short string
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">18</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'B'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">19</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'y'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">20</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'e'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+    }
+}
+</span></code></pre>
+</section>
+<section><h3>Example</h3>
+
+<pre class="code"><code class="lang-d"><span class="pun">@<a href="../../epcompat/string/EPShortString.html"></span><span class="typ">EPShortString</span></a><span class="pun">(</span><span class="lit">5</span><span class="pun">) </span><span class="typ">string </span><span class="pln">str1 </span><span class="pun">= </span><span class="str">"Hello"</span><span class="pun">;
+@<a href="../../epcompat/string/EPString.html"></span><span class="typ">EPString</span></a><span class="pun">(</span><span class="lit">10</span><span class="pun">) </span><span class="typ">string </span><span class="pln">str2 </span><span class="pun">= </span><span class="str">"World!"</span><span class="pun">;
+
+</span><span class="typ">File </span><span class="pln">tmp </span><span class="pun">= </span><span class="typ">File<wbr/></span><span class="pun">.</span><span class="pln">tmpfile</span><span class="pun">();
+<a href="../../epcompat/string/toFile.html"></span><span class="pln">toFile</span></a><span class="pun">!</span><span class="pln">str1</span><span class="pun">(</span><span class="pln">tmp</span><span class="pun">);
+<a href="../../epcompat/string/toFile.html"></span><span class="pln">toFile</span></a><span class="pun">!</span><span class="pln">str2</span><span class="pun">(</span><span class="pln">tmp</span><span class="pun">);
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">flush</span><span class="pun">;
+
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size </span><span class="pun">== </span><span class="lit">1   </span><span class="com">// ShortString length
+                 </span><span class="pun">+ </span><span class="lit">5   </span><span class="com">// ShortString
+                 </span><span class="pun">+ </span><span class="lit">10  </span><span class="com">// String
+                 </span><span class="pun">+ </span><span class="lit">2   </span><span class="com">// String unused length
+                 </span><span class="pun">);
+
+</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rewind</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">buf </span><span class="pun">= </span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">rawRead</span><span class="pun">(</span><span class="kwd">new </span><span class="typ">ubyte</span><span class="pun">[</span><span class="kwd">cast</span><span class="pun">(</span><span class="typ">uint</span><span class="pun">)(</span><span class="pln">tmp<wbr/></span><span class="pun">.</span><span class="pln">size</span><span class="pun">)]);
+
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="pln">i</span><span class="pun">, </span><span class="pln">b</span><span class="pun">; </span><span class="pln">buf</span><span class="pun">)
+{
+    </span><span class="kwd">final switch </span><span class="pun">(</span><span class="pln">i</span><span class="pun">)
+    {
+        </span><span class="kwd">case </span><span class="lit">12</span><span class="pun">, </span><span class="lit">13</span><span class="pun">, </span><span class="lit">14</span><span class="pun">, </span><span class="lit">15</span><span class="pun">, </span><span class="lit">17</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">0x0</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">0</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">5</span><span class="pun">); </span><span class="com">// length of EP short string
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">1</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'H'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">2</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'e'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">3</span><span class="pun">, </span><span class="lit">4</span><span class="pun">, </span><span class="lit">9</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'l'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">5</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'o'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">6</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'W'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">7</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'o'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">8</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'r'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">10</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'d'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">11</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="str">'!'</span><span class="pun">);
+            </span><span class="kwd">break</span><span class="pun">;
+        </span><span class="kwd">case </span><span class="lit">16</span><span class="pun">:
+            </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">b </span><span class="pun">== </span><span class="lit">4</span><span class="pun">); </span><span class="com">// unused length EP string
+            </span><span class="kwd">break</span><span class="pun">;
+    }
+}
+
+</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					<p>Bastiaan Veelo
+</p>
+
+					<p>SARC B.V.
+</p>
+
+					<p>Boost.
+</p>
+
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

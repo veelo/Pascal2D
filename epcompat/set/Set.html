@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Struct Set</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Struct Set</h1><p>The Set type supports set operations. Sets can be instantiated with an explicitly
+specified base type, in which case the range of values that the Set can contain
+is limited by the base type. Sets can also be constructed with an implicitly
+derived base type using the set() functions, where the underlying data is managed
+dynamically and the range of values that the set can contain is only limited by
+the available memory. Base types are ordinal types like the standard signed and
+unsigned integer types of various sizes, but also char types, booleans and custom
+enumerations.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">Set</span>(T)
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				
+				<section><h2>Constructors</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Fields</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.bits.html" class="public"><code>bits</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="typ">BitArray</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.minval.html" class="public"><code>minval</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Methods</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.card.html" class="public">
+									<code>card</code>
+								</a>
+							</td>
+							<td>Returns the cardinality of the set (the number of members). O(n).
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.init.html" class="public">
+									<code>init</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.opApply.html" class="public">
+									<code>opApply</code>
+								</a>
+							</td>
+							<td>Support for <code class="lang-d"><span class="kwd">foreach</span></code> loops over members of the <code class="lang-d"><a href="../../epcompat/set/Set.html"><span class="typ">Set</span></a></code>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.opBinary.html" class="public">
+									<code>opBinary</code>
+								</a>
+							</td>
+							<td>Support for set operations.
+     "+": set union
+     "-": set difference
+     "*": set intersection
+     "%": set symmetric difference (A + B - A * B)
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.opBinaryRight.html" class="public">
+									<code>opBinaryRight</code>
+								</a>
+							</td>
+							<td>Support for set membership testing using <code class="lang-d"><span class="kwd">in</span></code>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.opOpAssign.html" class="public">
+									<code>opOpAssign</code>
+								</a>
+							</td>
+							<td>ditto (+= etc)
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/set/Set.staticArray.html" class="public">
+									<code>staticArray</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">auto </span><span class="pln">i1 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="lit">10</span><span class="pun">, </span><span class="lit">20</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">i2 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="lit">15</span><span class="pun">);
+</span><span class="typ">byte </span><span class="pln">a </span><span class="pun">= </span><span class="lit">7</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">s1 </span><span class="pun">= </span><span class="typ">Set</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="pln">i1</span><span class="pun">, </span><span class="pln">i2</span><span class="pun">, </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="pln">a</span><span class="pun">));
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="lit">7 </span><span class="kwd">in </span><span class="pln">s1</span><span class="pun">);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">auto </span><span class="pln">s1 </span><span class="pun">= </span><span class="typ">Set</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="lit">10</span><span class="pun">, </span><span class="lit">20</span><span class="pun">));
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="lit">5 </span><span class="pun">!</span><span class="kwd">in </span><span class="pln">s1</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="lit">20 </span><span class="kwd">in </span><span class="pln">s1</span><span class="pun">);
+
+</span><span class="kwd">enum </span><span class="typ">Count </span><span class="pun">{</span><span class="typ">One</span><span class="pun">, </span><span class="typ">Two</span><span class="pun">, </span><span class="typ">Three</span><span class="pun">, </span><span class="typ">Four</span><span class="pun">, </span><span class="typ">Five</span><span class="pun">, </span><span class="typ">Six</span><span class="pun">, </span><span class="typ">Seven</span><span class="pun">, </span><span class="typ">Eight</span><span class="pun">, </span><span class="typ">Nine</span><span class="pun">, </span><span class="typ">Ten</span><span class="pun">}
+</span><span class="kwd">auto </span><span class="pln">i1 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Three</span><span class="pun">, </span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Six</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">i2 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Eight</span><span class="pun">, </span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Ten</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">s2 </span><span class="pun">= </span><span class="typ">Set</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="pln">i1</span><span class="pun">, </span><span class="pln">i2</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">s2<wbr/></span><span class="pun">.</span><span class="pln">card </span><span class="pun">== </span><span class="lit">7</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Nine </span><span class="kwd">in </span><span class="pln">s2</span><span class="pun">);
+</span><span class="pln">s2 </span><span class="pun">-= </span><span class="typ">Set</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="pln">i2</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">s2<wbr/></span><span class="pun">.</span><span class="pln">card </span><span class="pun">== </span><span class="lit">4</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Four </span><span class="kwd">in </span><span class="pln">s2</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="typ">Count<wbr/></span><span class="pun">.</span><span class="typ">Nine </span><span class="pun">!</span><span class="kwd">in </span><span class="pln">s2</span><span class="pun">);
+</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

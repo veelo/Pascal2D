@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Struct Initial</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Struct Initial</h1><p>Creates a type that is mostly T, only with a different initial value of val.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">Initial</span>(T, <span class="pln">T</span> val)
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				<section><p>It differs from https://dlang.org/library/std/typecons/typedef.html in that <code class="lang-d"><span class="kwd">typedef</span></code> takes care to
+create a new type that does not implicitly convert to the base type, whereas we try to stay
+compatible with the base type.
+</p>
+</section>
+
+				<section><h2>Constructors</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/initial/Initial.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Fields</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/initial/Initial._payload.html" class="public"><code>_payload</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Methods</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/initial/Initial.toString.html" class="public">
+									<code>toString</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Templates</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/initial/Initial.from.html" class="public">
+									<code>from</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">alias </span><span class="pln">int1 </span><span class="pun">= </span><span class="typ">Initial</span><span class="pun">!(</span><span class="typ">int</span><span class="pun">, </span><span class="lit">1</span><span class="pun">);
+</span><span class="kwd">static assert</span><span class="pun">(</span><span class="pln">int1<wbr/></span><span class="pun">.</span><span class="pln">init </span><span class="pun">== </span><span class="lit">1</span><span class="pun">); </span><span class="com">// typeof(int1.init) == int1
+</span><span class="kwd">static assert</span><span class="pun">(</span><span class="pln">int1<wbr/></span><span class="pun">.</span><span class="pln">sizeof </span><span class="pun">== </span><span class="typ">int<wbr/></span><span class="pun">.</span><span class="pln">sizeof</span><span class="pun">);
+
+</span><span class="pln">int1 i</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i </span><span class="pun">== </span><span class="lit">1</span><span class="pun">);
+</span><span class="pln">int1 ii </span><span class="pun">= </span><span class="lit">2</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">ii </span><span class="pun">== </span><span class="lit">2</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">ii<wbr/></span><span class="pun">.</span><span class="pln">init </span><span class="pun">== </span><span class="lit">1</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">int1<wbr/></span><span class="pun">.</span><span class="pln">init </span><span class="pun">== </span><span class="lit">1</span><span class="pun">);
+
+</span><span class="typ">void </span><span class="pln">f</span><span class="pun">(</span><span class="typ">int </span><span class="pln">val</span><span class="pun">)
+{
+    </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">val </span><span class="pun">== </span><span class="lit">1</span><span class="pun">);
+}
+</span><span class="pln">f</span><span class="pun">(</span><span class="pln">i</span><span class="pun">);
+
+</span><span class="typ">int </span><span class="pln">i0</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i0 </span><span class="pun">== </span><span class="lit">0</span><span class="pun">);
+</span><span class="pln">i </span><span class="pun">= </span><span class="pln">i0</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i </span><span class="pun">== </span><span class="lit">0</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i<wbr/></span><span class="pun">.</span><span class="pln">init </span><span class="pun">== </span><span class="lit">1</span><span class="pun">);
+</span><span class="pln">i0 </span><span class="pun">= </span><span class="pln">ii</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i0 </span><span class="pun">== </span><span class="lit">2</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i0<wbr/></span><span class="pun">.</span><span class="pln">init </span><span class="pun">== </span><span class="lit">0</span><span class="pun">);
+
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="typ">string</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">format</span><span class="pun">(</span><span class="str">"%6d"</span><span class="pun">, </span><span class="pln">ii</span><span class="pun">) == </span><span class="str">"     2"</span><span class="pun">);
+</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

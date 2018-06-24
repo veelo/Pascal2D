@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>StaticArray - multiple declarations</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>StaticArray - multiple declarations</h1>
+				<nav class="page-nav">
+					<ul>
+						<li>
+							<a href="#0">
+								Struct <code>StaticArray</code>
+							</a>
+						</li>
+						<li>
+							<a href="#1">
+								Struct <code>StaticArray</code>
+							</a>
+						</li>
+					</ul>
+				</nav><h2 id="0">Struct StaticArray</h2><p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">StaticArray</span>(T, <span class="typ">long</span> first, <span class="typ">long</span> last)
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				
+				<section><h3>Fields</h3>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray._payload.html" class="public"><code>_payload</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span><span class="pun">[</span><span class="pln">last</span><span class="pun">-</span><span class="pln">first</span><span class="pun">+</span><span class="lit">1</span><span class="pun">]</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h3>Methods</h3>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opApply.html" class="public">
+									<code>opApply</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opIndex.html" class="public">
+									<code>opIndex</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opIndexAssign.html" class="public">
+									<code>opIndexAssign</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h3>Example</h3>
+<p>A fixed-length array on type <i>T</i> with an index that runs from
+<i>first</i> to <i>last</i> inclusive. The bounds are supplied at
+compile-time.
+</p>
+<pre class="code"><code class="lang-d"><span class="typ">StaticArray</span><span class="pun">!(</span><span class="typ">int</span><span class="pun">, -</span><span class="lit">10</span><span class="pun">, </span><span class="lit">10</span><span class="pun">) </span><span class="pln">arr</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">21</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr<wbr/></span><span class="pun">.</span><span class="pln">sizeof </span><span class="pun">== </span><span class="pln">arr<wbr/></span><span class="pun">.</span><span class="pln">length </span><span class="pun">* </span><span class="typ">int<wbr/></span><span class="pun">.</span><span class="pln">sizeof</span><span class="pun">);
+
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="kwd">ref </span><span class="pln">e</span><span class="pun">; </span><span class="pln">arr</span><span class="pun">)
+    </span><span class="pln">e </span><span class="pun">= </span><span class="lit">42</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[-</span><span class="lit">10</span><span class="pun">] == </span><span class="lit">42</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]   == </span><span class="lit">42</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">10</span><span class="pun">]  == </span><span class="lit">42</span><span class="pun">);
+
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">conv </span><span class="pun">: </span><span class="pln">to</span><span class="pun">;
+</span><span class="kwd">foreach </span><span class="pun">(</span><span class="pln">i</span><span class="pun">, </span><span class="kwd">ref </span><span class="pln">e</span><span class="pun">; </span><span class="pln">arr</span><span class="pun">)
+    </span><span class="pln">e </span><span class="pun">= </span><span class="pln">i<wbr/></span><span class="pun">.</span><span class="pln">to</span><span class="pun">!</span><span class="typ">int</span><span class="pun">;   </span><span class="com">// i is of type size_t.
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[-</span><span class="lit">10</span><span class="pun">] == -</span><span class="lit">10</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]   ==   </span><span class="lit">0</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">]   ==   </span><span class="lit">5</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">10</span><span class="pun">]  ==  </span><span class="lit">10</span><span class="pun">);
+
+</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">] = </span><span class="lit">15</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">arr</span><span class="pun">[</span><span class="lit">5</span><span class="pun">]   == </span><span class="lit">15</span><span class="pun">);
+</span></code></pre>
+</section>
+<h2 id="1">Struct StaticArray</h2><p></p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">StaticArray</span>(T, E)
+				<br/>
+				&nbsp;&nbsp;
+				<br/>
+				<span class="kwd">if</span> <span class="pun">(</span><span class="kwd">is</span><span class="pun">(</span><span class="pln">E </span><span class="pun">== </span><span class="kwd">enum</span><span class="pun">)</span><span class="pun">);</span>
+						</div>
+					</code>
+				</div>
+				
+				<section><h3>Fields</h3>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray._payload.html" class="public"><code>_payload</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span><span class="pun">[</span><span class="pln">E<wbr/></span><span class="pun">.</span><span class="pln">max</span><span class="pun">-</span><span class="pln">E<wbr/></span><span class="pun">.</span><span class="pln">min</span><span class="pun">+</span><span class="lit">1</span><span class="pun">]</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h3>Methods</h3>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opApply.html" class="public">
+									<code>opApply</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opIndex.html" class="public">
+									<code>opIndex</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.opIndexAssign.html" class="public">
+									<code>opIndexAssign</code>
+								</a>
+							</td>
+							<td>Indexing operators yield or modify the value at a specified <i>index</i>.
+</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/array/StaticArray.toFile.html" class="public">
+									<code>toFile</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

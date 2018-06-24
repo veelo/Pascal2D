@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Struct Interval</title>
+		<link rel="stylesheet" href="../../css/style.min.css"/>
+		<script type="text/javascript" src="../../js/script.min.js"></script>
+	</head>
+	<body onload="setupDdox();">
+		<header></header>
+		<nav id="main-nav">
+			<div>
+				<noscript>
+					<p style="color: red">The search functionality needs JavaScript enabled</p>
+				</noscript>
+				<div id="symbolSearchPane" style="display: none">
+					<form action="#" method="GET">
+						<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(24);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" autofocus/>
+					</form>
+					<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+document.getElementById('symbolSearchPane').style.display = 'block';</script>
+				</div>
+				<ul class="tree-view">
+					<li class="tree-view ">
+						<div class="package ">
+							<a href="../../epcompat.html">epcompat</a>
+						</div>
+				<ul class="tree-view">
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/array.html">array</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/file.html">file</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/initial.html">initial</a>
+						</div>
+					</li>
+					<li>
+						<div class="module selected">
+							<a href="../../epcompat/interval.html">interval</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/ordinal.html">ordinal</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/set.html">set</a>
+						</div>
+					</li>
+					<li>
+						<div class="module ">
+							<a href="../../epcompat/string.html">string</a>
+						</div>
+					</li>
+				</ul>
+					</li>
+				</ul>
+			</div>
+			<p id="main-nav-footer">
+				Built with
+				<a href="https://github.com/MartinNowak/scod">scod</a>
+			</p>
+		</nav>
+		<div id="main-contents">
+			<div>
+				<h1>Struct Interval</h1><p>Defines an interval between two inclusive extremes on an explicitly supplied
+base type.
+</p>
+				<div class="prototype">
+					<code class="lang-d">
+						<div class="single-prototype">
+				<span class="kwd">struct</span> <span class="typ">Interval</span>(T)
+				<span class="pun">;</span>
+						</div>
+					</code>
+				</div>
+				
+				<section><h2>Constructors</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/interval/Interval.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/interval/Interval.this.html" class="public">
+									<code>this</code>
+								</a>
+							</td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Fields</h2>
+					<table>
+						<col class="caption"/>
+						<tr>
+							<th>Name</th><th>Type</th><th>Description</th>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/interval/Interval.high.html" class="public"><code>high</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span></code></td><td></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../../epcompat/interval/Interval.low.html" class="public"><code>low</code></a>
+							</td>
+							<td class="typecol"><code class="prettyprint lang-d"><span class="pln">T</span></code></td><td></td>
+						</tr>
+					</table>
+				</section>
+				<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">auto </span><span class="pln">i1 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="lit">10</span><span class="pun">, </span><span class="lit">20</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">i2 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">byte</span><span class="pun">(</span><span class="lit">15</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i1<wbr/></span><span class="pun">.</span><span class="pln">low </span><span class="pun">== </span><span class="lit">10</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i1<wbr/></span><span class="pun">.</span><span class="pln">high </span><span class="pun">== </span><span class="lit">20</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i2<wbr/></span><span class="pun">.</span><span class="pln">low </span><span class="pun">== </span><span class="lit">15</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i2<wbr/></span><span class="pun">.</span><span class="pln">high </span><span class="pun">== </span><span class="lit">15</span><span class="pun">);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">import </span><span class="pln">epcompat<wbr/></span><span class="pun">.</span><span class="pln">enumeration</span><span class="pun">;
+</span><span class="kwd">enum </span><span class="typ">Count </span><span class="pun">{</span><span class="typ">One</span><span class="pun">, </span><span class="typ">Two</span><span class="pun">, </span><span class="typ">Three</span><span class="pun">, </span><span class="typ">Four</span><span class="pun">, </span><span class="typ">Five</span><span class="pun">, </span><span class="typ">Six</span><span class="pun">, </span><span class="typ">Seven</span><span class="pun">, </span><span class="typ">Eight</span><span class="pun">, </span><span class="typ">Nine</span><span class="pun">, </span><span class="typ">Ten</span><span class="pun">}
+</span><span class="kwd">mixin </span><span class="pln">withEnum</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">i1 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="typ">Three</span><span class="pun">, </span><span class="typ">Six</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">i2 </span><span class="pun">= </span><span class="typ">Interval</span><span class="pun">!</span><span class="typ">Count</span><span class="pun">(</span><span class="typ">Eight</span><span class="pun">, </span><span class="typ">Ten</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i1<wbr/></span><span class="pun">.</span><span class="pln">low </span><span class="pun">== </span><span class="typ">Three</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i1<wbr/></span><span class="pun">.</span><span class="pln">high </span><span class="pun">== </span><span class="typ">Six</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i2<wbr/></span><span class="pun">.</span><span class="pln">low </span><span class="pun">== </span><span class="typ">Eight</span><span class="pun">);
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">i2<wbr/></span><span class="pun">.</span><span class="pln">high </span><span class="pun">== </span><span class="typ">Ten</span><span class="pun">);
+</span></code></pre>
+</section>
+
+			</div>
+			<footer>
+				<div id="license-info">
+					
+					
+					
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>
